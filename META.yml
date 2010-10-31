@@ -1,0 +1,38 @@
+---
+abstract: 'lets parents generate training lessons in Math'
+author:
+  - 'Jens Rehsack <rehsack@cpan.org>'
+build_requires:
+  App::Cmd::Tester: 0.300
+  Test::More: 0.90
+configure_requires:
+  Module::Build: 0.36
+generated_by: 'Module::Build version 0.3607'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: App-Math-Trainer
+provides:
+  App::Math::Trainer:
+    file: lib/App/Math/Trainer.pm
+    version: 0.001
+  App::Math::Trainer::Command::FracAdd:
+    file: lib/App/Math/Trainer/Command/FracAdd.pm
+    version: 0.001
+  App::Math::Trainer::Command::FracCast:
+    file: lib/App/Math/Trainer/Command/FracCast.pm
+    version: 0.001
+  App::Math::Trainer::Command::FracMul:
+    file: lib/App/Math/Trainer/Command/FracMul.pm
+    version: 0.001
+requires:
+  App::Cmd: 0.300
+  Carp: 0
+  File::ShareDir: 1.00
+  LaTeX::Table: v1.0.6
+  Template: 2.00
+  Template::Plugin::Latex: 3.01
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.001

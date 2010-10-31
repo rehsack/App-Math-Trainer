@@ -1,0 +1,76 @@
+[% USE Latex(format="pdf") -%]
+[% FILTER latex %]
+\documentclass[a4paper,10pt,final]{article}
+\usepackage{a4wide}
+\usepackage[a4paper,tmargin=1cm,lmargin=2.5cm,rmargin=1cm,includehead,includefoot,headheight=1cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{layouts} % for layout analyse
+
+% for multipage tables (xtab or longtable
+\usepackage{xtab}
+\usepackage{longtable}
+\usepackage{lscape}
+
+% for publication quality tables (Meyrin theme, the default)
+\usepackage{booktabs}
+% for the NYC theme
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{xcolor}
+
+\usepackage[tableposition=top]{caption}
+
+%\usepackage{german}   % for ß etc
+\usepackage{nextpage}
+\usepackage{url}
+\usepackage{helvet}
+\usepackage{hyperref}
+\usepackage{textcomp}
+\usepackage{fancybox}
+\usepackage{fancyhdr}  % \[lcr](head|foot)
+\setlength{\headheight}{71pt}
+\pagestyle{fancy}
+
+\setcounter{secnumdepth}{4}
+\usepackage{natbib}
+
+\usepackage{amsmath}
+
+\begin{document}
+
+\renewcommand{\baselinestretch}{1.5}
+
+\small\normalsize
+
+\section{[% problem.section %]}
+
+[% Latex.table( caption = problem.caption,
+		label = problem.label,
+		header = problem.header,
+		left = 1,
+		data = problem.tasks,
+		type = 'longtable',
+		coldef = 'p{8cm}|p{8cm}',
+		eor = '\\\\[0.8em]',
+# 		fontsize = 'tiny',
+	      )
+-%]
+
+\newpage
+
+\section{Solution: [% problem.section %]}
+
+[% Latex.table( caption = "Solution $problem.caption",
+		label = "solution$problem.label",
+		header = problem.header,
+		left = 1,
+		data = problem.solutions,
+		type = 'longtable',
+		coldef = 'p{8cm}|p{8cm}',
+		eor = '\\\\[0.8em]',
+# 		fontsize = 'tiny',
+	      )
+-%]
+
+\end{document}
+[% END %]
