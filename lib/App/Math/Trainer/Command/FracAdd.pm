@@ -184,7 +184,7 @@ sub execute
             push(
                   @way,
                   sprintf(
-                           '\frac{%d * %d}{%d * %d} %s \frac{%d * %d}{%d * %d}',
+                           '\frac{%d \cdot %d}{%d \cdot %d} %s \frac{%d \cdot %d}{%d \cdot %d}',
                            $a->{num}, $fa,
                            $a->{denum}, $fa,
                            $op,
@@ -230,7 +230,7 @@ sub execute
     my $ttcpath = File::Spec->catfile( $sharedir, "twocols.tt2" );
 
     my $template = Template->new( { ABSOLUTE => 1, } );
-    my $rc = $template->process( $ttcpath, { problem => $problem }, "vfadd.pdf" );
+    my $rc = $template->process( $ttcpath, { problem => $problem, output => { format => 'pdf', }, }, "vfadd.pdf" );
     $rc or croak( $template->error() );
 
     return 0;

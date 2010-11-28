@@ -149,7 +149,7 @@ sub execute
         foreach my $i ( 0 .. 1 )
         {
             my ( $a, $b ) = @$line[ 2 * $i, 2 * $i + 1 ];
-            my $op = $i ? ':' : '*';
+            my $op = $i ? '\div' : '\cdot';
             push(
                   @task,
                   sprintf(
@@ -174,7 +174,7 @@ sub execute
                 push(
                       @way,
                       sprintf(
-                               '\frac{%d * %d}{%d * %d}',
+                               '\frac{%d \cdot %d}{%d \cdot %d}',
                                $a->{num}, $b->{num}, $a->{denum}, $b->{denum}
                              )
                     );
@@ -186,7 +186,7 @@ sub execute
                 push(
                       @way,
                       sprintf(
-                               '\frac{%d * %d}{%d * %d}',
+                               '\frac{%d \cdot %d}{%d \cdot %d}',
                                $a->{num}, $b->{denum}, $b->{num}, $a->{denum}
                              )
                     );
@@ -209,7 +209,7 @@ sub execute
     my $ttcpath = File::Spec->catfile( $sharedir, "twocols.tt2" );
 
     my $template = Template->new( { ABSOLUTE => 1, } );
-    my $rc = $template->process( $ttcpath, { problem => $problem }, "vfmul.pdf" );
+    my $rc = $template->process( $ttcpath, { problem => $problem, output => { format => 'pdf', }, }, "vfmul.pdf" );
     $rc or croak( $template->error() );
 
     return 0;

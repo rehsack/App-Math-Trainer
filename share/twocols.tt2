@@ -1,10 +1,12 @@
-[% USE Latex(format="pdf") -%]
-[% FILTER latex %]
+[%- MACRO Content BLOCK -%]
 \documentclass[a4paper,10pt,final]{article}
 \usepackage{a4wide}
 \usepackage[a4paper,tmargin=1cm,lmargin=2.5cm,rmargin=1cm,includehead,includefoot,headheight=1cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{layouts} % for layout analyse
+
+%\usepackage[math]{cellspace}
+\usepackage{amsmath}
 
 % for multipage tables (xtab or longtable
 \usepackage{xtab}
@@ -34,9 +36,10 @@
 \setcounter{secnumdepth}{4}
 \usepackage{natbib}
 
-\usepackage{amsmath}
-
 \begin{document}
+
+%\addtolength\cellspacetoplimit{5pt}
+%\addtolength\cellspacebottomlimit{5pt}
 
 \renewcommand{\baselinestretch}{1.5}
 
@@ -51,8 +54,8 @@
 		data = problem.tasks,
 		type = 'longtable',
 		coldef = 'p{8cm}|p{8cm}',
-		eor = '\\\\[0.8em]',
-# 		fontsize = 'tiny',
+#		eor = '\\\\[0.8em]',
+ 		fontsize = 'footnotesize',
 	      )
 -%]
 
@@ -67,10 +70,21 @@
 		data = problem.solutions,
 		type = 'longtable',
 		coldef = 'p{8cm}|p{8cm}',
-		eor = '\\\\[0.8em]',
-# 		fontsize = 'tiny',
+#		eor = '\\\\[0.8em]',
+ 		fontsize = 'footnotesize',
 	      )
 -%]
 
 \end{document}
-[% END %]
+[%- END -%]
+[%- UNLESS output.defined('format') -%]
+[%-   output.format = "pdf" -%]
+[%- END -%]
+[% USE Latex -%]
+[% IF loutput.format == "tex" -%]
+[%   Content() %]
+[% ELSE %]
+[%   FILTER latex(format="${output.format}") -%]
+[%     Content() %]
+[%   END -%]
+[% END -%]

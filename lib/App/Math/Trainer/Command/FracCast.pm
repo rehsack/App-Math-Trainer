@@ -270,7 +270,7 @@ sub execute
     my $ttcpath = File::Spec->catfile( $sharedir, "twocols.tt2" );
 
     my $template = Template->new( { ABSOLUTE => 1, } );
-    my $rc = $template->process( $ttcpath, { problem => $problem }, "vfcast.pdf" );
+    my $rc = $template->process( $ttcpath, { problem => $problem, output => { format => 'pdf', }, }, "vfcast.pdf" );
     $rc or croak( $template->error() );
 
     return 0;
