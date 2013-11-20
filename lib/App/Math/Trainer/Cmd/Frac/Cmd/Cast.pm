@@ -43,7 +43,7 @@ option range => (
     },
     coerce => sub {
         defined( $_[0] )
-          or return [ 0, \&_lt, 10, \&_gt ];
+          or return [ 0, \&_lt, undef, \&_ok ];
 
         ref $_[0] eq "ARRAY" and return $_[0];
 
@@ -80,7 +80,7 @@ option range => (
 
 	return [ $minr, $minc, $maxr, $maxc ];
     },
-    default => sub { return [ 0, \&_lt, 10, \&_gt ]; },
+    default => sub { return [ 0, \&_lt, undef, \&_ok ]; },
     format  => "s",
     short   => "r",
                  );
