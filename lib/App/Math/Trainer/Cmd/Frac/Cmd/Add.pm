@@ -1,4 +1,4 @@
-package App::Math::Trainer::Command::FracAdd;
+package App::Math::Trainer::Cmd::Frac::Cmd::Add;
 
 use warnings;
 use strict;
@@ -15,50 +15,17 @@ App::Math::Trainer::Command::FracAdd - Plugin for addition and subtraction of vu
 
 our $VERSION = '0.001';
 
-use App::Math::Trainer -command;
+use Moo;
+use MooX::Cmd;
+use MooX::Options;
 
 use Carp qw(croak);
 use File::ShareDir ();
 use Template       ();
 
-=head2 opt_spec
+with "App::Math::Trainer::Role::FracExercise";
 
-Delivers the options supported by this command class.
-
-=cut
-
-sub opt_spec
-{
-    return (
-             [ "amount|n=i", "specifies amount of calculations to generate" ],
-             [ "format|f=s", "specifies format of numerator/denominator" ],
-           );
-}
-
-=head2 validate_args
-
-Validates the arguments given by user.
-
-=cut
-
-sub validate_args
-{
-    my ( $self, $opt, $args ) = @_;
-
-    defined( $opt->{format} )
-      and $opt->{format} !~ m/^\d?n+(?::\d?n+)?$/
-      and $self->usage_error("Invalid format");
-
-    return;
-}
-
-=head2 command_names
-
-Delivers the commands supported by this command class.
-
-=cut
-
-sub command_names
+sub _build_command_names
 {
     return qw(add sub);
 }
@@ -78,7 +45,7 @@ sub _gcd
     return $gcd;
 }
 
-sub _cancel
+sub _reduce
 {
     my ( $a, $b ) = @_;
     my $gcd = $a > $b ? _euklid( $a, $b ) : _euklid( $b, $a );
@@ -95,27 +62,12 @@ executes command
 
 sub execute
 {
-    my ( $self, $opt, $args ) = @_;
+    my ($self) = @_;
 
-    my ( @tasks, $maxa, $maxb, $minr, $maxr, $minc, $maxc );
-    my $amount = defined( $opt->{amount} ) ? $opt->{amount} : 25;
-    if ( defined( $opt->{format} ) )
-    {
-        my ( $fmta, $fmtb ) = ( $opt->{format} =~ m/^(\d?n+)(?::(\d?n+))?$/ );
-        defined $fmtb or $fmtb = $fmta;
-	my $starta = "1";
-	my $startb = "1";
-	$fmta =~ s/^(\d)(.*)/$2/ and $starta = $1;
-	$fmtb =~ s/^(\d)(.*)/$2/ and $startb = $1;
-        $maxa = $starta . "0" x length($fmta);
-        $maxb = $startb . "0" x length($fmtb);
-    }
-    else
-    {
-        $maxa = $maxb = 100;
-    }
+    my (@tasks);
+    my ( $maxa, $maxb ) = @{ $self->format };
 
-    foreach my $i ( 1 .. $amount )
+    foreach my $i ( 1 .. $self->amount )
     {
         my @numbers;
 
@@ -137,12 +89,12 @@ sub execute
     }
 
     my $problem = {
-	section => "Vulgar fraction addition / subtraction",
-	caption => 'Fractions',
-	label => 'vulgar_fractions_addition',
-        header => [ [ 'Vulgar Fraction Addition', 'Vulgar Fraction Subtraction' ] ],
-        solutions => [],
-        tasks     => [],
+                    section   => "Vulgar fraction addition / subtraction",
+                    caption   => 'Fractions',
+                    label     => 'vulgar_fractions_addition',
+                    header    => [ [ 'Vulgar Fraction Addition', 'Vulgar Fraction Subtraction' ] ],
+                    solutions => [],
+                    tasks     => [],
                   };
 
     # use Text::TabularDisplay;
@@ -185,11 +137,8 @@ sub execute
                   @way,
                   sprintf(
                            '\frac{%d \cdot %d}{%d \cdot %d} %s \frac{%d \cdot %d}{%d \cdot %d}',
-                           $a->{num}, $fa,
-                           $a->{denum}, $fa,
-                           $op,
-                           $b->{num}, $fb,
-                           $b->{denum}, $fb
+                           $a->{num}, $fa, $a->{denum}, $fa, $op,
+                           $b->{num}, $fb, $b->{denum}, $fb
                          )
                 );
             push(
@@ -215,7 +164,7 @@ sub execute
                 );
             my $s = $i ? $a->{num} * $fa - $b->{num} * $fb : $a->{num} * $fa + $b->{num} * $fb;
             push( @way, sprintf( '\frac{%d}{%d}', $s, $a->{denum} * $fa ) );
-            my @c = _cancel( $s, $a->{denum} * $fa );
+            my @c = _reduce( $s, $a->{denum} * $fa );
             $c[0] != $s and push( @way, sprintf( '\frac{%d}{%d}', @c ) );
 
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
@@ -229,8 +178,21 @@ sub execute
     my $sharedir = File::ShareDir::dist_dir("App-Math-Trainer");
     my $ttcpath = File::Spec->catfile( $sharedir, "twocols.tt2" );
 
-    my $template = Template->new( { ABSOLUTE => 1, } );
-    my $rc = $template->process( $ttcpath, { problem => $problem, output => { format => 'pdf', }, }, "vfadd.pdf" );
+    my $template = Template->new(
+                                  {
+                                    ABSOLUTE => 1,
+                                  }
+                                );
+    my $rc = $template->process(
+                                 $ttcpath,
+                                 {
+                                    problem => $problem,
+                                    output  => {
+                                                format => 'pdf',
+                                              },
+                                 },
+                                 "vfadd.pdf"
+                               );
     $rc or croak( $template->error() );
 
     return 0;

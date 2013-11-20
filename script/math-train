@@ -3,12 +3,5 @@
 use strict;
 use warnings;
 
-BEGIN {
-        my $default_cmd = "commands";
-        # unshift @ARGV, $default_cmd unless $ARGV[0] =~ /^\w/;
-}
-
 use App::Math::Trainer;
-my $app = App::Math::Trainer->new();
-$app->run();
-
+my $app = App::Math::Trainer->new_with_cmd;

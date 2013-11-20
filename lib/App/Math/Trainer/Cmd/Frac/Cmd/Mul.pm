@@ -1,4 +1,4 @@
-package App::Math::Trainer::Command::FracMul;
+package App::Math::Trainer::Cmd::Frac::Cmd::Mul;
 
 use warnings;
 use strict;
@@ -15,40 +15,15 @@ App::Math::Trainer::Command::FracMul - Plugin for multiplication and division of
 
 our $VERSION = '0.001';
 
-use App::Math::Trainer -command;
+use Moo;
+use MooX::Cmd;
+use MooX::Options;
 
 use Carp qw(croak);
 use File::ShareDir ();
 use Template       ();
 
-=head2 opt_spec
-
-Delivers the options supported by this command class.
-
-=cut
-
-sub opt_spec
-{
-    return ( [ "amount|n=i", "specifies amount of calculations to generate" ],
-             [ "format|f=s", "specifies format of numerator/denominator" ], );
-}
-
-=head2 validate_args
-
-Validates the arguments given by user.
-
-=cut
-
-sub validate_args
-{
-    my ( $self, $opt, $args ) = @_;
-
-    defined( $opt->{format} )
-      and $opt->{format} !~ m/^\d?n+(?::\d?n+)?$/
-      and $self->usage_error("Invalid format");
-
-    return;
-}
+with "App::Math::Trainer::Role::FracExercise";
 
 =head2 command_names
 
@@ -61,12 +36,6 @@ sub command_names
     return qw(mul div);
 }
 
-sub _lt { return $_[0] < $_[1]; }
-sub _le { return $_[0] <= $_[1]; }
-sub _gt { return $_[0] > $_[1]; }
-sub _ge { return $_[0] >= $_[1]; }
-sub _ok { return 1; }
-
 sub _euklid
 {
     my ( $a, $b ) = @_;
@@ -75,7 +44,7 @@ sub _euklid
     return $a;
 }
 
-sub _cancel
+sub _reduce
 {
     my ( $a, $b ) = @_;
     my $gcd = $a > $b ? _euklid( $a, $b ) : _euklid( $b, $a );
@@ -94,25 +63,10 @@ sub execute
 {
     my ( $self, $opt, $args ) = @_;
 
-    my ( @tasks, $maxa, $maxb, $minr, $maxr, $minc, $maxc );
-    my $amount = defined( $opt->{amount} ) ? $opt->{amount} : 25;
-    if ( defined( $opt->{format} ) )
-    {
-        my ( $fmta, $fmtb ) = ( $opt->{format} =~ m/^(\d?n+)(?::(\d?n+))?$/ );
-        defined $fmtb or $fmtb = $fmta;
-        my $starta = "1";
-        my $startb = "1";
-        $fmta =~ s/^(\d)(.*)/$2/ and $starta = $1;
-        $fmtb =~ s/^(\d)(.*)/$2/ and $startb = $1;
-        $maxa = $starta . "0" x length($fmta);
-        $maxb = $startb . "0" x length($fmtb);
-    }
-    else
-    {
-        $maxa = $maxb = 100;
-    }
+    my (@tasks);
+    my ( $maxa, $maxb ) = @{ $self->format };
 
-    foreach my $i ( 1 .. $amount )
+    foreach my $i ( 1 .. $self->amount )
     {
         my @numbers;
 
@@ -194,7 +148,7 @@ sub execute
             }
             push( @way, sprintf( '\frac{%d}{%d}', $c->{num}, $c->{denum} ) );
             my $cc = {};
-            @$cc{ 'num', 'denum' } = _cancel( $c->{num}, $c->{denum} );
+            @$cc{ 'num', 'denum' } = _reduce( $c->{num}, $c->{denum} );
             $cc->{num} != $c->{num}
               and push( @way, sprintf( '\frac{%d}{%d}', $cc->{num}, $cc->{denum} ) );
 

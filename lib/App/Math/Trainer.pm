@@ -11,13 +11,19 @@ App::Math::Trainer - lets parents generate training lessons in Math
 
 our $VERSION = '0.001';
 
-use App::Cmd::Setup -app;
+use Moo;
+use MooX::Cmd;
+use MooX::Options;
+
+*execute = sub {
+    shift->option_usage();
+};
 
 =head1 SYNOPSIS
 
-  # generates 25 addition and subtraction aufgaben (25 each)
+  # generates 25 addition and subtraction exercises (25 each)
   math-train add -n 25 -f nnn:nnn -r "0]..1"
-  # generates 25 multiplication and division aufgaben (40 each)
+  # generates 25 multiplication and division exercises (40 each)
   math-train mul -n 40 -f  nn:nnn -r "0]..1"
 
 =head1 DESCRIPTION
