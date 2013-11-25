@@ -8,14 +8,15 @@ my $builder = Module::Build->new(
     dist_author         => q{Jens Rehsack <rehsack@cpan.org>},
     dist_version_from   => 'lib/App/Math/Trainer.pm',
     build_requires => {
-	'App::Cmd::Tester' => '0.300',
+	'MooX::Cmd::Tester' => '0.007',
         'Test::More' => '0.90',
     },
     requires => {
-	'App::Cmd' => '0.300',
 	'Carp' => 0,
 	'LaTeX::Table' => '1.0.6',
-	'Template' => '2.00',
+	'MooX::Cmd' => '0.007',
+	'MooX::Options' => '4.000',
+	'Template' => '2.25',
 	'Template::Plugin::Latex' => '3.01',
     },
     share_dir          => { dist => [ 'share', ], },
