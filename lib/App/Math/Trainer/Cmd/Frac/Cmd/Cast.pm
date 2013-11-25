@@ -7,9 +7,7 @@ use vars qw(@ISA $VERSION);
 
 =head1 NAME
 
-App::Math::Trainer::Command::FracCast - Plugin for casting of vulgar fraction into decimal fraction and vice versa
-
-=head1 SYNOPSIS
+App::Math::Trainer::Cmd::Frac::Cmd::Cast - Plugin for casting of vulgar fraction into decimal fraction and vice versa
 
 =cut
 
@@ -105,13 +103,7 @@ option digits => (
     short   => "g",
                  );
 
-=head2 command_names
-
-Delivers the commands supported by this command class.
-
-=cut
-
-sub command_names
+sub _build_command_names
 {
     return qw(cast);
 }
@@ -230,5 +222,17 @@ sub execute
 
     return 0;
 }
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2010-2013 Jens Rehsack.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;

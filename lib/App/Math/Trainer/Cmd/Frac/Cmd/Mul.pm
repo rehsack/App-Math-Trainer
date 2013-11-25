@@ -7,9 +7,7 @@ use vars qw(@ISA $VERSION);
 
 =head1 NAME
 
-App::Math::Trainer::Command::FracMul - Plugin for multiplication and division of vulgar fraction
-
-=head1 SYNOPSIS
+App::Math::Trainer::Cmd::Frac::Cmd::Mul - Plugin for multiplication and division of vulgar fraction
 
 =cut
 
@@ -25,13 +23,7 @@ use Template       ();
 
 with "App::Math::Trainer::Role::FracExercise";
 
-=head2 command_names
-
-Delivers the commands supported by this command class.
-
-=cut
-
-sub command_names
+sub _build_command_names
 {
     return qw(mul div);
 }
@@ -52,12 +44,6 @@ sub _reduce
     $b /= $gcd;
     return ( $a, $b );
 }
-
-=head2 execute
-
-executes command
-
-=cut
 
 sub execute
 {
@@ -168,5 +154,17 @@ sub execute
 
     return 0;
 }
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2010-2013 Jens Rehsack.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;

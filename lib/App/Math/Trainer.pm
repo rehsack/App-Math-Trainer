@@ -5,7 +5,7 @@ use strict;
 
 =head1 NAME
 
-App::Math::Trainer - lets parents generate training lessons in Math
+App::Math::Trainer - lets one generate exercises for mathematical topic
 
 =cut
 
@@ -14,10 +14,6 @@ our $VERSION = '0.001';
 use Moo;
 use MooX::Cmd;
 use MooX::Options;
-
-*execute = sub {
-    shift->option_usage();
-};
 
 =head1 SYNOPSIS
 
@@ -29,7 +25,14 @@ use MooX::Options;
 =head1 DESCRIPTION
 
 Provides a command line tool to generate math (calculating) training
-lessons for their children.
+exercides.
+
+=cut
+
+sub execute
+{
+    shift->option_usage();
+}
 
 =head1 AUTHOR
 
@@ -81,7 +84,7 @@ guaranteed time.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2010 Jens Rehsack.
+Copyright 2010-2013 Jens Rehsack.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

@@ -3,6 +3,12 @@ package App::Math::Trainer::Role::FracExercise;
 use warnings;
 use strict;
 
+=head1 NAME
+
+App::Math::Trainer::Role::FracExercise - role for exercises in vulgar fraction
+
+=cut
+
 use Moo::Role;
 use MooX::Options;
 
@@ -36,5 +42,17 @@ option format => (
     format  => "s",
     short   => "n",
                  );
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2010-2013 Jens Rehsack.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;
