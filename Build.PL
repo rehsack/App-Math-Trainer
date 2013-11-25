@@ -21,6 +21,7 @@ my $builder = Module::Build->new(
     },
     share_dir          => { dist => [ 'share', ], },
     add_to_cleanup      => [ 'App-Math-Trainer-*' ],
+    test_files => join( ' ' => 't/*.t xt/*.t' ),
 );
 
 $builder->create_build_script();
