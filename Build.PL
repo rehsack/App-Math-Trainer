@@ -21,6 +21,8 @@ my $builder = Module::Build->new(
     },
     share_dir          => { dist => [ 'share', ], },
     add_to_cleanup      => [ 'App-Math-Trainer-*' ],
+    meta_merge =>
+        { resources => { repository => "https://github.com/rehsack/App-Math-Trainer", }, },
     test_files => join( ' ' => 't/*.t xt/*.t' ),
 );
 
