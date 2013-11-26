@@ -12,6 +12,8 @@ App::Math::Trainer::Role::Exercise - basic role for getting exercises
 use Moo::Role;
 use MooX::Options;
 
+our $VERSION = '0.002';
+
 option amount => (
                    is      => "ro",
                    doc     => "specifies amount of calculations to generate",

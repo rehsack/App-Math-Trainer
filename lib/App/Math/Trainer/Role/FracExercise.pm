@@ -14,6 +14,8 @@ use MooX::Options;
 
 with "App::Math::Trainer::Role::Exercise";
 
+our $VERSION = '0.002';
+
 option format => (
     is  => "ro",
     doc => "specifies format of numerator/denominator",

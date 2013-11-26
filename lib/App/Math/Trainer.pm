@@ -9,7 +9,7 @@ App::Math::Trainer - lets one generate exercises for mathematical topic
 
 =cut
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 use Moo;
 use MooX::Cmd;

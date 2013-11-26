@@ -11,7 +11,7 @@ App::Math::Trainer::Cmd::Frac::Cmd::Mul - Plugin for multiplication and division
 
 =cut
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 use Moo;
 use MooX::Cmd;

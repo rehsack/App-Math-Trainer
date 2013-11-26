@@ -11,7 +11,7 @@ App::Math::Trainer::Cmd::Frac::Cmd::Add - Plugin for addition and subtraction of
 
 =cut
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 use Moo;
 use MooX::Cmd;
