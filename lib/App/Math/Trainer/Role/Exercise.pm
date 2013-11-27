@@ -14,6 +14,14 @@ use MooX::Options;
 
 our $VERSION = '0.002';
 
+=head1 ATTRIBUTES
+
+=head2 amount
+
+Specifies amount of calculations to generate
+
+=cut
+
 option amount => (
                    is      => "ro",
                    doc     => "specifies amount of calculations to generate",

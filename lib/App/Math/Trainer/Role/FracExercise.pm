@@ -16,6 +16,14 @@ with "App::Math::Trainer::Role::Exercise";
 
 our $VERSION = '0.002';
 
+=head1 ATTRIBUTES
+
+=head2 format
+
+Specifies format of numerator/denominator
+
+=cut
+
 option format => (
     is  => "ro",
     doc => "specifies format of numerator/denominator",

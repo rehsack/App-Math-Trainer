@@ -30,6 +30,14 @@ sub _gt { return $_[0] > $_[1]; }
 sub _ge { return $_[0] >= $_[1]; }
 sub _ok { return 1; }
 
+=head1 ATTRIBUTES
+
+=head2 range
+
+Specifies range of resulting numbers ([m..n] or [m..[n or m]..n] ...)
+
+=cut
+
 option range => (
     is  => "ro",
     doc => "specifies range of resulting numbers ([m..n] or [m..[n or m]..n] ...)",
@@ -83,6 +91,12 @@ option range => (
     short   => "r",
                  );
 
+=head2 digits
+
+Specifies number of decimal digits (after decimal point)
+
+=cut
+
 option digits => (
     is  => "ro",
     doc => "specified number of decimal digits (after decimal point)",
@@ -124,12 +138,6 @@ sub _reduce
     $b /= $gcd;
     return ( $a, $b );
 }
-
-=head2 execute
-
-executes command
-
-=cut
 
 sub execute
 {
