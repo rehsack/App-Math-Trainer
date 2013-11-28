@@ -40,7 +40,11 @@ Specifies range of resulting numbers ([m..n] or [m..[n or m]..n] ...)
 
 option range => (
     is  => "ro",
-    doc => "specifies range of resulting numbers ([m..n] or [m..[n or m]..n] ...)",
+    doc => "Specifies range of results",
+    long_doc => "Specifies range of fraction value using a lower and an upper limit:\n\n" .
+    "\t--range [m..n] -- includes value of m and n in range\n\n" .
+    "\t--range [m..[n -- includes value of m in range, but exlude n\n\n" .
+    "\t--range m]..n] -- excludes value of m from rangem but include n\n\n",
     isa => sub {
     defined( $_[0] )
       and !ref $_[0]
@@ -99,7 +103,8 @@ Specifies number of decimal digits (after decimal point)
 
 option digits => (
     is  => "ro",
-    doc => "specified number of decimal digits (after decimal point)",
+    doc => "Specified number of decimal digits (after decimal point)",
+    long_doc => "Specify count of decimal digits after decimal point (limit value using range)",
     isa => sub {
     defined( $_[0] )
       and looks_like_number($_[0])

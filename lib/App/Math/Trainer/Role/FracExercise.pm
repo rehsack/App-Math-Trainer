@@ -27,10 +27,15 @@ Specifies format of numerator/denominator
 option format => (
     is  => "ro",
     doc => "specifies format of numerator/denominator",
+    long_doc => "Allow specifying the format of the numerator/denominator " .
+    "as vulgar fraction is typed with 'n' as placeholder:\n\n" .
+    "\t--format 5nnn/nn\n\n" .
+    "creates vulgar fractions from 5999/99 .. 0001/01.\n\n" .
+    "Defailt: 100/100",
     isa => sub {
         defined( $_[0] )
           and !ref $_[0]
-	  and $_[0] !~ m/^\d?n+(?::\d?n+)?$/
+	  and $_[0] !~ m,^\d?n+(?:/\d?n+)?$,
           and die("Invalid format");
     },
     coerce => sub {
@@ -38,7 +43,7 @@ option format => (
           or return [ 100, 100 ];
         ref $_[0] eq "ARRAY" and return $_[0];
 
-        my ( $fmta, $fmtb ) = ( $_[0] =~ m/^(\d?n+)(?::(\d?n+))?$/ );
+        my ( $fmta, $fmtb ) = ( $_[0] =~ m,^(\d?n+)(?:/(\d?n+))?$, );
         defined $fmtb or $fmtb = $fmta;
         my $starta = "1";
         my $startb = "1";
@@ -50,7 +55,7 @@ option format => (
     },
     default => sub { return [ 100, 100 ]; },
     format  => "s",
-    short   => "n",
+    short   => "f",
                  );
 
 =head1 LICENSE AND COPYRIGHT

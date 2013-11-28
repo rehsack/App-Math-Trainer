@@ -24,7 +24,10 @@ Specifies amount of calculations to generate
 
 option amount => (
                    is      => "ro",
-                   doc     => "specifies amount of calculations to generate",
+                   doc     => "Specifies amount of exercises to generate",
+		   long_doc => "Specify amount of exercises to generate. In " .
+		   "case of several kind of exercises, \$amount exercises " .
+		   "are generated per kind.",
                    format  => "i",
                    short   => "n",
                    default => sub { 25 },
