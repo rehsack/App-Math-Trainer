@@ -86,8 +86,8 @@ sub _build_exercises
                       caption => 'Fractions',
                       label   => 'vulgar_fractions_addition',
                       header  => [ [ 'Vulgar Fraction Addition', 'Vulgar Fraction Subtraction' ] ],
-                      solutions => [],
-                      challenges     => [],
+                      solutions  => [],
+                      challenges => [],
                     };
 
     # use Text::TabularDisplay;
@@ -163,8 +163,8 @@ sub _build_exercises
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }
 
-        push( @{ $exercises->{solutions} }, \@solution );
-        push( @{ $exercises->{challenges} },     \@challenge );
+        push( @{ $exercises->{solutions} },  \@solution );
+        push( @{ $exercises->{challenges} }, \@challenge );
     }
 
     return $exercises;

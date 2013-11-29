@@ -200,8 +200,8 @@ sub _build_exercises
                       caption => 'Fractions',
                       label   => 'vulgar_decimal_fractions',
                       header  => [ [ 'Vulgar => Decimal Fraction', 'Decimal => Vulgar Fraction' ] ],
-                      solutions => [],
-                      challenges     => [],
+                      solutions  => [],
+                      challenges => [],
                     };
 
     foreach my $line (@tasks)
@@ -231,8 +231,8 @@ sub _build_exercises
                   sprintf( '$ \frac{%d}{%d} = $', $line->[0][0], $line->[0][1] ),
                   sprintf( '$ %s = $',            $line->[1][2] ) );
         }
-        push( @{ $exercises->{solutions} }, \@solution );
-        push( @{ $exercises->{challenges} },     \@challenge );
+        push( @{ $exercises->{solutions} },  \@solution );
+        push( @{ $exercises->{challenges} }, \@challenge );
     }
 
     return $exercises;

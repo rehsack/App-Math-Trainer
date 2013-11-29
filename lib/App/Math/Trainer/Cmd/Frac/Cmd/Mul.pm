@@ -79,8 +79,8 @@ sub _build_exercises
                      caption => 'Fractions',
                      label   => 'vulgar_fractions_multiplication',
                      header => [ [ 'Vulgar Fraction Multiplication', 'Vulgar Fraction Division' ] ],
-                     solutions => [],
-                     challenges     => [],
+                     solutions  => [],
+                     challenges => [],
                     };
 
     foreach my $line (@tasks)
@@ -142,8 +142,8 @@ sub _build_exercises
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }
 
-        push( @{ $exercises->{solutions} }, \@solution );
-        push( @{ $exercises->{challenges} },     \@challenge );
+        push( @{ $exercises->{solutions} },  \@solution );
+        push( @{ $exercises->{challenges} }, \@challenge );
     }
 
     return $exercises;
