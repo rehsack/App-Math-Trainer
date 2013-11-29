@@ -172,6 +172,17 @@ sub _build_exercises
             my @c = _reduce( $s, $a->{denum} * $fa );
             $c[0] != $s and push( @way, sprintf( '\frac{%d}{%d}', @c ) );
 
+            my $n;
+            $c[0] > $c[1]
+              and push(
+                        @way,
+                        sprintf(
+                                 '\normalsize{%d} \frac{%d}{%d}',
+                                 $n = int( $c[0] / $c[1] ),
+                                 $c[0] - $c[1] * $n, $c[1]
+                               )
+                      );
+
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }
 

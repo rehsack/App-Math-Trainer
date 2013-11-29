@@ -144,11 +144,24 @@ sub _build_exercises
                     );
                 @$c{ 'num', 'denum' } = ( $a->{num} * $b->{denum}, $b->{num} * $a->{denum} );
             }
-            push( @way, sprintf( '\frac{%d}{%d}', $c->{num}, $c->{denum} ) );
+            push( @way, sprintf( '\frac{%d}{%d}', @$c{ 'num', 'denum' } ) );
             my $cc = {};
-            @$cc{ 'num', 'denum' } = _reduce( $c->{num}, $c->{denum} );
+            @$cc{ 'num', 'denum' } = _reduce( @$c{ 'num', 'denum' } );
             $cc->{num} != $c->{num}
-              and push( @way, sprintf( '\frac{%d}{%d}', $cc->{num}, $cc->{denum} ) );
+              and $c = $cc
+              and push( @way, sprintf( '\frac{%d}{%d}', @$c{ 'num', 'denum' } ) );
+
+            my $n;
+            $c->{num} > $c->{denum}
+              and push(
+                        @way,
+                        sprintf(
+                                 '\normalsize{%d} \frac{%d}{%d}',
+                                 $n = int( $c->{num} / $c->{denum} ),
+                                 $c->{num} - $c->{denum} * $n,
+                                 $c->{denum}
+                               )
+                      );
 
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }
