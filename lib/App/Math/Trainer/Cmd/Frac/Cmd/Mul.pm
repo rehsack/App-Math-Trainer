@@ -148,8 +148,21 @@ sub execute
     my $sharedir = File::ShareDir::dist_dir("App-Math-Trainer");
     my $ttcpath = File::Spec->catfile( $sharedir, "twocols.tt2" );
 
-    my $template = Template->new( { ABSOLUTE => 1, } );
-    my $rc = $template->process( $ttcpath, { problem => $problem, output => { format => 'pdf', }, }, "vfmul.pdf" );
+    my $template = Template->new(
+                                  {
+                                    ABSOLUTE => 1,
+                                  }
+                                );
+    my $rc = $template->process(
+                                 $ttcpath,
+                                 {
+                                    problem => $problem,
+                                    output  => {
+                                                format => 'pdf',
+                                              },
+                                 },
+                                 "vfmul.pdf"
+                               );
     $rc or croak( $template->error() );
 
     return 0;

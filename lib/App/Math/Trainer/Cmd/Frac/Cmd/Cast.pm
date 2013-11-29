@@ -39,17 +39,17 @@ Specifies range of resulting numbers ([m..n] or [m..[n or m]..n] ...)
 =cut
 
 option range => (
-    is  => "ro",
-    doc => "Specifies range of results",
-    long_doc => "Specifies range of fraction value using a lower and an upper limit:\n\n" .
-    "\t--range [m..n] -- includes value of m and n in range\n\n" .
-    "\t--range [m..[n -- includes value of m in range, but exlude n\n\n" .
-    "\t--range m]..n] -- excludes value of m from rangem but include n\n\n",
+    is       => "ro",
+    doc      => "Specifies range of results",
+    long_doc => "Specifies range of fraction value using a lower and an upper limit:\n\n"
+      . "\t--range [m..n] -- includes value of m and n in range\n\n"
+      . "\t--range [m..[n -- includes value of m in range, but exlude n\n\n"
+      . "\t--range m]..n] -- excludes value of m from rangem but include n\n\n",
     isa => sub {
-    defined( $_[0] )
-      and !ref $_[0]
-      and $_[0] !~ m/^(\[?)((?:\d?\.)?\d+)(\]?)\.\.(\[?)((?:\d?\.)?\d+)(\]?)$/
-      and die("Invalid range");
+        defined( $_[0] )
+          and !ref $_[0]
+          and $_[0] !~ m/^(\[?)((?:\d?\.)?\d+)(\]?)\.\.(\[?)((?:\d?\.)?\d+)(\]?)$/
+          and die("Invalid range");
     },
     coerce => sub {
         defined( $_[0] )
@@ -68,11 +68,12 @@ option range => (
 			      |
 			      (?:(?:\d+\.?\d*)|(?:\.?\d+)\])
 			  )
-		        )?$/x);
-        my ($minr, $minc, $maxr, $maxc);
+		        )?$/x
+                                  );
+        my ( $minr, $minc, $maxr, $maxc );
 
-	$fmtmin =~ s/^\[// and $minc = \&_le;
-	$fmtmin =~ s/\]$// and $minc = \&_lt;
+        $fmtmin =~ s/^\[// and $minc = \&_le;
+        $fmtmin =~ s/\]$// and $minc = \&_lt;
         defined $minc or $minc = \&_lt;
         $minr = $fmtmin;
 
@@ -80,7 +81,7 @@ option range => (
         {
             $fmtmax =~ s/^\[// and $maxc = \&_gt;
             $fmtmax =~ s/\]$// and $maxc = \&_ge;
-	    defined $maxc or $maxc = \&_ge;
+            defined $maxc or $maxc = \&_ge;
             $maxr = $fmtmax;
         }
         else
@@ -88,12 +89,12 @@ option range => (
             $maxc = \&_ok;
         }
 
-	return [ $minr, $minc, $maxr, $maxc ];
+        return [ $minr, $minc, $maxr, $maxc ];
     },
     default => sub { return [ 0, \&_lt, undef, \&_ok ]; },
     format  => "s",
     short   => "r",
-                 );
+                );
 
 =head2 digits
 
@@ -102,20 +103,20 @@ Specifies number of decimal digits (after decimal point)
 =cut
 
 option digits => (
-    is  => "ro",
-    doc => "Specified number of decimal digits (after decimal point)",
+    is       => "ro",
+    doc      => "Specified number of decimal digits (after decimal point)",
     long_doc => "Specify count of decimal digits after decimal point (limit value using range)",
-    isa => sub {
-    defined( $_[0] )
-      and looks_like_number($_[0])
-      and $_[0] != int( $_[0] )
-      and die("Digits must be natural");
-    defined( $_[0] )
-      and ( $_[0] < 2 or $_[0] > 13 )
-      and die("Digits must be between 2 and 13");
+    isa      => sub {
+        defined( $_[0] )
+          and looks_like_number( $_[0] )
+          and $_[0] != int( $_[0] )
+          and die("Digits must be natural");
+        defined( $_[0] )
+          and ( $_[0] < 2 or $_[0] > 13 )
+          and die("Digits must be between 2 and 13");
     },
     coerce => sub {
-	int($_[0])
+        int( $_[0] );
     },
     default => sub { return 5; },
     format  => "s",
@@ -150,7 +151,7 @@ sub execute
 
     my (@tasks);
     my ( $maxa, $maxb ) = @{ $self->format };
-    my ($minr, $minc, $maxr, $maxc) = @{ $self->range };
+    my ( $minr, $minc, $maxr, $maxc ) = @{ $self->range };
 
     my $digits = $self->digits;
 
@@ -165,7 +166,10 @@ sub execute
             $ca < 2 and goto NEXT_A;
             $cb < 2 and goto NEXT_A;
             $s1 = sprintf( "%0.${digits}g", $a / $b );
-          } while ( !$minc->( $minr, $a / $b ) || !$maxc->( $maxr, $a / $b ) || $s1 != $a / $b || length($s1) < 3 ); 
+          } while (    !$minc->( $minr, $a / $b )
+                    || !$maxc->( $maxr, $a / $b )
+                    || $s1 != $a / $b
+                    || length($s1) < 3 );
 
       NEXT_B:
         do
@@ -187,12 +191,12 @@ sub execute
     }
 
     my $problem = {
-	section => "Vulgar fraction <-> decimal fracion casting",
-	caption => 'Fractions',
-	label => 'vulgar_decimal_fractions',
-        header => [ [ 'Vulgar => Decimal Fraction', 'Decimal => Vulgar Fraction' ] ],
-        solutions => [],
-        tasks     => [],
+                    section   => "Vulgar fraction <-> decimal fracion casting",
+                    caption   => 'Fractions',
+                    label     => 'vulgar_decimal_fractions',
+                    header    => [ [ 'Vulgar => Decimal Fraction', 'Decimal => Vulgar Fraction' ] ],
+                    solutions => [],
+                    tasks     => [],
                   };
 
     foreach my $line (@tasks)
@@ -229,8 +233,21 @@ sub execute
     my $sharedir = File::ShareDir::dist_dir("App-Math-Trainer");
     my $ttcpath = File::Spec->catfile( $sharedir, "twocols.tt2" );
 
-    my $template = Template->new( { ABSOLUTE => 1, } );
-    my $rc = $template->process( $ttcpath, { problem => $problem, output => { format => 'pdf', }, }, "vfcast.pdf" );
+    my $template = Template->new(
+                                  {
+                                    ABSOLUTE => 1,
+                                  }
+                                );
+    my $rc = $template->process(
+                                 $ttcpath,
+                                 {
+                                    problem => $problem,
+                                    output  => {
+                                                format => 'pdf',
+                                              },
+                                 },
+                                 "vfcast.pdf"
+                               );
     $rc or croak( $template->error() );
 
     return 0;

@@ -23,11 +23,11 @@ Specifies amount of calculations to generate
 =cut
 
 option amount => (
-                   is      => "ro",
-                   doc     => "Specifies amount of exercises to generate",
-		   long_doc => "Specify amount of exercises to generate. In " .
-		   "case of several kind of exercises, \$amount exercises " .
-		   "are generated per kind.",
+                   is       => "ro",
+                   doc      => "Specifies amount of exercises to generate",
+                   long_doc => "Specify amount of exercises to generate. In "
+                     . "case of several kind of exercises, \$amount exercises "
+                     . "are generated per kind.",
                    format  => "i",
                    short   => "n",
                    default => sub { 25 },
