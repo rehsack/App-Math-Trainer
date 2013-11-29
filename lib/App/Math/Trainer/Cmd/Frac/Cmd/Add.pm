@@ -107,8 +107,6 @@ sub _build_exercises
         foreach my $i ( 0 .. 1 )
         {
             my ( $a, $b ) = @$line[ 2 * $i, 2 * $i + 1 ];
-            my $gcd = _gcd( $a->{denum}, $b->{denum} );
-            my ( $fa, $fb ) = ( $b->{denum} / $gcd, $a->{denum} / $gcd );
             my $op = $i ? '-' : '+';
             push(
                   @challenge,
@@ -126,6 +124,20 @@ sub _build_exercises
                            $a->{num}, $a->{denum}, $op, $b->{num}, $b->{denum}
                          )
                 );
+
+            @$a{ 'num', 'denum' } = _reduce( @$a{ 'num', 'denum' } );
+            @$b{ 'num', 'denum' } = _reduce( @$b{ 'num', 'denum' } );
+
+            push(
+                  @way,
+                  sprintf(
+                           '\frac{%d}{%d} %s \frac{%d}{%d}',
+                           $a->{num}, $a->{denum}, $op, $b->{num}, $b->{denum}
+                         )
+                );
+            my $gcd = _gcd( $a->{denum}, $b->{denum} );
+            my ( $fa, $fb ) = ( $b->{denum} / $gcd, $a->{denum} / $gcd );
+
             push(
                   @way,
                   sprintf(

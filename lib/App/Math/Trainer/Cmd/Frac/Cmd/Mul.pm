@@ -108,6 +108,17 @@ sub _build_exercises
                          )
                 );
 
+            @$a{ 'num', 'denum' } = _reduce( @$a{ 'num', 'denum' } );
+            @$b{ 'num', 'denum' } = _reduce( @$b{ 'num', 'denum' } );
+
+            push(
+                  @way,
+                  sprintf(
+                           '\frac{%d}{%d} %s \frac{%d}{%d}',
+                           $a->{num}, $a->{denum}, $op, $b->{num}, $b->{denum}
+                         )
+                );
+
             my $c = {};
             unless ($i)
             {
