@@ -30,3 +30,4 @@ App-Math-Trainer-.*
 \bxt
 ^MYMETA\.json$
 ^MYMETA\..*$
+.*\.pdf$

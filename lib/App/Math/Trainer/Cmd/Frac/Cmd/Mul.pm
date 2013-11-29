@@ -17,9 +17,10 @@ use Moo;
 use MooX::Cmd;
 use MooX::Options;
 
-use Carp qw(croak);
-use File::ShareDir ();
-use Template       ();
+has template_filename => (
+                           is      => "ro",
+                           default => "twocols"
+                         );
 
 with "App::Math::Trainer::Role::FracExercise";
 
@@ -45,9 +46,9 @@ sub _reduce
     return ( $a, $b );
 }
 
-sub execute
+sub _build_exercises
 {
-    my ( $self, $opt, $args ) = @_;
+    my ($self) = @_;
 
     my (@tasks);
     my ( $maxa, $maxb ) = @{ $self->format };
@@ -73,25 +74,25 @@ sub execute
         push( @tasks, \@numbers );
     }
 
-    my $problem = {
-                    section => "Vulgar fraction multiplication / division",
-                    caption => 'Fractions',
-                    label   => 'vulgar_fractions_multiplication',
-                    header  => [ [ 'Vulgar Fraction Multiplication', 'Vulgar Fraction Division' ] ],
-                    solutions => [],
-                    tasks     => [],
-                  };
+    my $exercises = {
+                     section => "Vulgar fraction multiplication / division",
+                     caption => 'Fractions',
+                     label   => 'vulgar_fractions_multiplication',
+                     header => [ [ 'Vulgar Fraction Multiplication', 'Vulgar Fraction Division' ] ],
+                     solutions => [],
+                     challenges     => [],
+                    };
 
     foreach my $line (@tasks)
     {
-        my ( @solution, @task );
+        my ( @solution, @challenge );
 
         foreach my $i ( 0 .. 1 )
         {
             my ( $a, $b ) = @$line[ 2 * $i, 2 * $i + 1 ];
             my $op = $i ? '\div' : '\cdot';
             push(
-                  @task,
+                  @challenge,
                   sprintf(
                            '$ \frac{%d}{%d} %s \frac{%d}{%d} = $',
                            $a->{num}, $a->{denum}, $op, $b->{num}, $b->{denum}
@@ -141,31 +142,11 @@ sub execute
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }
 
-        push( @{ $problem->{solutions} }, \@solution );
-        push( @{ $problem->{tasks} },     \@task );
+        push( @{ $exercises->{solutions} }, \@solution );
+        push( @{ $exercises->{challenges} },     \@challenge );
     }
 
-    my $sharedir = File::ShareDir::dist_dir("App-Math-Trainer");
-    my $ttcpath = File::Spec->catfile( $sharedir, "twocols.tt2" );
-
-    my $template = Template->new(
-                                  {
-                                    ABSOLUTE => 1,
-                                  }
-                                );
-    my $rc = $template->process(
-                                 $ttcpath,
-                                 {
-                                    problem => $problem,
-                                    output  => {
-                                                format => 'pdf',
-                                              },
-                                 },
-                                 "vfmul.pdf"
-                               );
-    $rc or croak( $template->error() );
-
-    return 0;
+    return $exercises;
 }
 
 =head1 LICENSE AND COPYRIGHT

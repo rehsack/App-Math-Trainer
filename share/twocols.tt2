@@ -45,13 +45,13 @@
 
 \small\normalsize
 
-\section{[% problem.section %]}
+\section{[% exercises.section %]}
 
-[% Latex.table( caption = problem.caption,
-		label = problem.label,
-		header = problem.header,
+[% Latex.table( caption = exercises.caption,
+		label = exercises.label,
+		header = exercises.header,
 		left = 1,
-		data = problem.tasks,
+		data = exercises.challenges,
 		type = 'longtable',
 		coldef = 'p{8cm}|p{8cm}',
 #		eor = '\\\\[0.8em]',
@@ -61,13 +61,13 @@
 
 \newpage
 
-\section{Solution: [% problem.section %]}
+\section{Solution: [% exercises.section %]}
 
-[% Latex.table( caption = "Solution $problem.caption",
-		label = "solution$problem.label",
-		header = problem.header,
+[% Latex.table( caption = "Solution $exercises.caption",
+		label = "solution$exercises.label",
+		header = exercises.header,
 		left = 1,
-		data = problem.solutions,
+		data = exercises.solutions,
 		type = 'longtable',
 		coldef = 'p{8cm}|p{8cm}',
 #		eor = '\\\\[0.8em]',

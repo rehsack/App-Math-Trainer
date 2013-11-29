@@ -22,6 +22,11 @@ use File::ShareDir ();
 use Template       ();
 use Scalar::Util qw(looks_like_number);
 
+has template_filename => (
+                           is      => "ro",
+                           default => "twocols"
+                         );
+
 with "App::Math::Trainer::Role::FracExercise";
 
 sub _lt { return $_[0] < $_[1]; }
@@ -145,9 +150,9 @@ sub _reduce
     return ( $a, $b );
 }
 
-sub execute
+sub _build_exercises
 {
-    my ( $self, $opt, $args ) = @_;
+    my ($self) = @_;
 
     my (@tasks);
     my ( $maxa, $maxb ) = @{ $self->format };
@@ -190,24 +195,24 @@ sub execute
         push( @tasks, \@line );
     }
 
-    my $problem = {
-                    section   => "Vulgar fraction <-> decimal fracion casting",
-                    caption   => 'Fractions',
-                    label     => 'vulgar_decimal_fractions',
-                    header    => [ [ 'Vulgar => Decimal Fraction', 'Decimal => Vulgar Fraction' ] ],
-                    solutions => [],
-                    tasks     => [],
-                  };
+    my $exercises = {
+                      section => "Vulgar fraction <-> decimal fracion casting",
+                      caption => 'Fractions',
+                      label   => 'vulgar_decimal_fractions',
+                      header  => [ [ 'Vulgar => Decimal Fraction', 'Decimal => Vulgar Fraction' ] ],
+                      solutions => [],
+                      challenges     => [],
+                    };
 
     foreach my $line (@tasks)
     {
-        my ( @solution, @task );
+        my ( @solution, @challenge );
         if ( $line->[0][0] == $line->[0][2] )
         {
             push( @solution,
                  sprintf( '$ \frac{%d}{%d} = %s $', $line->[0][0], $line->[0][1], $line->[0][4] ),
                  sprintf( '$ %s = \frac{%d}{%d} $', $line->[1][2], $line->[1][0], $line->[1][1] ) );
-            push( @task,
+            push( @challenge,
                   sprintf( '$ \frac{%d}{%d} = $', $line->[0][0], $line->[0][1] ),
                   sprintf( '$ %s = $',            $line->[1][2] ) );
         }
@@ -222,35 +227,15 @@ sub execute
                          ),
                   sprintf( '$ %s = \frac{%d}{%d} $', $line->[1][2], $line->[1][0], $line->[1][1] )
                 );
-            push( @task,
+            push( @challenge,
                   sprintf( '$ \frac{%d}{%d} = $', $line->[0][0], $line->[0][1] ),
                   sprintf( '$ %s = $',            $line->[1][2] ) );
         }
-        push( @{ $problem->{solutions} }, \@solution );
-        push( @{ $problem->{tasks} },     \@task );
+        push( @{ $exercises->{solutions} }, \@solution );
+        push( @{ $exercises->{challenges} },     \@challenge );
     }
 
-    my $sharedir = File::ShareDir::dist_dir("App-Math-Trainer");
-    my $ttcpath = File::Spec->catfile( $sharedir, "twocols.tt2" );
-
-    my $template = Template->new(
-                                  {
-                                    ABSOLUTE => 1,
-                                  }
-                                );
-    my $rc = $template->process(
-                                 $ttcpath,
-                                 {
-                                    problem => $problem,
-                                    output  => {
-                                                format => 'pdf',
-                                              },
-                                 },
-                                 "vfcast.pdf"
-                               );
-    $rc or croak( $template->error() );
-
-    return 0;
+    return $exercises;
 }
 
 =head1 LICENSE AND COPYRIGHT

@@ -17,9 +17,10 @@ use Moo;
 use MooX::Cmd;
 use MooX::Options;
 
-use Carp qw(croak);
-use File::ShareDir ();
-use Template       ();
+has template_filename => (
+                           is      => "ro",
+                           default => "twocols"
+                         );
 
 with "App::Math::Trainer::Role::FracExercise";
 
@@ -52,7 +53,7 @@ sub _reduce
     return ( $a, $b );
 }
 
-sub execute
+sub _build_exercises
 {
     my ($self) = @_;
 
@@ -80,20 +81,20 @@ sub execute
         push( @tasks, \@numbers );
     }
 
-    my $problem = {
-                    section   => "Vulgar fraction addition / subtraction",
-                    caption   => 'Fractions',
-                    label     => 'vulgar_fractions_addition',
-                    header    => [ [ 'Vulgar Fraction Addition', 'Vulgar Fraction Subtraction' ] ],
-                    solutions => [],
-                    tasks     => [],
-                  };
+    my $exercises = {
+                      section => "Vulgar fraction addition / subtraction",
+                      caption => 'Fractions',
+                      label   => 'vulgar_fractions_addition',
+                      header  => [ [ 'Vulgar Fraction Addition', 'Vulgar Fraction Subtraction' ] ],
+                      solutions => [],
+                      challenges     => [],
+                    };
 
     # use Text::TabularDisplay;
     # my $table = Text::TabularDisplay->new( 'Bruch -> Dez', 'Dez -> Bruch' );
     foreach my $line (@tasks)
     {
-        my ( @solution, @task );
+        my ( @solution, @challenge );
         if ( ( $line->[2]->{num} / $line->[2]->{denum} ) <
              ( $line->[3]->{num} / $line->[3]->{denum} ) )
         {
@@ -110,7 +111,7 @@ sub execute
             my ( $fa, $fb ) = ( $b->{denum} / $gcd, $a->{denum} / $gcd );
             my $op = $i ? '-' : '+';
             push(
-                  @task,
+                  @challenge,
                   sprintf(
                            '$ \frac{%d}{%d} %s \frac{%d}{%d} = $',
                            $a->{num}, $a->{denum}, $op, $b->{num}, $b->{denum}
@@ -162,32 +163,11 @@ sub execute
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }
 
-        push( @{ $problem->{solutions} }, \@solution );
-        push( @{ $problem->{tasks} },     \@task );
+        push( @{ $exercises->{solutions} }, \@solution );
+        push( @{ $exercises->{challenges} },     \@challenge );
     }
-    # print $table->render(), "\n";
 
-    my $sharedir = File::ShareDir::dist_dir("App-Math-Trainer");
-    my $ttcpath = File::Spec->catfile( $sharedir, "twocols.tt2" );
-
-    my $template = Template->new(
-                                  {
-                                    ABSOLUTE => 1,
-                                  }
-                                );
-    my $rc = $template->process(
-                                 $ttcpath,
-                                 {
-                                    problem => $problem,
-                                    output  => {
-                                                format => 'pdf',
-                                              },
-                                 },
-                                 "vfadd.pdf"
-                               );
-    $rc or croak( $template->error() );
-
-    return 0;
+    return $exercises;
 }
 
 =head1 LICENSE AND COPYRIGHT
