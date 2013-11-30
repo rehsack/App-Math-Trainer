@@ -12,7 +12,7 @@ App::Math::Trainer::Role::FracExercise - role for exercises in vulgar fraction
 use Moo::Role;
 use MooX::Options;
 
-with "App::Math::Trainer::Role::Exercise";
+with "App::Math::Trainer::Role::Exercise", "App::Math::Trainer::Role::Frac";
 
 our $VERSION = '0.003';
 
@@ -31,7 +31,7 @@ option format => (
       . "as vulgar fraction is typed with 'n' as placeholder:\n\n"
       . "\t--format 5nnn/nn\n\n"
       . "creates vulgar fractions from 5999/99 .. 0001/01.\n\n"
-      . "Defailt: 100/100",
+      . "Default: 100/100",
     isa => sub {
         defined( $_[0] )
           and !ref $_[0]
