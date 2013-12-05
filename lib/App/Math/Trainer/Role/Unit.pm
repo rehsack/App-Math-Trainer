@@ -22,7 +22,7 @@ use List::MoreUtils qw/firstidx/;
       Unit;
 
     use Moo;
-    use overload '""' => sub { join( " ", @{ $_[0]->parts } ) };
+    use overload '""' => \&_stringify;
 
     has type => (
                   is       => "ro",
@@ -32,6 +32,22 @@ use List::MoreUtils qw/firstidx/;
                    is        => "ro",
                    rerquired => 1
                  );
+
+    sub _stringify
+    {
+	my @parts = @{ $_[0]->parts };
+	my @res;
+	while(@parts)
+	{
+	    my $num = shift @parts;
+	    my $un = shift @parts;
+	    # $un =~ s/^([^{]*)\{\}/$1\{$num\}/ and push(@res, $un) and next;
+	    $un = "\\text{$un }";
+	    push(@res, "$num $un");
+	}
+	join( " ", @res );
+	#join(" ", @{ $_[0]->parts } );
+    }
 }
 
 has unit_definitions => ( is => "lazy" );
@@ -108,15 +124,15 @@ sub _build_unit_definitions
                        },
              euro => {
                        base    => { '\euro{}' => {} },
-                       divider => { 'ct'      => { factor => 100 } },
+                       divider => { 'cent' => { factor => 100 } },
                      },
              pound => {
                         base    => { '\textsterling{}' => {} },
-                        divider => { 'ct'              => { factor => 100 } },
+                        divider => { 'p'              => { factor => 100 } },
                       },
              dollar => {
                          base    => { '\textdollar{}' => {} },
-                         divider => { 'ct'            => { factor => 100 } },
+                         divider => { '\textcent{}'   => { factor => 100 } },
                        },
            };
 }
@@ -191,6 +207,7 @@ sub _guess_unit_number
     $lb == $ub and $ub < $unit_type->{base} and ++$ub;
     $lb == $ub and --$lb;
 
+REDO:
     my $i;
     for ( $i = $lb; $i <= $ub; ++$i )
     {
@@ -198,8 +215,10 @@ sub _guess_unit_number
           defined $unit_type->{spectrum}->[$i]->{max} ? $unit_type->{spectrum}->[$i]->{max} : 100;
         my $min   = $unit_type->{spectrum}->[$i]->{min};
         my $value = int( rand( $max + $min ) ) - $min;
+	$value or next;
         push( @rc, $value, $unit_type->{spectrum}->[$i]->{unit} );
     }
+    @rc or goto REDO;
 
     return
       Unit->new( type  => $unit_type,
@@ -214,11 +233,11 @@ sub get_unit_numbers
     my @result;
     my @unames = keys %$ou;
     my $nunits = scalar @unames;
+    my $_ut    = int( rand($nunits) );
+    my $ut     = $ou->{ $unames[$_ut] };
 
     while ( $amount-- )
     {
-        my $_ut    = int( rand($nunits) );
-        my $ut     = $ou->{ $unames[$_ut] };
         my @bounds = ( int( rand( scalar @{ $ut->{spectrum} } ) ),
                        int( rand( scalar @{ $ut->{spectrum} } ) ) );
         my $unit =

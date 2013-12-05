@@ -6,7 +6,10 @@
 \usepackage{layouts} % for layout analyse
 
 %\usepackage[math]{cellspace}
+\usepackage{amsfonts}
+\usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{eurosym}
 
 % for multipage tables (xtab or longtable
 \usepackage{xtab}
