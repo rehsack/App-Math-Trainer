@@ -22,9 +22,18 @@ use List::MoreUtils qw/firstidx/;
       Unit;
 
     use Moo;
-    use overload '""' => \&_stringify;
+    use overload '""' => \&_stringify, '0+' => \&_numify, 'bool' => \&_filled,
+                 '<=>' => \&_num_compare;
 
     has type => (
+                  is       => "ro",
+                  required => 1
+                );
+    has begin => (
+                  is       => "ro",
+                  required => 1
+                );
+    has end => (
                   is       => "ro",
                   required => 1
                 );
@@ -37,16 +46,46 @@ use List::MoreUtils qw/firstidx/;
     {
 	my @parts = @{ $_[0]->parts };
 	my @res;
-	while(@parts)
+	for my $i ($_[0]->begin .. $_[0]->end)
 	{
 	    my $num = shift @parts;
-	    my $un = shift @parts;
-	    # $un =~ s/^([^{]*)\{\}/$1\{$num\}/ and push(@res, $un) and next;
+	    $num or next;
+	    my $un = $_[0]->type->{spectrum}->[$i]->{unit};
 	    $un = "\\text{$un }";
 	    push(@res, "$num $un");
 	}
 	join( " ", @res );
 	#join(" ", @{ $_[0]->parts } );
+    }
+
+    sub _numify
+    {
+	my @parts = @{ $_[0]->parts };
+	my $res = 0;
+	for my $i ($_[0]->begin .. $_[0]->end)
+	{
+	    my $num = shift @parts;
+	    $num or next;
+	    my $factor = $_[0]->type->{spectrum}->[$i]->{factor};
+	    $res = $i <= $_[0]->type->{base} ? $res + $num * $factor : $res + $num / $factor
+	}
+
+	$res
+    }
+
+    sub _filled
+    {
+	grep { $_ } @{ $_[0]->parts };
+    }
+
+    sub _num_compare
+    {
+	my ($self, $other, $swapped) = @_;
+	$swapped and return $other <=> $self->_numify;
+
+	my $rc;
+	0 != ($rc = $other->begin <=> $self->begin) and return $rc; # $self->begin < $other->begin => $self > $other
+	return $self->_numify <=> $other->_numify;
     }
 }
 
@@ -215,13 +254,15 @@ REDO:
           defined $unit_type->{spectrum}->[$i]->{max} ? $unit_type->{spectrum}->[$i]->{max} : 100;
         my $min   = $unit_type->{spectrum}->[$i]->{min};
         my $value = int( rand( $max + $min ) ) - $min;
-	$value or next;
-        push( @rc, $value, $unit_type->{spectrum}->[$i]->{unit} );
+	$value or @rc or next;
+        push( @rc, $value );
     }
     @rc or goto REDO;
 
     return
       Unit->new( type  => $unit_type,
+                 begin => $lb,
+		 end => $ub,
                  parts => \@rc );
 }
 

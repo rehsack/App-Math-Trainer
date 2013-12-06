@@ -63,6 +63,7 @@ sub _build_exercises
 	{
 	    my ($a, $b) = @{$line->[$i]};
             my $op = $i ? '-' : '+';
+	    $op eq '-' and $a < $b and ($b, $a) = ($a, $b);
             push( @challenge, "\$ $a $op $b = \$" );
 
             my @way;    # remember Frank Sinatra :)
