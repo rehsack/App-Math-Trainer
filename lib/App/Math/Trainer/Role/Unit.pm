@@ -254,8 +254,9 @@ REDO:
           defined $unit_type->{spectrum}->[$i]->{max} ? $unit_type->{spectrum}->[$i]->{max} : 100;
         my $min   = $unit_type->{spectrum}->[$i]->{min};
         my $value = int( rand( $max + $min ) ) - $min;
+	$value or @rc or ++$lb;
 	$value or @rc or next;
-        push( @rc, $value );
+	push( @rc, $value );
     }
     @rc or goto REDO;
 

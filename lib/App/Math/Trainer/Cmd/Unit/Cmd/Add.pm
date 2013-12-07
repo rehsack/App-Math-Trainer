@@ -67,7 +67,33 @@ sub _build_exercises
             push( @challenge, "\$ $a $op $b = \$" );
 
             my @way;    # remember Frank Sinatra :)
-            push( @way, "$a $op $b = " );
+            push( @way, "$a $op $b" );
+	    my $beg = $a->begin < $b->begin ? $a->begin : $b->begin;
+	    my $end = $a->end > $b->end ? $a->end : $b->end;
+	    my @ap = @{$a->parts};
+	    my @bp = @{$b->parts};
+	    my (@cparts, @dparts);
+	    for my $i ($beg .. $end)
+	    {
+		my @cps;
+		$i >= $a->begin and $i <= $a->end and push(@cps, shift @ap);
+		$i >= $b->begin and $i <= $b->end and push(@cps, shift @bp);
+		my $cp = join( " $op ", @cps );
+		my $dp = eval "$cp;";
+		push(@cparts, $cp);
+		push(@dparts, $dp);
+	    }
+	    my $c = Unit->new(type  => $a->type,
+                 begin => $beg,
+		 end => $end,
+                 parts => \@cparts );
+	    my $d = Unit->new(type  => $a->type,
+                 begin => $beg,
+		 end => $end,
+                 parts => \@dparts );
+
+	    push(@way, "$c");
+	    push(@way, "$d");
 
 	    push( @solution, '$ ' . join( " = ", @way ) . ' $' );
 	}
