@@ -22,21 +22,24 @@ use List::MoreUtils qw/firstidx/;
       Unit;
 
     use Moo;
-    use overload '""' => \&_stringify, '0+' => \&_numify, 'bool' => \&_filled,
-                 '<=>' => \&_num_compare;
+    use overload
+      '""'   => \&_stringify,
+      '0+'   => \&_numify,
+      'bool' => \&_filled,
+      '<=>'  => \&_num_compare;
 
     has type => (
                   is       => "ro",
                   required => 1
                 );
     has begin => (
-                  is       => "ro",
-                  required => 1
-                );
+                   is       => "ro",
+                   required => 1
+                 );
     has end => (
-                  is       => "ro",
-                  required => 1
-                );
+                 is       => "ro",
+                 required => 1
+               );
     has parts => (
                    is        => "ro",
                    rerquired => 1
@@ -44,48 +47,49 @@ use List::MoreUtils qw/firstidx/;
 
     sub _stringify
     {
-	my @parts = @{ $_[0]->parts };
-	my @res;
-	for my $i ($_[0]->begin .. $_[0]->end)
-	{
-	    my $num = shift @parts;
-	    $num or next;
-	    my $un = $_[0]->type->{spectrum}->[$i]->{unit};
-	    $un = "\\text{$un }";
-	    push(@res, "$num $un");
-	}
-	join( " ", @res );
-	#join(" ", @{ $_[0]->parts } );
+        my @parts = @{ $_[0]->parts };
+        my @res;
+        for my $i ( $_[0]->begin .. $_[0]->end )
+        {
+            my $num = shift @parts;
+            $num or next;
+            my $un = $_[0]->type->{spectrum}->[$i]->{unit};
+            $un = "\\text{$un }";
+            push( @res, "$num $un" );
+        }
+        join( " ", @res );
+        #join(" ", @{ $_[0]->parts } );
     }
 
     sub _numify
     {
-	my @parts = @{ $_[0]->parts };
-	my $res = 0;
-	for my $i ($_[0]->begin .. $_[0]->end)
-	{
-	    my $num = shift @parts;
-	    $num or next;
-	    my $factor = $_[0]->type->{spectrum}->[$i]->{factor};
-	    $res = $i <= $_[0]->type->{base} ? $res + $num * $factor : $res + $num / $factor
-	}
+        my @parts = @{ $_[0]->parts };
+        my $res   = 0;
+        for my $i ( $_[0]->begin .. $_[0]->end )
+        {
+            my $num = shift @parts;
+            $num or next;
+            my $factor = $_[0]->type->{spectrum}->[$i]->{factor};
+            $res = $i <= $_[0]->type->{base} ? $res + $num * $factor : $res + $num / $factor;
+        }
 
-	$res
+        $res;
     }
 
     sub _filled
     {
-	grep { $_ } @{ $_[0]->parts };
+        grep { $_ } @{ $_[0]->parts };
     }
 
     sub _num_compare
     {
-	my ($self, $other, $swapped) = @_;
-	$swapped and return $other <=> $self->_numify;
+        my ( $self, $other, $swapped ) = @_;
+        $swapped and return $other <=> $self->_numify;
 
-	my $rc;
-	0 != ($rc = $other->begin <=> $self->begin) and return $rc; # $self->begin < $other->begin => $self > $other
-	return $self->_numify <=> $other->_numify;
+        my $rc;
+        0 != ( $rc = $other->begin <=> $self->begin )
+          and return $rc;    # $self->begin < $other->begin => $self > $other
+        return $self->_numify <=> $other->_numify;
     }
 }
 
@@ -163,15 +167,30 @@ sub _build_unit_definitions
                        },
              euro => {
                        base    => { '\euro{}' => {} },
-                       divider => { 'cent' => { factor => 100, max => 99 } },
+                       divider => {
+                                    'cent' => {
+                                                factor => 100,
+                                                max    => 99
+                                              }
+                                  },
                      },
              pound => {
                         base    => { '\textsterling{}' => {} },
-                        divider => { 'p'              => { factor => 100, max => 99 } },
+                        divider => {
+                                     'p' => {
+                                              factor => 100,
+                                              max    => 99
+                                            }
+                                   },
                       },
              dollar => {
                          base    => { '\textdollar{}' => {} },
-                         divider => { '\textcent{}'   => { factor => 100, max => 99 } },
+                         divider => {
+                                      '\textcent{}' => {
+                                                         factor => 100,
+                                                         max    => 99
+                                                       }
+                                    },
                        },
            };
 }
@@ -246,7 +265,7 @@ sub _guess_unit_number
     $lb == $ub and $ub < $unit_type->{base} and ++$ub;
     $lb == $ub and --$lb;
 
-REDO:
+  REDO:
     my $i;
     for ( $i = $lb; $i <= $ub; ++$i )
     {
@@ -254,17 +273,19 @@ REDO:
           defined $unit_type->{spectrum}->[$i]->{max} ? $unit_type->{spectrum}->[$i]->{max} : 100;
         my $min   = $unit_type->{spectrum}->[$i]->{min};
         my $value = int( rand( $max + $min ) ) - $min;
-	$value or @rc or ++$lb;
-	$value or @rc or next;
-	push( @rc, $value );
+        $value or @rc or ++$lb;
+        $value or @rc or next;
+        push( @rc, $value );
     }
     @rc or goto REDO;
 
     return
-      Unit->new( type  => $unit_type,
+      Unit->new(
+                 type  => $unit_type,
                  begin => $lb,
-		 end => $ub,
-                 parts => \@rc );
+                 end   => $ub,
+                 parts => \@rc
+               );
 }
 
 sub get_unit_numbers
