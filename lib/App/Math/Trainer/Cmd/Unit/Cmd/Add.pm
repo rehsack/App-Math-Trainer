@@ -78,8 +78,14 @@ sub _build_exercises
 		my @cps;
 		$i >= $a->begin and $i <= $a->end and push(@cps, shift @ap);
 		$i >= $b->begin and $i <= $b->end and push(@cps, shift @bp);
+		scalar @cps or next;
 		my $cp = join( " $op ", @cps );
 		my $dp = eval "$cp;";
+		if($dp < 0)
+		{
+		    --$dparts[-1];
+		    $dp += $a->type->{spectrum}->[$i]->{max} + 1;
+		}
 		push(@cparts, $cp);
 		push(@dparts, $dp);
 	    }

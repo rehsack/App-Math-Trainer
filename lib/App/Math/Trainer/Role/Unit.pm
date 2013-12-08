@@ -163,15 +163,15 @@ sub _build_unit_definitions
                        },
              euro => {
                        base    => { '\euro{}' => {} },
-                       divider => { 'cent' => { factor => 100 } },
+                       divider => { 'cent' => { factor => 100, max => 99 } },
                      },
              pound => {
                         base    => { '\textsterling{}' => {} },
-                        divider => { 'p'              => { factor => 100 } },
+                        divider => { 'p'              => { factor => 100, max => 99 } },
                       },
              dollar => {
                          base    => { '\textdollar{}' => {} },
-                         divider => { '\textcent{}'   => { factor => 100 } },
+                         divider => { '\textcent{}'   => { factor => 100, max => 99 } },
                        },
            };
 }
