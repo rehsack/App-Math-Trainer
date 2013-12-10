@@ -203,6 +203,8 @@ sub _ok { return 1; }
 
 has ordered_units => ( is => "lazy" );
 
+requires "relevant_units";
+
 sub _build_ordered_units_flatten_helper
 {
     my $unit_part = $_[0];
@@ -235,8 +237,9 @@ sub _build_ordered_units
     my $self = shift;
     my %ou;    # ordered units
     my $ud = $self->unit_definitions;
+    my $ru = $self->relevant_units;
 
-    foreach my $cat ( keys %$ud )
+    foreach my $cat ( @$ru )
     {
         my @base = _build_ordered_units_flatten_helper( $ud->{$cat}->{base} );
         my @mult = _build_ordered_units_flatten_helper( $ud->{$cat}->{multiplier} );
