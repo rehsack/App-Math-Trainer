@@ -13,22 +13,22 @@ use Moo::Role;
 use MooX::Options;
 
 option "relevant_units" => (
-    is       => "lazy",
-    doc      => "Specifies the units relevant for the exercise",
-    long_doc => "Specifies the units relevant for the exercise using one or more of: "
-      . "time, length, weight, euro, pound, dollar.",
-    coerce    => \&_coerce_relevant_units,
-    format    => "s@",
-    autosplit => ",",
-    repeatable => 1,
-    short     => "r",
-                           );
+                  is       => "lazy",
+                  doc      => "Specifies the units relevant for the exercise",
+                  long_doc => "Specifies the units relevant for the exercise using one or more of: "
+                    . "time, length, weight, euro, pound, dollar.",
+                  coerce     => \&_coerce_relevant_units,
+                  format     => "s@",
+                  autosplit  => ",",
+                  repeatable => 1,
+                  short      => "r",
+);
 
 my $single_inst;
 my $single_redo;
 
 around new => sub {
-    my ($orig, $class, %params) = @_;
+    my ( $orig, $class, %params ) = @_;
     my $self = $class->$orig(%params);
     $single_inst = $self;
     $single_redo and $self->{relevant_units} = _coerce_relevant_units($single_redo);
@@ -52,35 +52,39 @@ sub _coerce_relevant_units
     $single_inst or return $val;
 
     my @brkn;
-    foreach my $ru ( @{ $val } )
+    foreach my $ru ( @{$val} )
     {
-	$neg = $ru eq "!" and next unless defined $neg;
-	exists $single_inst->unit_definitions->{$ru}
-	  or push @brkn, $ru;
+        $neg = $ru eq "!" and next unless defined $neg;
+        exists $single_inst->unit_definitions->{$ru}
+          or push @brkn, $ru;
     }
     @brkn and die "Non-existing unit type(s): " . join( ", ", @brkn );
 
     $neg or return $val;
 
-    my @neg_list = grep { my $item = $_; grep { $_ ne "!" and $_ ne $item } @{$val} } keys %{$single_inst->unit_definitions};
+    my @neg_list = grep
+    {
+        my $item = $_;
+        grep { $_ ne "!" and $_ ne $item } @{$val}
+    } keys %{ $single_inst->unit_definitions };
     return \@neg_list;
 }
 
 option "unit_length" => (
-    is => "ro",
-    doc => "Allowes limitation of unit length",
-    format => "i",
-    short => "l",
-    predicate => 1,
-);
+                          is        => "ro",
+                          doc       => "Allowes limitation of unit length",
+                          format    => "i",
+                          short     => "l",
+                          predicate => 1,
+                        );
 
 option "deviation" => (
-    is => "ro",
-    doc => "Allowes limit deviation of unit elements by <einheit>",
-    format => "i",
-    short => "d",
-    predicate => 1,
-);
+                        is        => "ro",
+                        doc       => "Allowes limit deviation of unit elements by <einheit>",
+                        format    => "i",
+                        short     => "d",
+                        predicate => 1,
+                      );
 
 with "App::Math::Trainer::Role::Exercise", "App::Math::Trainer::Role::Unit";
 

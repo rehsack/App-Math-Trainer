@@ -239,7 +239,7 @@ sub _build_ordered_units
     my $ud = $self->unit_definitions;
     my $ru = $self->relevant_units;
 
-    foreach my $cat ( @$ru )
+    foreach my $cat (@$ru)
     {
         my @base = _build_ordered_units_flatten_helper( $ud->{$cat}->{base} );
         my @mult = _build_ordered_units_flatten_helper( $ud->{$cat}->{multiplier} );
@@ -280,10 +280,10 @@ sub _guess_unit_number
         $value or @rc or next;
         push( @rc, $value );
     }
-    while(!$rc[-1])
+    while ( !$rc[-1] )
     {
-	pop @rc;
-	--$ub;
+        pop @rc;
+        --$ub;
     }
     @rc or goto REDO;
 
@@ -305,34 +305,37 @@ sub get_unit_numbers
 
     my $ou = $self->ordered_units;
     my @result;
-    my @unames = keys %$ou;
-    my $nunits = scalar @unames;
-    my $_ut    = int( rand($nunits) );
-    my $ut     = $ou->{ $unames[$_ut] };
-    my $length = $self->has_unit_length ? $self->unit_length : scalar @{$ut->{spectrum} };
+    my @unames    = keys %$ou;
+    my $nunits    = scalar @unames;
+    my $_ut       = int( rand($nunits) );
+    my $ut        = $ou->{ $unames[$_ut] };
+    my $length    = $self->has_unit_length ? $self->unit_length : scalar @{ $ut->{spectrum} };
     my $deviation = $self->deviation;
-    my ($lo, $uo);
+    my ( $lo, $uo );
 
     my $fits = sub {
-	my ($lb, $ub) = @_;
-	$ub - $lb >= $length and return 0;
-	defined $deviation or return 1;
-	defined $lo and abs($lb - $lo) > $deviation and return 0;
-	defined $uo and abs($lb - $uo) > $deviation and return 0;
-	return 1;
+        my ( $lb, $ub ) = @_;
+        $ub - $lb >= $length and return 0;
+        defined $deviation or return 1;
+        defined $lo and abs( $lb - $lo ) > $deviation and return 0;
+        defined $uo and abs( $lb - $uo ) > $deviation and return 0;
+        return 1;
     };
 
     while ( $amount-- )
     {
-        my (@bounds, $unit);
-	do { 
-	    @bounds = ( int( rand( scalar @{ $ut->{spectrum} } ) ),
-                       int( rand( scalar @{ $ut->{spectrum} } ) ) );
-	    $bounds[0] > $bounds[1] and @bounds = reverse @bounds;
-	} while(!$fits->(@bounds));
+        my ( @bounds, $unit );
+        do
+        {
+            @bounds = (
+                        int( rand( scalar @{ $ut->{spectrum} } ) ),
+                        int( rand( scalar @{ $ut->{spectrum} } ) )
+                      );
+            $bounds[0] > $bounds[1] and @bounds = reverse @bounds;
+        } while ( !$fits->(@bounds) );
 
-	$unit = _guess_unit_number( $ut, @bounds );
-	@result or ($lo, $uo) = ($unit->begin, $unit->end);
+        $unit = _guess_unit_number( $ut, @bounds );
+        @result or ( $lo, $uo ) = ( $unit->begin, $unit->end );
         push( @result, $unit );
     }
 
