@@ -35,7 +35,7 @@ option amount => (
                      . "are generated per kind.",
                    format  => "i",
                    short   => "n",
-                   default => sub { 25 },
+                   default => sub { 15 },
                  );
 
 =head2 exercises
