@@ -66,6 +66,22 @@ sub _coerce_relevant_units
     return \@neg_list;
 }
 
+option "unit_length" => (
+    is => "ro",
+    doc => "Allowes limitation of unit length",
+    format => "i",
+    short => "l",
+    predicate => 1,
+);
+
+option "deviation" => (
+    is => "ro",
+    doc => "Allowes limit deviation of unit elements by <einheit>",
+    format => "i",
+    short => "d",
+    predicate => 1,
+);
+
 with "App::Math::Trainer::Role::Exercise", "App::Math::Trainer::Role::Unit";
 
 our $VERSION = '0.003';
