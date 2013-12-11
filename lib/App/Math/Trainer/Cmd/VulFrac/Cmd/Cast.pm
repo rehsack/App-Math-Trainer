@@ -1,4 +1,4 @@
-package App::Math::Trainer::Cmd::Frac::Cmd::Cast;
+package App::Math::Trainer::Cmd::VulFrac::Cmd::Cast;
 
 use warnings;
 use strict;
@@ -7,7 +7,7 @@ use vars qw(@ISA $VERSION);
 
 =head1 NAME
 
-App::Math::Trainer::Cmd::Frac::Cmd::Cast - Plugin for casting of vulgar fraction into decimal fraction and vice versa
+App::Math::Trainer::Cmd::VulFrac::Cmd::Cast - Plugin for casting of vulgar fraction into decimal fraction and vice versa
 
 =cut
 
@@ -27,7 +27,7 @@ has template_filename => (
                            default => "twocols"
                          );
 
-with "App::Math::Trainer::Role::FracExercise";
+with "App::Math::Trainer::Role::VulFracExercise";
 
 sub _lt { return $_[0] < $_[1]; }
 sub _le { return $_[0] <= $_[1]; }

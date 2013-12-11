@@ -1,4 +1,4 @@
-package App::Math::Trainer::Cmd::Frac::Cmd::Mul;
+package App::Math::Trainer::Cmd::VulFrac::Cmd::Mul;
 
 use warnings;
 use strict;
@@ -7,7 +7,7 @@ use vars qw(@ISA $VERSION);
 
 =head1 NAME
 
-App::Math::Trainer::Cmd::Frac::Cmd::Mul - Plugin for multiplication and division of vulgar fraction
+App::Math::Trainer::Cmd::VulFrac::Cmd::Mul - Plugin for multiplication and division of vulgar fraction
 
 =cut
 
@@ -22,7 +22,7 @@ has template_filename => (
                            default => "twocols"
                          );
 
-with "App::Math::Trainer::Role::FracExercise";
+with "App::Math::Trainer::Role::VulFracExercise";
 
 sub _build_command_names
 {

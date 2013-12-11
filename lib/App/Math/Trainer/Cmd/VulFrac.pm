@@ -1,11 +1,11 @@
-package App::Math::Trainer::Cmd::Frac;
+package App::Math::Trainer::Cmd::VulFrac;
 
 use warnings;
 use strict;
 
 =head1 NAME
 
-App::Math::Trainer::Cmd::Frac - namespace for exercises for vulgar fraction
+App::Math::Trainer::Cmd::VulFrac - namespace for exercises for vulgar fraction
 
 =cut
 

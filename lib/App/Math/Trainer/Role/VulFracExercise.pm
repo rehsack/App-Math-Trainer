@@ -1,18 +1,18 @@
-package App::Math::Trainer::Role::FracExercise;
+package App::Math::Trainer::Role::VulFracExercise;
 
 use warnings;
 use strict;
 
 =head1 NAME
 
-App::Math::Trainer::Role::FracExercise - role for exercises in vulgar fraction
+App::Math::Trainer::Role::VulFracExercise - role for exercises in vulgar fraction
 
 =cut
 
 use Moo::Role;
 use MooX::Options;
 
-with "App::Math::Trainer::Role::Exercise", "App::Math::Trainer::Role::Frac";
+with "App::Math::Trainer::Role::Exercise", "App::Math::Trainer::Role::VulFrac";
 
 our $VERSION = '0.003';
 
