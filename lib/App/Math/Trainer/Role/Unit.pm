@@ -15,7 +15,6 @@ use MooX::Options;
 our $VERSION = '0.003';
 
 use Hash::MoreUtils qw/slice_def/;
-use List::MoreUtils qw/firstidx/;
 
 {
     package    #
@@ -27,6 +26,7 @@ use List::MoreUtils qw/firstidx/;
       '0+'   => \&_numify,
       'bool' => \&_filled,
       '<=>'  => \&_num_compare;
+    use Scalar::Util qw/blessed/;
 
     has type => (
                   is       => "ro",
@@ -42,7 +42,7 @@ use List::MoreUtils qw/firstidx/;
                );
     has parts => (
                    is        => "ro",
-                   rerquired => 1
+                   required => 1
                  );
 
     sub _stringify
@@ -86,6 +86,7 @@ use List::MoreUtils qw/firstidx/;
         my ( $self, $other, $swapped ) = @_;
         $swapped and return $other <=> $self->_numify;
 
+	blessed $other or return $self->_numify <=> $other;
         my $rc;
         0 != ( $rc = $other->begin <=> $self->begin )
           and return $rc;    # $self->begin < $other->begin => $self > $other
