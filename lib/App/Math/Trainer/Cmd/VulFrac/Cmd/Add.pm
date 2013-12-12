@@ -111,7 +111,7 @@ sub _build_exercises
                 );
             my $s = VulFrac->new(
                           num => $i ? $a->num * $fa - $b->num * $fb : $a->num * $fa + $b->num * $fb,
-                          denum => $a->denum );
+                          denum => $a->denum * $fa );
             push( @way, "" . $s );
             my $c = $s->_reduce;
             $c != $s and push @way, "" . $c;
