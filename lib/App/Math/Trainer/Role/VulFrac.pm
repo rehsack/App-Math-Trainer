@@ -93,7 +93,10 @@ our $VERSION = '0.003';
 
 }
 
-sub _check_vulgar_fraction { my $vf = shift; $vf->num >= 2 and $vf->denum >= 2 }
+sub _check_vulgar_fraction
+{
+    $_[0]->num >= 2 and $_[0]->denum >= 2 and $_[0]->num % $_[0]->denum != 0;
+}
 
 requires "format";
 
