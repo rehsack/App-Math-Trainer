@@ -66,67 +66,41 @@ sub _build_exercises
             my ( $a, $b ) = @{ $line->[$i] };
             my $op = $i ? '-' : '+';
             $op eq '-' and $a < $b and ( $b, $a ) = ( $a, $b );
-            push( @challenge, sprintf( '$ %s %s %s = $', $a, $op, $b ) );
+            push @challenge, sprintf( '$ %s %s %s = $', $a, $op, $b );
 
             my @way;    # remember Frank Sinatra :)
-            push( @way, sprintf( '%s %s %s', $a, $op, $b ) );
+            push @way, sprintf( '%s %s %s', $a, $op, $b );
 
-            $a = $a->_reduce;
-            $b = $b->_reduce;
+            ( $a, $b ) = ( $a->_reduce, $b = $b->_reduce );
 
-            push( @way, sprintf( '%s %s %s', $a, $op, $b ) );
+            push @way, sprintf( '%s %s %s', $a, $op, $b );
             my $gcd = VulFrac->new(
                                     num   => $a->denum,
                                     denum => $b->denum
                                   )->_gcd;
             my ( $fa, $fb ) = ( $b->{denum} / $gcd, $a->{denum} / $gcd );
 
-            push(
-                  @way,
-                  sprintf(
-                           '\frac{%d \cdot %d}{%d \cdot %d} %s \frac{%d \cdot %d}{%d \cdot %d}',
-                           $a->num, $fa, $a->denum, $fa, $op, $b->num, $fb, $b->denum, $fb
-                         )
-                );
-            push(
-                  @way,
-                  sprintf(
-                           '\frac{%d}{%d} %s \frac{%d}{%d}',
-                           $a->num * $fa,
-                           $a->denum * $fa,
-                           $op,
-                           $b->num * $fb,
-                           $b->denum * $fb
-                         )
-                );
-            push(
-                  @way,
-                  sprintf(
-                           '\frac{%d %s %d}{%d}',
-                           $a->num * $fa,
-                           $op,
-                           $b->num * $fb,
-                           $a->denum * $fa
-                         )
-                );
+            push @way,
+              sprintf( '\frac{%d \cdot %d}{%d \cdot %d} %s \frac{%d \cdot %d}{%d \cdot %d}',
+                       $a->num, $fa, $a->denum, $fa, $op, $b->num, $fb, $b->denum, $fb );
+            push @way,
+              sprintf( '\frac{%d}{%d} %s \frac{%d}{%d}',
+                       $a->num * $fa,
+                       $a->denum * $fa,
+                       $op,
+                       $b->num * $fb,
+                       $b->denum * $fb );
+            push @way,
+              sprintf( '\frac{%d %s %d}{%d}', $a->num * $fa, $op, $b->num * $fb, $a->denum * $fa );
             my $s = VulFrac->new(
                           num => $i ? $a->num * $fa - $b->num * $fb : $a->num * $fa + $b->num * $fb,
                           denum => $a->denum * $fa );
-            push( @way, "" . $s );
+            push @way, "" . $s;
             my $c = $s->_reduce;
             $c != $s and push @way, "" . $c;
 
             my $n;
-            $c->num > $c->denum
-              and push(
-                        @way,
-                        sprintf(
-                                 '\normalsize{%d} \frac{%d}{%d}',
-                                 $n = int($c),
-                                 $c->num - $c->denum * $n,
-                                 $c->denum
-                               )
-                      );
+            $c->num > $c->denum and $c->denum > 1 and push @way, $c->_stringify(1);
 
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }

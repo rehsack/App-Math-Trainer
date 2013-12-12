@@ -38,7 +38,18 @@ our $VERSION = '0.003';
                    required => 1
                  );
 
-    sub _stringify { "\\frac{" . $_[0]->num . "}{" . $_[0]->denum . "}" }
+    sub _stringify
+    {
+        $_[0]->denum == 1 and return $_[0]->num;
+        $_[1]
+          and $_[0]->num > $_[0]->denum
+          and return
+          sprintf( '\normalsize{%d} \frac{%d}{%d}',
+                   int( $_[0]->_numify ),
+                   $_[0]->num - $_[0]->denum * int( $_[0]->_numify ),
+                   $_[0]->denum );
+        return "\\frac{" . $_[0]->num . "}{" . $_[0]->denum . "}";
+    }
 
     sub _numify
     {
