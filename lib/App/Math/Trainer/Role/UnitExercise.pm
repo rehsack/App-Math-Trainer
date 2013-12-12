@@ -62,8 +62,7 @@ sub _coerce_relevant_units
 
     $neg or return $val;
 
-    my @neg_list = grep
-    {
+    my @neg_list = grep {
         my $item = $_;
         grep { $_ ne "!" and $_ ne $item } @{$val}
     } keys %{ $single_inst->unit_definitions };

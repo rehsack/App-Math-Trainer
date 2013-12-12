@@ -41,7 +41,7 @@ use Hash::MoreUtils qw/slice_def/;
                  required => 1
                );
     has parts => (
-                   is        => "ro",
+                   is       => "ro",
                    required => 1
                  );
 
@@ -86,7 +86,7 @@ use Hash::MoreUtils qw/slice_def/;
         my ( $self, $other, $swapped ) = @_;
         $swapped and return $other <=> $self->_numify;
 
-	blessed $other or return $self->_numify <=> $other;
+        blessed $other or return $self->_numify <=> $other;
         my $rc;
         0 != ( $rc = $other->begin <=> $self->begin )
           and return $rc;    # $self->begin < $other->begin => $self > $other
