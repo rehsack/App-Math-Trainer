@@ -29,49 +29,20 @@ sub _build_command_names
     return qw(mul div);
 }
 
-sub _euklid
-{
-    my ( $a, $b ) = @_;
-    my $h;
-    while ( $b != 0 ) { $h = $a % $b; $a = $b; $b = $h; }
-    return $a;
-}
-
-sub _reduce
-{
-    my ( $a, $b ) = @_;
-    my $gcd = $a > $b ? _euklid( $a, $b ) : _euklid( $b, $a );
-    $a /= $gcd;
-    $b /= $gcd;
-    return ( $a, $b );
-}
-
 sub _build_exercises
 {
     my ($self) = @_;
 
     my (@tasks);
-    my ( $maxa, $maxb ) = @{ $self->format };
-
     foreach my $i ( 1 .. $self->amount )
     {
-        my @numbers;
-
-        foreach my $i ( 0 .. 3 )
+        my @line;
+        foreach my $j ( 0 .. 1 )
         {
-            my ( $a, $b );
-            do
-            {
-                ( $a, $b ) = ( int( rand($maxa) ), int( rand($maxb) ) );
-            } while ( $a < 2 || $b < 2 );
-
-            $numbers[$i] = {
-                             num   => $a,
-                             denum => $b
-                           };
+            my ( $a, $b ) = $self->get_vulgar_fractions(2);
+            push @line, [ $a, $b ];
         }
-
-        push( @tasks, \@numbers );
+        push @tasks, \@line;
     }
 
     my $exercises = {
@@ -89,79 +60,34 @@ sub _build_exercises
 
         foreach my $i ( 0 .. 1 )
         {
-            my ( $a, $b ) = @$line[ 2 * $i, 2 * $i + 1 ];
+            my ( $a, $b ) = @{ $line->[$i] };
             my $op = $i ? '\div' : '\cdot';
-            push(
-                  @challenge,
-                  sprintf(
-                           '$ \frac{%d}{%d} %s \frac{%d}{%d} = $',
-                           $a->{num}, $a->{denum}, $op, $b->{num}, $b->{denum}
-                         )
-                );
+            push @challenge, sprintf( '$ %s %s %s = $', $a, $op, $b);
 
             my @way;    # remember Frank Sinatra :)
-            push(
-                  @way,
-                  sprintf(
-                           '\frac{%d}{%d} %s \frac{%d}{%d}',
-                           $a->{num}, $a->{denum}, $op, $b->{num}, $b->{denum}
-                         )
-                );
+            push @way, sprintf( '%s %s %s', $a, $op, $b);
 
-            @$a{ 'num', 'denum' } = _reduce( @$a{ 'num', 'denum' } );
-            @$b{ 'num', 'denum' } = _reduce( @$b{ 'num', 'denum' } );
+            ( $a, $b ) = ( $a->_reduce, $b = $b->_reduce );
+            push @way, sprintf( '%s %s %s', $a, $op, $b) if($a->num != $line->[$i]->[0]->num or $b->num != $line->[$i]->[1]->num);
 
-            push(
-                  @way,
-                  sprintf(
-                           '\frac{%d}{%d} %s \frac{%d}{%d}',
-                           $a->{num}, $a->{denum}, $op, $b->{num}, $b->{denum}
-                         )
-                );
-
-            my $c = {};
+            my $s;
             unless ($i)
             {
                 # multiplication
-                push(
-                      @way,
-                      sprintf(
-                               '\frac{%d \cdot %d}{%d \cdot %d}',
-                               $a->{num}, $b->{num}, $a->{denum}, $b->{denum}
-                             )
-                    );
-                @$c{ 'num', 'denum' } = ( $a->{num} * $b->{num}, $a->{denum} * $b->{denum} );
+                push @way, sprintf( '\frac{%d \cdot %d}{%d \cdot %d}', $a->num, $b->num, $a->denum, $b->denum);
+                $s = VulFrac->new( num => $a->num * $b->num, denum => $a->denum * $b->denum );
             }
             else
             {
                 #division
-                push(
-                      @way,
-                      sprintf(
-                               '\frac{%d \cdot %d}{%d \cdot %d}',
-                               $a->{num}, $b->{denum}, $b->{num}, $a->{denum}
-                             )
-                    );
-                @$c{ 'num', 'denum' } = ( $a->{num} * $b->{denum}, $b->{num} * $a->{denum} );
+                push @way, sprintf( '\frac{%d \cdot %d}{%d \cdot %d}', $a->num, $b->denum, $b->num, $a->denum);
+                $s = VulFrac->new( num => $a->num * $b->denum, denum => $b->num * $a->denum );
             }
-            push( @way, sprintf( '\frac{%d}{%d}', @$c{ 'num', 'denum' } ) );
-            my $cc = {};
-            @$cc{ 'num', 'denum' } = _reduce( @$c{ 'num', 'denum' } );
-            $cc->{num} != $c->{num}
-              and $c = $cc
-              and push( @way, sprintf( '\frac{%d}{%d}', @$c{ 'num', 'denum' } ) );
+            push @way, "".$s;
+            my $c = $s->_reduce;
+            $c->num != $s->num and push @way, "" . $c;
 
-            my $n;
-            $c->{num} > $c->{denum}
-              and push(
-                        @way,
-                        sprintf(
-                                 '\normalsize{%d} \frac{%d}{%d}',
-                                 $n = int( $c->{num} / $c->{denum} ),
-                                 $c->{num} - $c->{denum} * $n,
-                                 $c->{denum}
-                               )
-                      );
+            $c->num > $c->denum and $c->denum > 1 and push @way, $c->_stringify(1);
 
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }

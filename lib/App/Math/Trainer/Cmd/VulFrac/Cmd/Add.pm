@@ -34,7 +34,6 @@ sub _build_exercises
     my ($self) = @_;
 
     my (@tasks);
-
     foreach my $i ( 1 .. $self->amount )
     {
         my @line;
@@ -72,8 +71,8 @@ sub _build_exercises
             push @way, sprintf( '%s %s %s', $a, $op, $b );
 
             ( $a, $b ) = ( $a->_reduce, $b = $b->_reduce );
+            push @way, sprintf( '%s %s %s', $a, $op, $b) if($a->num != $line->[$i]->[0]->num or $b->num != $line->[$i]->[1]->num);
 
-            push @way, sprintf( '%s %s %s', $a, $op, $b );
             my $gcd = VulFrac->new(
                                     num   => $a->denum,
                                     denum => $b->denum
@@ -97,9 +96,8 @@ sub _build_exercises
                           denum => $a->denum * $fa );
             push @way, "" . $s;
             my $c = $s->_reduce;
-            $c != $s and push @way, "" . $c;
+            $c->num != $s->num and push @way, "" . $c;
 
-            my $n;
             $c->num > $c->denum and $c->denum > 1 and push @way, $c->_stringify(1);
 
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
