@@ -98,6 +98,13 @@ sub _check_vulgar_fraction
     $_[0]->num >= 2 and $_[0]->denum >= 2 and $_[0]->num % $_[0]->denum != 0;
 }
 
+sub _guess_vulgar_fraction
+{
+    my ( $max_num, $max_denum ) = @{ $_[0]->format };
+    my ( $num, $denum ) = ( int( rand($max_num) ), int( rand($max_denum) ) );
+    return VulFrac->new( num   => $num, denum => $denum );
+}
+
 requires "format";
 
 sub get_vulgar_fractions
@@ -112,9 +119,7 @@ sub get_vulgar_fractions
         my $vf;
         do
         {
-            my ( $num, $denum ) = ( int( rand($max_num) ), int( rand($max_denum) ) );
-            $vf = VulFrac->new( num   => $num,
-                                denum => $denum );
+            $vf = $self->_guess_vulgar_fraction;
         } while ( !_check_vulgar_fraction($vf) );
 
         push @result, $vf;
