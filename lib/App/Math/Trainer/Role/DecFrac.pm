@@ -22,7 +22,7 @@ sub _check_decimal_fraction
     my ( $minr, $minc, $maxr, $maxc ) = @{ $self->range };
     my $digits = $self->digits;
     my $s1 = sprintf( "%0.${digits}g", $_[0] );
-    
+
     return $minc->( $minr, $_[0] ) and $maxc->( $maxr, $_[0] ) and $s1 != $_[0] and length($s1) < 3;
 }
 

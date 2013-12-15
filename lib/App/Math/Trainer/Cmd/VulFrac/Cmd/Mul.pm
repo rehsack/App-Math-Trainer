@@ -62,28 +62,35 @@ sub _build_exercises
         {
             my ( $a, $b ) = @{ $line->[$i] };
             my $op = $i ? '\div' : '\cdot';
-            push @challenge, sprintf( '$ %s %s %s = $', $a, $op, $b);
+            push @challenge, sprintf( '$ %s %s %s = $', $a, $op, $b );
 
             my @way;    # remember Frank Sinatra :)
-            push @way, sprintf( '%s %s %s', $a, $op, $b);
+            push @way, sprintf( '%s %s %s', $a, $op, $b );
 
             ( $a, $b ) = ( $a->_reduce, $b = $b->_reduce );
-            push @way, sprintf( '%s %s %s', $a, $op, $b) if($a->num != $line->[$i]->[0]->num or $b->num != $line->[$i]->[1]->num);
+            push @way, sprintf( '%s %s %s', $a, $op, $b )
+              if ( $a->num != $line->[$i]->[0]->num or $b->num != $line->[$i]->[1]->num );
 
             my $s;
             unless ($i)
             {
                 # multiplication
-                push @way, sprintf( '\frac{%d \cdot %d}{%d \cdot %d}', $a->num, $b->num, $a->denum, $b->denum);
-                $s = VulFrac->new( num => $a->num * $b->num, denum => $a->denum * $b->denum );
+                push @way,
+                  sprintf( '\frac{%d \cdot %d}{%d \cdot %d}',
+                           $a->num, $b->num, $a->denum, $b->denum );
+                $s = VulFrac->new( num   => $a->num * $b->num,
+                                   denum => $a->denum * $b->denum );
             }
             else
             {
                 #division
-                push @way, sprintf( '\frac{%d \cdot %d}{%d \cdot %d}', $a->num, $b->denum, $b->num, $a->denum);
-                $s = VulFrac->new( num => $a->num * $b->denum, denum => $b->num * $a->denum );
+                push @way,
+                  sprintf( '\frac{%d \cdot %d}{%d \cdot %d}',
+                           $a->num, $b->denum, $b->num, $a->denum );
+                $s = VulFrac->new( num   => $a->num * $b->denum,
+                                   denum => $b->num * $a->denum );
             }
-            push @way, "".$s;
+            push @way, "" . $s;
             my $c = $s->_reduce;
             $c->num != $s->num and push @way, "" . $c;
 

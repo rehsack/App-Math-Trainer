@@ -102,7 +102,9 @@ sub _guess_vulgar_fraction
 {
     my ( $max_num, $max_denum ) = @{ $_[0]->format };
     my ( $num, $denum ) = ( int( rand($max_num) ), int( rand($max_denum) ) );
-    return VulFrac->new( num   => $num, denum => $denum );
+    return
+      VulFrac->new( num   => $num,
+                    denum => $denum );
 }
 
 requires "format";

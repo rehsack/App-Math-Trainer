@@ -71,7 +71,8 @@ sub _build_exercises
             push @way, sprintf( '%s %s %s', $a, $op, $b );
 
             ( $a, $b ) = ( $a->_reduce, $b = $b->_reduce );
-            push @way, sprintf( '%s %s %s', $a, $op, $b) if($a->num != $line->[$i]->[0]->num or $b->num != $line->[$i]->[1]->num);
+            push @way, sprintf( '%s %s %s', $a, $op, $b )
+              if ( $a->num != $line->[$i]->[0]->num or $b->num != $line->[$i]->[1]->num );
 
             my $gcd = VulFrac->new(
                                     num   => $a->denum,

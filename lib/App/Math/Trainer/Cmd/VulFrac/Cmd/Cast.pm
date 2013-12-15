@@ -62,8 +62,8 @@ sub _build_exercises
         my @line;
         foreach my $j ( 0 .. 1 )
         {
-            my ( $a ) = $self->_get_castable_numbers(1);
-            push @line, [ $a ];
+            my ($a) = $self->_get_castable_numbers(1);
+            push @line, [$a];
         }
         push @tasks, \@line;
     }
@@ -82,25 +82,25 @@ sub _build_exercises
     {
         my ( @solution, @challenge );
 
-	# cast vulgar fraction to decimal
-	my ( $a ) = @{ $line->[0] };
-	push @challenge, sprintf('$ %s = $', $a);
+        # cast vulgar fraction to decimal
+        my ($a) = @{ $line->[0] };
+        push @challenge, sprintf( '$ %s = $', $a );
 
-	my @way;    # remember Frank Sinatra :)
-	push @way, "" . $a;
-	$a = $a->_reduce;
-	$a->num != $line->[0]->[0]->num and push @way, "" . $a;
-	push @way, sprintf("%0.${digits}g", $a);
-	push( @solution, '$ ' . join( " = ", @way ) . ' $' );
+        my @way;    # remember Frank Sinatra :)
+        push @way, "" . $a;
+        $a = $a->_reduce;
+        $a->num != $line->[0]->[0]->num and push @way, "" . $a;
+        push @way, sprintf( "%0.${digits}g", $a );
+        push( @solution, '$ ' . join( " = ", @way ) . ' $' );
 
-	# cast decimal to vulgar fraction
-	@way = ();
-	( $a ) = @{ $line->[1] };
-	push @challenge, sprintf("\$ %0.${digits}g = \$", $a);
-	push @way, sprintf("%0.${digits}g", $a);
-	$a = $a->_reduce;
-	push @way, "" . $a;
-	push( @solution, '$ ' . join( " = ", @way ) . ' $' );
+        # cast decimal to vulgar fraction
+        @way = ();
+        ($a) = @{ $line->[1] };
+        push @challenge, sprintf( "\$ %0.${digits}g = \$", $a );
+        push @way,       sprintf( "%0.${digits}g",         $a );
+        $a = $a->_reduce;
+        push @way, "" . $a;
+        push( @solution, '$ ' . join( " = ", @way ) . ' $' );
 
         push( @{ $exercises->{solutions} },  \@solution );
         push( @{ $exercises->{challenges} }, \@challenge );
