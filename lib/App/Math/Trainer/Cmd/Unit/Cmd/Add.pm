@@ -86,12 +86,13 @@ sub _build_exercises
                     --$dparts[-1];
                     $dp += $a->type->{spectrum}->[$i]->{max} + 1;
                 }
-		elsif( defined $a->type->{spectrum}->[$i]->{max} and $dp > $a->type->{spectrum}->[$i]->{max} )
-		{
+                elsif ( defined $a->type->{spectrum}->[$i]->{max}
+                        and $dp > $a->type->{spectrum}->[$i]->{max} )
+                {
                     @dparts and ++$dparts[-1];
-		    @dparts or push @dparts, 1;
+                    @dparts or push @dparts, 1;
                     $dp -= $a->type->{spectrum}->[$i]->{max} + 1;
-		}
+                }
                 push( @cparts, $cp );
                 push( @dparts, $dp );
             }
@@ -103,7 +104,7 @@ sub _build_exercises
                              );
             my $d = Unit->new(
                                type  => $a->type,
-                               begin => $beg - (scalar @cparts - scalar @dparts),
+                               begin => $beg - ( scalar @cparts - scalar @dparts ),
                                end   => $end,
                                parts => \@dparts
                              );
