@@ -152,7 +152,7 @@ sub _build_unit_definitions
                          base       => { g => { max => 999 } },
                          multiplier => {
                                          kg => {
-                                                 max    => 1000,
+                                                 max    => 999,
                                                  factor => 1000,
                                                },
                                          t => {
