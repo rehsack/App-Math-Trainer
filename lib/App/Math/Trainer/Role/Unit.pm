@@ -63,14 +63,22 @@ use Hash::MoreUtils qw/slice_def/;
 
     sub _numify
     {
-        my @parts = @{ $_[0]->parts };
-        my $res   = 0;
+        my @parts    = @{ $_[0]->parts };
+        my $base     = $_[0]->type->{base};
+        my $spectrum = $_[0]->type->{spectrum};
+        my $res      = 0;
         for my $i ( $_[0]->begin .. $_[0]->end )
         {
             my $num = shift @parts;
             $num or next;
-            my $factor = $_[0]->type->{spectrum}->[$i]->{factor};
-            $res = $i <= $_[0]->type->{base} ? $res + $num * $factor : $res + $num / $factor;
+            my $factor = $spectrum->[$i]->{factor};
+            $res = $i <= $base ? $res + $num * $factor : $res + $num / $factor;
+        }
+
+        if ( defined $_[1] )
+        {
+            my $factor = $spectrum->[ $_[1] ]->{factor};
+            $res = $_[1] <= $base ? $res / $factor : $res * $factor;
         }
 
         $res;
@@ -196,12 +204,6 @@ sub _build_unit_definitions
            };
 }
 
-sub _lt { return $_[0] < $_[1]; }
-sub _le { return $_[0] <= $_[1]; }
-sub _gt { return $_[0] > $_[1]; }
-sub _ge { return $_[0] >= $_[1]; }
-sub _ok { return 1; }
-
 has ordered_units => ( is => "lazy" );
 
 requires "relevant_units";
@@ -222,11 +224,6 @@ sub _build_ordered_units_flatten_helper
                               factor => $factor,
                               unit   => $upnm
                             };
-        my @match;
-        $min and push( @match, "_le($min,\$_[0])" );
-        $max and push( @match, "_ge($max,\$_[0])" );
-        @match or @match = ("1");
-        $upv{match} = eval sprintf( "sub { %s };", join( " and ", @match ) );
         push @flatten, \%upv;
     }
 

@@ -90,14 +90,16 @@ sub _build_exercises
         push @way, "" . $a;
         $a = $a->_reduce;
         $a->num != $line->[0]->[0]->num and push @way, "" . $a;
-        push @way, sprintf( "%0.${digits}g", $a );
+        my $rd = $digits + length( int($a) ) + 1;
+        push @way, sprintf( "%0.${rd}g", $a );
         push( @solution, '$ ' . join( " = ", @way ) . ' $' );
 
         # cast decimal to vulgar fraction
         @way = ();
         ($a) = @{ $line->[1] };
-        push @challenge, sprintf( "\$ %0.${digits}g = \$", $a );
-        push @way,       sprintf( "%0.${digits}g",         $a );
+        $rd = $digits + length( int($a) ) + 1;
+        push @challenge, sprintf( "\$ %0.${rd}g = \$", $a );
+        push @way,       sprintf( "%0.${rd}g",         $a );
         $a = $a->_reduce;
         push @way, "" . $a;
         push( @solution, '$ ' . join( " = ", @way ) . ' $' );
