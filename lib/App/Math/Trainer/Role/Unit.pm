@@ -299,15 +299,13 @@ requires "deviation";
 
 sub get_unit_numbers
 {
-    my ( $self, $amount ) = @_;
+    my ( $self, $amount, $ut ) = @_;
 
     my $ou = $self->ordered_units;
     my @result;
-    my @unames    = keys %$ou;
-    my $nunits    = scalar @unames;
-    my $_ut       = int( rand($nunits) );
-    my $ut        = $ou->{ $unames[$_ut] };
-    my $length    = $self->has_unit_length ? $self->unit_length : scalar @{ $ut->{spectrum} };
+    my @unames = keys %$ou;
+    defined $ut or $ut = $ou->{ $unames[ int( rand( scalar @unames ) ) ] };
+    my $length = $self->has_unit_length ? $self->unit_length : scalar @{ $ut->{spectrum} };
     my $deviation = $self->deviation;
     my ( $lo, $uo );
 
