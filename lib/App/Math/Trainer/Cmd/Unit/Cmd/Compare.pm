@@ -47,10 +47,10 @@ sub _build_exercises
     }
 
     my $exercises = {
-                      section    => "Unit comparisation",
+                      section    => "Unit comparison",
                       caption    => 'Units',
-                      label      => 'unit_comparisation',
-                      header     => [ [ 'Unit Comparisation', 'Unit Comparisation' ] ],
+                      label      => 'unit_comparison',
+                      header     => [ [ 'Unit Comparison', 'Unit Comparison' ] ],
                       solutions  => [],
                       challenges => [],
                     };
