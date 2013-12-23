@@ -36,12 +36,13 @@ sub _get_castable_numbers
     my @result;
     while ( $amount-- )
     {
-        my ( $un, $base );
+        my ( $un, $base, $ut );
         do
         {
-            ($un) = $self->get_unit_numbers(1);
+            ($un) = $self->get_unit_numbers(1, $ut);
             my $rng = $un->end - $un->begin;
             $base = int( rand($rng) ) + $un->begin;
+	    defined $ut or $ut = $un->type;
         } while ( !$self->_check_decimal_fraction( $un->_numify($base) ) );
 
         push @result,
@@ -91,7 +92,7 @@ sub _build_exercises
         my ( $unit, $based ) = @{ $line->[0] };
         my $base      = $based->begin;
         my $base_name = $unit->type->{spectrum}->[$base]->{unit};
-        push @challenge, sprintf( '$ %s = \\text{%s} $', $unit, $base_name );
+        push @challenge, sprintf( '$ %s = %s\\text{%s} $', $unit, "\\ldots" x int(length($based) / 3), $base_name );
 
         my @way;    # remember Frank Sinatra :)
         push @way, "" . $unit;
@@ -103,7 +104,7 @@ sub _build_exercises
         ( $unit, $based ) = @{ $line->[1] };
         $base_name = $unit->type->{spectrum}->[$base]->{unit};
         $base      = $based->begin;
-        push @challenge, "\$ " . $based . " = \$";
+        push @challenge, sprintf('$ %s = %s $', $based, "\\ldots" x int(length($unit) / 3));
         push @way,       "" . $based;
         push @way,       "" . $unit;
         push( @solution, '$ ' . join( " = ", @way ) . ' $' );
