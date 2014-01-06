@@ -28,9 +28,9 @@ option format => (
     is       => "ro",
     doc      => "specifies format of numerator/denominator",
     long_doc => "Allow specifying the format of the numerator/denominator "
-      . "as vulgar fraction is typed with 'n' as placeholder:\n\n"
+      . "whereby any digit is typed with 'n' as placeholder:\n\n"
       . "\t--format 5nnn/nn\n\n"
-      . "creates vulgar fractions from 5999/99 .. 0001/01.\n\n"
+      . "creates vulgar fractions from 5999/99 .. 0002/02.\n\n"
       . "Default: 100/100",
     isa => sub {
         defined( $_[0] )
