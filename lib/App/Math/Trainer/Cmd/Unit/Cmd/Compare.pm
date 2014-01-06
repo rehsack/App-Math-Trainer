@@ -62,7 +62,7 @@ sub _build_exercises
         foreach my $i ( 0 .. 1 )
         {
             my ( $a, $b ) = @{ $line->[$i] };
-            push( @challenge, "\$ $a \\underline{\\texttt{ }}\\text{ } $b = \$" );
+            push( @challenge, "\$ $a \\underbracket[0.5pt]{\\texttt{ }}\\text{ } $b = \$" );
 
             my @way;    # remember Frank Sinatra :)
             my $op = $a <=> $b;

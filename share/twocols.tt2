@@ -9,6 +9,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{mathtools}
 \usepackage{eurosym}
 
 % for multipage tables (xtab or longtable
