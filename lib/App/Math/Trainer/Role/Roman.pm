@@ -61,7 +61,7 @@ our $VERSION = '0.003';
         my @order = sort { $sizes{$b} <=> $sizes{$a} } keys %sizes;
         foreach my $sym (@order)
         {
-            while ( $value > $sizes{$sym} )
+            while ( $value >= $sizes{$sym} )
             {
                 $str .= $sym;
                 $value -= $sizes{$sym};
@@ -74,7 +74,7 @@ our $VERSION = '0.003';
 around _guess_natural_number => sub {
     my $next   = shift;
     my $max_val = $_[0]->format;
-    my $value   = int( rand($max_val) );
+    my $value   = int( rand($max_val-1) )+1;
     return RomanNum->new( value => $value );
 };
 
