@@ -10,7 +10,6 @@ App::Math::Trainer::Role::Natural - role for natural numbers
 =cut
 
 use Moo::Role;
-use MooX::Options;
 
 our $VERSION = '0.003';
 
