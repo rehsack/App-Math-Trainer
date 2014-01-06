@@ -98,6 +98,8 @@ sub _check_vulgar_fraction
     $_[0]->num >= 2 and $_[0]->denum >= 2 and $_[0]->num % $_[0]->denum != 0;
 }
 
+requires "format";
+
 sub _guess_vulgar_fraction
 {
     my ( $max_num, $max_denum ) = @{ $_[0]->format };
@@ -107,14 +109,10 @@ sub _guess_vulgar_fraction
                     denum => $denum );
 }
 
-requires "format";
-
 sub get_vulgar_fractions
 {
     my ( $self, $amount ) = @_;
-
     my @result;
-    my ( $max_num, $max_denum ) = @{ $self->format };
 
     while ( $amount-- )
     {
