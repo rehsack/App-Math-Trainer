@@ -19,10 +19,10 @@ our $VERSION = '0.003';
 
     use Moo;
     use overload
-      '""'   => \&_stringify,
-      '0+'   => \&_numify,
+      '""'   => "_stringify",
+      '0+'   => "_numify",
       'bool' => sub { 1 },
-      '<=>'  => \&_num_compare;
+      '<=>'  => "_num_compare";
 
     use Carp qw/croak/;
     use Scalar::Util qw/blessed/;

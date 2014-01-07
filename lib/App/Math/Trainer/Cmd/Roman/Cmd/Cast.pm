@@ -1,4 +1,4 @@
-package App::Math::Trainer::Cmd::Roman::Cmd::Add;
+package App::Math::Trainer::Cmd::Roman::Cmd::Cast;
 
 use warnings;
 use strict;
@@ -7,7 +7,7 @@ use vars qw(@ISA $VERSION);
 
 =head1 NAME
 
-App::Math::Trainer::Cmd::Roman::Cmd::Add - Plugin for addition and subtraction of roman numbers
+App::Math::Trainer::Cmd::Roman::Cmd::Cast - Plugin for casting of roman numerals into natural numbers and vice versa
 
 =cut
 
@@ -23,11 +23,6 @@ has template_filename => (
                          );
 
 with "App::Math::Trainer::Role::Roman", "App::Math::Trainer::Role::NaturalExercise";
-
-sub _build_command_names
-{
-    return qw(add sub);
-}
 
 sub _build_exercises
 {
@@ -46,10 +41,10 @@ sub _build_exercises
     }
 
     my $exercises = {
-                      section    => "Roman number addition / subtraction",
-                      caption    => 'Roman Numeral Addition / Subtraction',
-                      label      => 'roman_numeral_addition',
-                      header     => [ [ 'Roman Number Addition', 'Roman Number Subtraction' ] ],
+                      section    => "Roman number cast from/to natural number",
+                      caption    => 'Roman Numerals Casting',
+                      label      => 'roman_number_cast',
+                      header     => [ [ 'Cast From Roman Number', 'Cast Into Roman Number' ] ],
                       solutions  => [],
                       challenges => [],
                     };
@@ -58,19 +53,22 @@ sub _build_exercises
     {
         my ( @solution, @challenge );
 
-        foreach my $i ( 0 .. 1 )
-        {
-            my ( $a, $b ) = @{ $line->[$i] };
-            my $op = $i ? '-' : '+';
-            $op eq '-' and $a < $b and ( $b, $a ) = ( $a, $b );
-            push @challenge, sprintf( '$ %s %s %s = $', $a, $op, $b );
+        # cast roman into natural number
+        my ($a) = @{ $line->[0] };
+        push @challenge, sprintf( '$ %s = $', $a );
 
-            my @way;    # remember Frank Sinatra :)
-            push @way, sprintf( '%s %s %s', $a, $op, $b );
-	    push @way, RomanNum->new( value => $op eq "+" ? $a->_numify + $b->_numify : $a->_numify - $b->_numify );
+        my @way;    # remember Frank Sinatra :)
+        push @way, "" . $a;
+        push @way, int($a);
+        push( @solution, '$ ' . join( " = ", @way ) . ' $' );
 
-            push( @solution, '$ ' . join( " = ", @way ) . ' $' );
-        }
+        # cast natural number into roman
+        @way = ();
+        ($a) = @{ $line->[1] };
+        push @challenge, sprintf( '$ %d = $', $a );
+        push @way,       int($a);
+        push @way,       "" . $a;
+        push( @solution, '$ ' . join( " = ", @way ) . ' $' );
 
         push( @{ $exercises->{solutions} },  \@solution );
         push( @{ $exercises->{challenges} }, \@challenge );

@@ -17,10 +17,6 @@ use Moo;
 use MooX::Cmd;
 use MooX::Options;
 
-use Carp qw(croak);
-use File::ShareDir ();
-use Template       ();
-
 has template_filename => (
                            is      => "ro",
                            default => "twocols"
