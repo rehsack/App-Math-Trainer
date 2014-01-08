@@ -33,7 +33,7 @@ our $VERSION = '0.003';
                  );
 
     sub _stringify { "" . $_[0]->value }
-    sub _numify { $_[0]->value }
+    sub _numify    { $_[0]->value }
 
     sub _num_compare
     {
@@ -52,8 +52,8 @@ requires "format";
 sub _guess_natural_number
 {
     my $max_val = $_[0]->format;
-    my $value = int(rand($max_val));
-    return NatNum->new(value => $value);
+    my $value   = int( rand($max_val) );
+    return NatNum->new( value => $value );
 }
 
 sub get_natural_number

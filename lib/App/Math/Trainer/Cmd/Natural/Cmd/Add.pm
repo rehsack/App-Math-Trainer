@@ -67,7 +67,7 @@ sub _build_exercises
 
             my @way;    # remember Frank Sinatra :)
             push @way, sprintf( '%s %s %s', $a, $op, $b );
-	    push @way, $op eq "+" ? $a->_numify + $b->_numify : $a->_numify - $b->_numify;
+            push @way, $op eq "+" ? $a->_numify + $b->_numify : $a->_numify - $b->_numify;
 
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }

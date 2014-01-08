@@ -40,20 +40,20 @@ our $VERSION = '0.003';
     };
 
     my %sizes = (
-                   M  => 1000,
-                   CM => 900,
-                   D  => 500,
-                   CD  => 400,
-                   C  => 100,
-                   XC => 90,
-                   L  => 50,
-                   XL  => 40,
-                   X  => 10,
-                   IX => 9,
-                   V  => 5,
-                   IV  => 4,
-                   I  => 1,
-                 );
+                  M  => 1000,
+                  CM => 900,
+                  D  => 500,
+                  CD => 400,
+                  C  => 100,
+                  XC => 90,
+                  L  => 50,
+                  XL => 40,
+                  X  => 10,
+                  IX => 9,
+                  V  => 5,
+                  IV => 4,
+                  I  => 1,
+                );
 
     sub _stringify
     {
@@ -74,9 +74,9 @@ our $VERSION = '0.003';
 }
 
 around _guess_natural_number => sub {
-    my $next   = shift;
+    my $next    = shift;
     my $max_val = $_[0]->format;
-    my $value   = int( rand($max_val-1) )+1;
+    my $value   = int( rand( $max_val - 1 ) ) + 1;
     return RomanNum->new( value => $value );
 };
 

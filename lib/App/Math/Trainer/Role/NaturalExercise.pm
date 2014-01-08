@@ -36,15 +36,15 @@ option format => (
       . "Default: 100",
     isa => sub {
         defined( $_[0] )
-          and !looks_like_number($_[0])
+          and !looks_like_number( $_[0] )
           and $_[0] !~ m,^\d?n+?$,
           and die("Invalid format");
     },
     coerce => sub {
         defined( $_[0] ) or return 100;
-        looks_like_number($_[0]) and int($_[0]) == $_[0] and return $_[0];
+        looks_like_number( $_[0] ) and int( $_[0] ) == $_[0] and return $_[0];
 
-        my ( $fmtv ) = ( $_[0] =~ m,^(\d?n+)?$, );
+        my ($fmtv) = ( $_[0] =~ m,^(\d?n+)?$, );
         my $startv = "1";
         $fmtv =~ s/^(\d)(.*)/$2/ and $startv = $1;
         my $maxv = $startv . "0" x length($fmtv);
