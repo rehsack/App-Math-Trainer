@@ -84,7 +84,7 @@ require_module 'App::Math::Trainer::Role::VulFrac';    # we only want VulFrac ty
 
 sub _check_power_to
 {
-    return $_[0]->basis != 0;
+    return $_[0]->basis != 0 and $_[0]->basis != 1;
 }
 
 has power_types => (
@@ -134,8 +134,11 @@ sub _guess_power_to
     my ( $basis, $exponent ) =
       ( int( rand($max_basis) ), $types[$type]->{builder}->($max_exponent) );
     return
-      Power->new( basis    => $basis,
-                  exponent => $exponent );
+      Power->new(
+                  basis    => $basis,
+                  exponent => $exponent,
+                  mode     => int( rand(2) )
+                );
 }
 
 sub get_power_to

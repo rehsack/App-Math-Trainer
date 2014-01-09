@@ -60,7 +60,7 @@ sub _build_exercises
 
             my @way;    # remember Frank Sinatra :)
             push @way, sprintf( "%s", $a );
-            $a->mode(1);
+            $a->mode( ( $a->mode + 1 ) % 2 );
             push @way, sprintf( "%s", $a );
 
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
