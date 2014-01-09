@@ -91,6 +91,12 @@ our $VERSION = '0.003';
                         denum => $_[0]->denum / $gcd );
     }
 
+    sub _reciprocal
+    {
+        return
+          VulFrac->new( num   => $_[0]->denum,
+                        denum => $_[0]->num );
+    }
 }
 
 sub _check_vulgar_fraction
