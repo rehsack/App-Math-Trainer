@@ -3,5 +3,5 @@
 use strict;
 use warnings;
 
-use App::Math::Trainer;
-my $app = App::Math::Trainer->new_with_cmd;
+use App::Math::Tutor;
+my $app = App::Math::Tutor->new_with_cmd;

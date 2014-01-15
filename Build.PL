@@ -3,10 +3,10 @@ use warnings;
 use Module::Build;
 
 my $builder = Module::Build->new(
-    module_name         => 'App::Math::Trainer',
+    module_name         => 'App::Math::Tutor',
     license             => 'perl',
     dist_author         => q{Jens Rehsack <rehsack@cpan.org>},
-    dist_version_from   => 'lib/App/Math/Trainer.pm',
+    dist_version_from   => 'lib/App/Math/Tutor.pm',
     build_requires => {
 	'MooX::Cmd::Tester' => '0.007',
         'Test::More' => '0.90',
@@ -20,9 +20,9 @@ my $builder = Module::Build->new(
 	'Template::Plugin::Latex' => '3.01',
     },
     share_dir          => { dist => [ 'share', ], },
-    add_to_cleanup      => [ 'App-Math-Trainer-*' ],
+    add_to_cleanup      => [ 'App-Math-Tutor-*' ],
     meta_merge =>
-        { resources => { repository => "https://github.com/rehsack/App-Math-Trainer", }, },
+        { resources => { repository => "https://github.com/rehsack/App-Math-Tutor", }, },
     test_files => join( ' ' => 't/*.t xt/*.t' ),
 );
 

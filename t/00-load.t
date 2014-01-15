@@ -3,7 +3,7 @@
 use Test::More tests => 1;
 
 BEGIN {
-    use_ok( 'App::Math::Trainer' ) || BAIL_OUT "Couldn't load App::Math::Trainer!";
+    use_ok( 'App::Math::Tutor' ) || BAIL_OUT "Couldn't load App::Math::Tutor!";
 }
 
-diag( "Testing App::Math::Trainer $App::Math::Trainer::VERSION, Perl $], $^X" );
+diag( "Testing App::Math::Tutor $App::Math::Tutor::VERSION, Perl $], $^X" );
