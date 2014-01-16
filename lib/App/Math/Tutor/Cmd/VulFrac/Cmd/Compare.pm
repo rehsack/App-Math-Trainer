@@ -47,10 +47,10 @@ sub _build_exercises
     }
 
     my $exercises = {
-                      section    => "Vulgar fraction comparison",
-                      caption    => 'Vulgar fractions',
-                      label      => 'vulgar_fractions_comparison',
-                      header     => [ [ 'Vulgar fraction Comparison', 'Vulgar fraction Comparison' ] ],
+                      section => "Vulgar fraction comparison",
+                      caption => 'Vulgar fractions',
+                      label   => 'vulgar_fractions_comparison',
+                      header  => [ [ 'Vulgar fraction Comparison', 'Vulgar fraction Comparison' ] ],
                       solutions  => [],
                       challenges => [],
                     };
