@@ -1,9 +1,13 @@
 Revision history for App-Math-Trainer
 
-0.003	2013-12-23
+0.004
+    - add exercise for comparing volgar fractions
+
+0.003	2014-01-15
     - redesign of guessing exercise values
     - introduce unit exercises
     - reduce default amount of exercises
+    - add exercises for unit, power rules, natural & roman numbers
 
 0.002	2013-11-29
     - convert from App::Cmd to MooX::Cmd and MooX::Options
