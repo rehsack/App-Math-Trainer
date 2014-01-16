@@ -13,7 +13,7 @@ use Moo::Role;
 
 with "App::Math::Tutor::Role::Natural";
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 {
     package    #

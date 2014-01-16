@@ -12,7 +12,7 @@ App::Math::Tutor::Role::Unit - role for numererical parts for calculation with u
 use Moo::Role;
 use MooX::Options;
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 use Hash::MoreUtils qw/slice_def/;
 

@@ -16,7 +16,7 @@ with "App::Math::Tutor::Role::Exercise", "App::Math::Tutor::Role::DecFrac";
 
 use Scalar::Util qw(looks_like_number);
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 sub _lt { return $_[0] < $_[1]; }
 sub _le { return $_[0] <= $_[1]; }

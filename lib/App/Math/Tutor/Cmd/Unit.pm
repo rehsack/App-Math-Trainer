@@ -9,7 +9,7 @@ App::Math::Tutor::Cmd::Unit - namespace for exercises for unit calculations
 
 =cut
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 use Moo;
 use MooX::Cmd;

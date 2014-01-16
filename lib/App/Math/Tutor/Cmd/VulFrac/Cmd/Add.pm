@@ -11,7 +11,7 @@ App::Math::Tutor::Cmd::VulFrac::Cmd::Add - Plugin for addition and subtraction o
 
 =cut
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 use Moo;
 use MooX::Cmd;

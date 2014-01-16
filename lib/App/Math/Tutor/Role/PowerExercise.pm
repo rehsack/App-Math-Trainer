@@ -14,7 +14,7 @@ use MooX::Options;
 
 with "App::Math::Tutor::Role::Exercise", "App::Math::Tutor::Role::Power";
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 =head1 ATTRIBUTES
 

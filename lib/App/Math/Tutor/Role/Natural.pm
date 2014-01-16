@@ -11,7 +11,7 @@ App::Math::Tutor::Role::Natural - role for natural numbers
 
 use Moo::Role;
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 {
     package    #

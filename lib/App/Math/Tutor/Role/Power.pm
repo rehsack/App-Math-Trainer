@@ -14,7 +14,7 @@ use MooX::Options;
 
 use Module::Runtime qw/require_module/;
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 require_module 'App::Math::Tutor::Role::VulFrac';    # we only want VulFrac type
 
