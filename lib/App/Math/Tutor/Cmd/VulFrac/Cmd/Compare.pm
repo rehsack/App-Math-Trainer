@@ -1,4 +1,4 @@
-package App::Math::Tutor::Cmd::Unit::Cmd::Compare;
+package App::Math::Tutor::Cmd::VulFrac::Cmd::Compare;
 
 use warnings;
 use strict;
@@ -7,7 +7,7 @@ use vars qw(@ISA $VERSION);
 
 =head1 NAME
 
-App::Math::Tutor::Cmd::Unit::Cmd::Compare - Plugin for comparing numbers with units
+App::Math::Tutor::Cmd::VulFrac::Cmd::Compare - Plugin for comparing vulgar fractions
 
 =cut
 
@@ -27,7 +27,7 @@ has template_filename => (
                            default => "twocols"
                          );
 
-with "App::Math::Tutor::Role::UnitExercise";
+with "App::Math::Tutor::Role::VulFracExercise";
 
 sub _build_exercises
 {
@@ -40,17 +40,17 @@ sub _build_exercises
         my @line;
         foreach my $j ( 0 .. 1 )
         {
-            my ( $a, $b ) = $self->get_unit_numbers(2);
+            my ( $a, $b ) = $self->get_vulgar_fractions(2);
             push @line, [ $a, $b ];
         }
         push @tasks, \@line;
     }
 
     my $exercises = {
-                      section    => "Unit comparison",
-                      caption    => 'Units',
-                      label      => 'unit_comparison',
-                      header     => [ [ 'Unit Comparison', 'Unit Comparison' ] ],
+                      section    => "Vulgar fraction comparison",
+                      caption    => 'Vulgar fractions',
+                      label      => 'vulgar_fractions_comparison',
+                      header     => [ [ 'Vulgar fraction Comparison', 'Vulgar fraction Comparison' ] ],
                       solutions  => [],
                       challenges => [],
                     };
