@@ -12,6 +12,7 @@ my $rv;
 $rv = test_cmd_ok( 'App::Math::Tutor' => [qw(vulfrac add)] );
 $rv = test_cmd_ok( 'App::Math::Tutor' => [qw(vulfrac mul)] );
 $rv = test_cmd_ok( 'App::Math::Tutor' => [qw(vulfrac cast)] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [qw(vulfrac compare)] );
 
 $rv = test_cmd_ok( 'App::Math::Tutor' => [qw(natural add)] );
 
