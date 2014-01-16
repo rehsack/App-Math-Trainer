@@ -22,7 +22,7 @@ our $VERSION = '0.004';
 
 =head2 format
 
-Specifies format of numerator/denominator
+Specifies format of operand
 
 =cut
 
