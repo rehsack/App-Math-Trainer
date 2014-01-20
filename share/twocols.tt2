@@ -85,7 +85,7 @@
 [%-   output.format = "pdf" -%]
 [%- END -%]
 [% USE Latex -%]
-[% IF loutput.format == "tex" -%]
+[% IF output.format == "tex" -%]
 [%   Content() %]
 [% ELSE %]
 [%   FILTER latex(format="${output.format}") -%]
