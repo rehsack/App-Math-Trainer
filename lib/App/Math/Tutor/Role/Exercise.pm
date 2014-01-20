@@ -103,6 +103,22 @@ sub _build_output_name
     return $cmdnames;
 }
 
+=head2 output_type
+
+Lazy string representing the extension of the output file. The default
+builder returns 'pdf'.
+
+=cut
+
+option output_type => (
+                        is     => "lazy",
+                        doc    => "Specifies the output type (tex, pdf, ps)",
+                        format => "s",
+                        short  => "t",
+                      );
+
+sub _build_output_type { 'pdf' }
+
 =head1 REQUIRED ATTRIBUTES
 
 =head2 template_filename
@@ -132,10 +148,10 @@ sub execute
                                  {
                                     exercises => $exercises,
                                     output    => {
-                                                format => 'pdf',
+                                                format => $self->output_type,
                                               },
                                  },
-                                 $self->output_name . ".pdf"
+                                 join( ".", $self->output_name, $self->output_type )
                                );
     $rc or croak( $template->error() );
 
