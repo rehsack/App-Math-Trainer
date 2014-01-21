@@ -17,11 +17,6 @@ use Moo;
 use MooX::Cmd;
 use MooX::Options;
 
-use Carp qw(croak);
-use File::ShareDir ();
-use Template       ();
-use Scalar::Util qw(looks_like_number);
-
 has template_filename => (
                            is      => "ro",
                            default => "twocols"
