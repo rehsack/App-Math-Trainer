@@ -32,23 +32,30 @@ our $VERSION = '0.004';
 
     sub _stringify_term
     {
-	my ($self, $fact, $exp) = @_;
-	$fact or return;
-	0 == $exp and return "$fact";
-	1 == $exp and 1 != $fact and return "{$fact}x";
-	1 == $exp and return "x";
-	1 == $fact and return "x^{$exp}";
-	return sprintf("{%s}x^{%s}", $fact, $exp);
+        my ( $self, $fact, $exp ) = @_;
+        $fact or return;
+        0 == $exp  and return "$fact";
+        1 == $exp  and 1 != $fact and return "{$fact}x";
+        1 == $exp  and return "x";
+        1 == $fact and return "x^{$exp}";
+        return sprintf( "{%s}x^{%s}", $fact, $exp );
     }
 
     sub _stringify
     {
-	my $self = $_[0];
-        join( "+", grep { defined $_ } ( map { $self->_stringify_term(@{$_}) } reverse @{ $_[0]->values } ));
+        my $self = $_[0];
+        join( "+",
+              grep { defined $_ }
+                ( map { $self->_stringify_term( @{$_} ) } reverse @{ $_[0]->values } ) );
     }
 }
 
-sub _check_polynom { $_[1]->values->[-1]->[1] == $_[0]->max_power; }
+sub _check_polynom
+{
+    defined $_[1]->values->[-1]->[1]
+      and $_[1]->values->[-1]->[1] == $_[0]->max_power
+      and $_[1]->values->[-1]->[1] != 0;
+}
 
 requires "max_power";
 

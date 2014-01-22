@@ -33,14 +33,14 @@ sub _get_quad_solution
 {
     my ( $self, $poly ) = @_;
     my ( @orig, @way, @solution );
-    push @orig, "$poly";
+    push @orig, 0, "$poly";
 
     my @values = @{ $poly->values };
     my @rvalues;
     my @pqvalues;
     my $reduced = 0;
     my $a_f     = $values[-1]->[0];
-    my ( $p, $q ) = (0, 0);
+    my ( $p, $q ) = ( 0, 0 );
     foreach my $i ( 0 .. $#values - 1 )
     {
         my $exp = $values[$i][1];
@@ -53,14 +53,83 @@ sub _get_quad_solution
         1 == $exp and $p = $f;
     }
     push( @pqvalues, [ 1, $values[-1]->[1] ] );
-    push( @rvalues, [ 1, $values[-1]->[1] ] );
+    push( @rvalues,  [ 1, $values[-1]->[1] ] );
     $reduced and push @orig, PolyNum->new( values => \@pqvalues );
     push( @orig, PolyNum->new( values => \@rvalues ) );
 
     push( @solution, '$ ' . join( " = ", @orig ) . ' $' );
 
     push @way, "X_{1/2}";
-    push @way, sprintf( '-\frac{%s}{2} + \sqrt{\frac{(%s)^2}{4} - %s}', $p, $p, $q );
+    push @way, sprintf( '-\frac{%s}{2} \pm \sqrt{{\left(\frac{%s}{2}\right)}^2 - %s}', $p, $p, $q );
+
+    my ( $D, $P, $Q, $P2, $SQRT_D, @TERMS ) = ( 0, 0, 0 );
+          $p != 0
+      and $P = sprintf( '\frac{%d}{%d \cdot %d}', $p->num, $p->denum, 2 )
+      and $P2 = sprintf( '{\left(%s\right)}^2', $P )
+      and push @TERMS, "-$P";
+    $q != 0 and $Q = $q;
+    $SQRT_D = sprintf( '\sqrt{%s}', join( " - ", grep { $_ } ( $P2, $Q ) ) )
+      and push @TERMS, $SQRT_D
+      if $p != 0 or $q != 0;
+    push @way, join( '\pm', @TERMS );
+
+        $p != 0
+          and $P = VulFrac->new(
+                                 num   => $p->num,
+                                 denum => 2 * $p->denum
+          )->_reduce;
+
+    if ( $p != 0 and $q != 0 )
+    {
+        @TERMS = ();
+          $P2 = VulFrac->new(
+                                  num   => $P->num * $P->num,
+                                  denum => $P->denum * $P->denum
+          )->_reduce
+          and push @TERMS, "-$P";
+        $q != 0 and $Q = $q;
+        $SQRT_D = sprintf( '\sqrt{%s}', join( " - ", grep { $_ } ( $P2, $Q ) ) )
+          and push @TERMS, $SQRT_D
+          if $p != 0 or $q != 0;
+        push @way, join( '\pm', @TERMS );
+
+        my $gcd = VulFrac->new(
+                                num   => $P->denum,
+                                denum => $Q->denum
+                              )->_gcd;
+        my ( $fP, $fQ ) = ( $Q->{denum} / $gcd, $P2->{denum} / $gcd );
+
+        @TERMS = ("-$P");
+        $SQRT_D =
+          sprintf( '\sqrt{\frac{%d \cdot %d}{%d \cdot %d} - \frac{%d \cdot %d}{%d \cdot %d}}',
+                   $P2->num, $fP, $P2->denum, $fP, $Q->num, $fQ, $Q->denum, $fQ );
+        push @TERMS, $SQRT_D;
+        push @way, join( '\pm', @TERMS );
+
+        @TERMS = ("-$P");
+        $SQRT_D = sprintf(
+                           '\sqrt{\frac{%d}{%d} - \frac{%d}{%d}}',
+                           $P2->num * $fP,
+                           $P2->denum * $fP,
+                           $Q->num * $fQ,
+                           $Q->denum * $fQ
+                         );
+        push @TERMS, $SQRT_D;
+        push @way, join( '\pm', @TERMS );
+
+        @TERMS = ("-$P");
+        $SQRT_D =
+          sprintf( '\sqrt{\frac{%d - %d}{%d}}', $P2->num * $fP, $Q->num * $fQ, $P2->denum * $fP );
+        push @TERMS, $SQRT_D;
+        push @way, join( '\pm', @TERMS );
+
+        @TERMS = ("-$P");
+        $D = VulFrac->new( num   => $P2->num * $fP - $Q->num * $fQ,
+                           denum => $P2->denum * $fP );
+        my $SQRT_D = sprintf( '\sqrt{%s}', $D );
+        push @TERMS, $SQRT_D;
+        push @way, join( '\pm', @TERMS );
+    }
 
     push( @solution, '$ ' . join( " = ", @way ) . ' $' );
 
@@ -75,7 +144,7 @@ sub _build_exercises
 
     foreach my $i ( 1 .. $self->amount )
     {
-	my @line;
+        my @line;
         push @line,  $self->get_polynom(1);
         push @tasks, \@line;
     }
