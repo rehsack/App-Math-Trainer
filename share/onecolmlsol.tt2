@@ -69,7 +69,8 @@
 
 [% solutions = [];
    FOREACH solution IN exercises.solutions ;
-     solutions.push( [ solution.join('\\\\') ]);
+     sol = solution.join(' \\newline ');
+     solutions.push( [ "$sol \\\\[0.8em] \\hline" ]);
    END
 -%]
 
@@ -80,7 +81,7 @@
 		data = solutions,
 		type = 'longtable',
 		coldef = 'p{16cm}',
-#		eor = '\\\\[0.8em]',
+#		eor = '\\\\[0.8em]\\hline',
  		fontsize = 'footnotesize',
 	      )
 -%]
