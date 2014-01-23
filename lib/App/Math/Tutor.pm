@@ -31,7 +31,7 @@ exercides.
 
 sub execute
 {
-    shift->option_usage();
+    shift->options_usage();
 }
 
 =head1 AUTHOR

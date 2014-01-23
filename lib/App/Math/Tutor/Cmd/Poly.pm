@@ -17,7 +17,7 @@ use MooX::Options;
 
 sub execute
 {
-    shift->option_usage();
+    shift->options_usage();
 }
 
 =head1 LICENSE AND COPYRIGHT
