@@ -1,7 +1,10 @@
 Revision history for App-Math-Trainer
 
 0.004
-    - add exercise for comparing volgar fractions
+    - add exercise for comparing vulgar fractions
+    - add missing required modules
+    - add support for polynoms and power mathematics
+    - remane option --amount to --quantity
 
 0.003	2014-01-15
     - redesign of guessing exercise values
