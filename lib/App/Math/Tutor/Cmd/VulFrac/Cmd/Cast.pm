@@ -31,10 +31,10 @@ sub _build_command_names
 
 sub _get_castable_numbers
 {
-    my ( $self, $amount ) = @_;
+    my ( $self, $quantity ) = @_;
 
     my @result;
-    while ( $amount-- )
+    while ( $quantity-- )
     {
         my $vf;
         do
@@ -53,7 +53,7 @@ sub _build_exercises
     my ($self) = @_;
 
     my (@tasks);
-    foreach my $i ( 1 .. $self->amount )
+    foreach my $i ( 1 .. $self->quantity )
     {
         my @line;
         foreach my $j ( 0 .. 1 )

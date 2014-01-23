@@ -31,10 +31,10 @@ with "App::Math::Tutor::Role::UnitExercise", "App::Math::Tutor::Role::DecFracExe
 
 sub _get_castable_numbers
 {
-    my ( $self, $amount ) = @_;
+    my ( $self, $quantity ) = @_;
 
     my @result;
-    while ( $amount-- )
+    while ( $quantity-- )
     {
         my ( $un, $base, $ut );
         do
@@ -65,7 +65,7 @@ sub _build_exercises
     my ($self) = @_;
 
     my (@tasks);
-    foreach my $i ( 1 .. $self->amount )
+    foreach my $i ( 1 .. $self->quantity )
     {
         my @line;
         foreach my $j ( 0 .. 1 )

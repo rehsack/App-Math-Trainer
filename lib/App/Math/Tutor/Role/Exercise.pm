@@ -21,22 +21,22 @@ our $VERSION = '0.004';
 
 =head1 ATTRIBUTES
 
-=head2 amount
+=head2 quantity
 
-Specifies amount of calculations to generate
+Specifies number of calculations to generate
 
 =cut
 
-option amount => (
-                   is       => "ro",
-                   doc      => "Specifies amount of exercises to generate",
-                   long_doc => "Specify amount of exercises to generate. In "
-                     . "case of several kind of exercises, \$amount exercises "
-                     . "are generated per kind.",
-                   format  => "i",
-                   short   => "n",
-                   default => sub { 15 },
-                 );
+option quantity => (
+                     is       => "ro",
+                     doc      => "Specifies number of exercises to generate",
+                     long_doc => "Specify number of exercises to generate. In "
+                       . "case of several kind of exercises, \$quantity exercises "
+                       . "are generated per kind.",
+                     format  => "i",
+                     short   => "n",
+                     default => sub { 15 },
+                   );
 
 =head2 exercises
 

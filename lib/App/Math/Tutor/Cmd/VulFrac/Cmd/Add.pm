@@ -34,7 +34,7 @@ sub _build_exercises
     my ($self) = @_;
 
     my (@tasks);
-    foreach my $i ( 1 .. $self->amount )
+    foreach my $i ( 1 .. $self->quantity )
     {
         my @line;
         foreach my $j ( 0 .. 1 )
