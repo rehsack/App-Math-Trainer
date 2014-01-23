@@ -31,3 +31,5 @@ App-Math-Trainer-.*
 ^MYMETA\.json$
 ^MYMETA\..*$
 .*\.pdf$
+.*\.ps$
+.*\.tex$
