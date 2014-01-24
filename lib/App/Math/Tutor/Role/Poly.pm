@@ -52,12 +52,14 @@ our $VERSION = '0.004';
 
 sub _check_polynom
 {
-    defined $_[1]->values->[-1]->[1]
-      and $_[1]->values->[-1]->[1] == $_[0]->max_power
-      and $_[1]->values->[-1]->[1] != 0;
+    my $values = [ grep { $_->[0] } @{ $_[1]->values } ];
+    scalar @{$values} > 1
+      and defined $values->[-1]->[1]
+      and $values->[-1]->[1] == $_[0]->max_power
+      and $values->[-1]->[1] != 0;
 }
 
-requires "max_power";
+requires "max_power", "format", "probability";
 
 sub _guess_polynom
 {
@@ -66,8 +68,7 @@ sub _guess_polynom
     my @values;
     foreach my $exp ( 0 .. $_[0]->max_power )
     {
-        my $likely = rand(100);
-        $likely <= $probability or next;
+        rand(100) <= $probability or next;
         my $value = int( rand($max_val) );
         push @values, [ $value, $exp ];
     }
