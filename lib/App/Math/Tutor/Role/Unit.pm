@@ -10,97 +10,11 @@ App::Math::Tutor::Role::Unit - role for numererical parts for calculation with u
 =cut
 
 use Moo::Role;
-use MooX::Options;
 
 our $VERSION = '0.004';
 
 use Hash::MoreUtils qw/slice_def/;
-
-{
-    package    #
-      Unit;
-
-    use Moo;
-    use overload
-      '""'   => \&_stringify,
-      '0+'   => \&_numify,
-      'bool' => \&_filled,
-      '<=>'  => \&_num_compare;
-    use Scalar::Util qw/blessed/;
-
-    has type => (
-                  is       => "ro",
-                  required => 1
-                );
-    has begin => (
-                   is       => "ro",
-                   required => 1
-                 );
-    has end => (
-                 is       => "ro",
-                 required => 1
-               );
-    has parts => (
-                   is       => "ro",
-                   required => 1
-                 );
-
-    sub _stringify
-    {
-        my @parts = @{ $_[0]->parts };
-        my @res;
-        for my $i ( $_[0]->begin .. $_[0]->end )
-        {
-            my $num = shift @parts;
-            $num or next;
-            my $un = $_[0]->type->{spectrum}->[$i]->{unit};
-            $un = "\\text{$un }";
-            push( @res, "$num $un" );
-        }
-        join( " ", @res );
-        #join(" ", @{ $_[0]->parts } );
-    }
-
-    sub _numify
-    {
-        my @parts    = @{ $_[0]->parts };
-        my $base     = $_[0]->type->{base};
-        my $spectrum = $_[0]->type->{spectrum};
-        my $res      = 0;
-        for my $i ( $_[0]->begin .. $_[0]->end )
-        {
-            my $num = shift @parts;
-            $num or next;
-            my $factor = $spectrum->[$i]->{factor};
-            $res = $i <= $base ? $res + $num * $factor : $res + $num / $factor;
-        }
-
-        if ( defined $_[1] )
-        {
-            my $factor = $spectrum->[ $_[1] ]->{factor};
-            $res = $_[1] <= $base ? $res / $factor : $res * $factor;
-        }
-
-        $res;
-    }
-
-    sub _filled
-    {
-        grep { $_ } @{ $_[0]->parts };
-    }
-
-    sub _num_compare
-    {
-        my ( $self, $other, $swapped ) = @_;
-        $swapped and return $other <=> $self->_numify;
-
-        blessed $other or return $self->_numify <=> $other;
-        my $rc;
-        0 != ( $rc = $other->begin <=> $self->begin )
-          and return $rc;    # $self->begin < $other->begin => $self > $other
-        return $self->_numify <=> $other->_numify;
-    }
-}
+use App::Math::Tutor::Numbers;
 
 has unit_definitions => ( is => "lazy" );
 

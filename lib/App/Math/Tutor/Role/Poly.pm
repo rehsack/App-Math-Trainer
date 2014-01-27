@@ -10,45 +10,9 @@ App::Math::Tutor::Role::Poly - role for polynoms
 =cut
 
 use Moo::Role;
+use App::Math::Tutor::Numbers;
 
 our $VERSION = '0.004';
-
-{
-    package    #
-      PolyNum;
-
-    use Moo;
-    use overload
-      '""'   => "_stringify",
-      'bool' => sub { 1 };
-
-    use Carp qw/croak/;
-    use Scalar::Util qw/blessed/;
-
-    has values => (
-                    is       => "ro",
-                    required => 1
-                  );
-
-    sub _stringify_term
-    {
-        my ( $self, $fact, $exp ) = @_;
-        $fact or return;
-        0 == $exp  and return "$fact";
-        1 == $exp  and 1 != $fact and return "{$fact}x";
-        1 == $exp  and return "x";
-        1 == $fact and return "x^{$exp}";
-        return sprintf( "{%s}x^{%s}", $fact, $exp );
-    }
-
-    sub _stringify
-    {
-        my $self = $_[0];
-        join( "+",
-              grep { defined $_ }
-                ( map { $self->_stringify_term( @{$_} ) } reverse @{ $_[0]->values } ) );
-    }
-}
 
 sub _check_polynom
 {
@@ -69,7 +33,7 @@ sub _guess_polynom
     foreach my $exp ( 0 .. $_[0]->max_power )
     {
         rand(100) <= $probability or next;
-        my $value = int( rand($max_val) );
+        my $value = int( rand( $max_val * 2 ) - $max_val );
         push @values, [ $value, $exp ];
     }
     return PolyNum->new( values => \@values );

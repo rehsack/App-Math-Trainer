@@ -1,27 +1,35 @@
-package App::Math::Tutor::Role::Roman;
+package App::Math::Tutor::Util;
 
 use warnings;
 use strict;
 
 =head1 NAME
 
-App::Math::Tutor::Role::Roman - role for roman style natural numbers
+App::Math::Tutor::Util - Utilities for easier Math Tutorial Exercises generation
 
 =cut
 
-use Moo::Role;
-use App::Math::Tutor::Numbers;
+use vars qw();
 
-with "App::Math::Tutor::Role::Natural";
+use Exporter;
 
 our $VERSION = '0.004';
+our @ISA = qw(Exporter);
+our @EXPORT = qw();
+our @EXPORT_OK = qw(sumcat_terms);
+our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 
-around _guess_natural_number => sub {
-    my $next    = shift;
-    my $max_val = $_[0]->format;
-    my $value   = int( rand( $max_val - 1 ) ) + 1;
-    return RomanNum->new( value => $value );
-};
+my %sum_opposites = (
+'+' => '-',
+'-' => '+',
+'\pm' => '\mp',
+'\mp' => '\pm',);
+
+sub sumcat_terms
+{
+    my ($op, @terms) = @_;
+    ...
+}
 
 =head1 LICENSE AND COPYRIGHT
 

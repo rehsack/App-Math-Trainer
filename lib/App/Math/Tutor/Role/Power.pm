@@ -10,77 +10,9 @@ App::Math::Tutor::Role::Power - role for power mathematics
 =cut
 
 use Moo::Role;
-use MooX::Options;
-
-use Module::Runtime qw/require_module/;
+use App::Math::Tutor::Numbers;
 
 our $VERSION = '0.004';
-
-require_module 'App::Math::Tutor::Role::VulFrac';    # we only want VulFrac type
-
-{
-    package                                          #
-      Power;
-
-    use Moo;
-    use overload
-      '""'   => \&_stringify,
-      '0+'   => \&_numify,
-      'bool' => sub { 1 },
-      '<=>'  => \&_num_compare;
-
-    use Carp qw/croak/;
-    use Scalar::Util qw/blessed/;
-
-    has basis => (
-                   is       => "ro",
-                   required => 1
-                 );
-
-    has exponent => (
-                      is       => "ro",
-                      required => 1
-                    );
-
-    has mode => (
-                  is      => "rw",
-                  default => sub { 0 },
-                );
-
-    sub _stringify
-    {
-        $_[0]->exponent == 1 and return $_[0]->basis;
-        $_[0]->mode or return join( "^", $_[0]->basis, $_[0]->exponent );
-        return
-          sprintf( "\\sqrt[%s]{%s}",
-                   blessed( $_[0]->exponent ) ? $_[0]->exponent->denum : $_[0]->exponent,
-                   blessed( $_[0]->exponent )
-                     && $_[0]->exponent->num > 1
-                   ? sprintf( "{%s}^{%s}", $_[0]->basis, $_[0]->exponent->num )
-                   : $_[0]->basis );
-    }
-
-    sub _numify
-    {
-        my $rc = eval sprintf( "(%d)**(%d)", $_[0]->basis, $_[0]->exponent );
-        $@ and croak $@;
-        return $rc;
-    }
-
-    sub _num_compare
-    {
-        my ( $self, $other, $swapped ) = @_;
-        $swapped and return $other <=> $self->_numify;
-
-        blessed $other or return $self->_numify <=> $other;
-        return $self->_numify <=> $other->_numify;
-    }
-
-    sub _reduce
-    {
-        die "mising";
-    }
-}
 
 sub _check_power_to
 {

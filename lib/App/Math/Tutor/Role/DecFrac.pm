@@ -10,7 +10,7 @@ App::Math::Tutor::Role::DecFrac - role for decimal fraction numbers
 =cut
 
 use Moo::Role;
-use MooX::Options;
+use App::Math::Tutor::Numbers;
 
 our $VERSION = '0.004';
 

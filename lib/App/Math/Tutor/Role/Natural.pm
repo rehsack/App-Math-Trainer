@@ -10,40 +10,9 @@ App::Math::Tutor::Role::Natural - role for natural numbers
 =cut
 
 use Moo::Role;
+use App::Math::Tutor::Numbers;
 
 our $VERSION = '0.004';
-
-{
-    package    #
-      NatNum;
-
-    use Moo;
-    use overload
-      '""'   => "_stringify",
-      '0+'   => "_numify",
-      'bool' => sub { 1 },
-      '<=>'  => "_num_compare";
-
-    use Carp qw/croak/;
-    use Scalar::Util qw/blessed/;
-
-    has value => (
-                   is       => "ro",
-                   required => 1
-                 );
-
-    sub _stringify { "" . $_[0]->value }
-    sub _numify    { $_[0]->value }
-
-    sub _num_compare
-    {
-        my ( $self, $other, $swapped ) = @_;
-        $swapped and return $other <=> $self->_numify;
-
-        blessed $other or return $self->_numify <=> $other;
-        return $self->_numify <=> $other->_numify;
-    }
-}
 
 sub _check_natural_number { return $_[0]->value >= 2 }
 
