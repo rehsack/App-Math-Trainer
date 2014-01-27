@@ -13,22 +13,40 @@ use vars qw();
 
 use Exporter;
 
-our $VERSION = '0.004';
-our @ISA = qw(Exporter);
-our @EXPORT = qw();
-our @EXPORT_OK = qw(sumcat_terms);
-our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
+our $VERSION     = '0.004';
+our @ISA         = qw(Exporter);
+our @EXPORT      = qw();
+our @EXPORT_OK   = qw(sumcat_terms);
+our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
+
+use Scalar::Util qw/blessed/;
 
 my %sum_opposites = (
-'+' => '-',
-'-' => '+',
-'\pm' => '\mp',
-'\mp' => '\pm',);
+                      '+'   => '-',
+                      '-'   => '+',
+                      '\pm' => '\mp',
+                      '\mp' => '\pm',
+                    );
 
 sub sumcat_terms
 {
-    my ($op, @terms) = @_;
-    ...
+    my ( $op, @terms ) = @_;
+    my $str = "" . shift @terms;
+
+    foreach my $term (@terms)
+    {
+        $term or next;
+        my $c_op = $op;
+        my $sign = blessed $term ? $term->sign : $term <=> 0;
+        if ( $sign < 0 )
+        {
+            $term = $term->_abs();         # XXX
+            $c_op = $sum_opposites{$op};
+        }
+        $str .= "${c_op}${term}";
+    }
+
+    $str;
 }
 
 =head1 LICENSE AND COPYRIGHT

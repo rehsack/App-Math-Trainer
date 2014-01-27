@@ -16,11 +16,11 @@ our $VERSION = '0.004';
 
 sub _check_polynom
 {
-    my $values = [ grep { $_->[0] } @{ $_[1]->values } ];
+    my $values = [ grep { $_->factor } @{ $_[1]->values } ];
     scalar @{$values} > 1
-      and defined $values->[-1]->[1]
-      and $values->[-1]->[1] == $_[0]->max_power
-      and $values->[-1]->[1] != 0;
+      and defined $values->[-1]->exponent
+      and $values->[-1]->exponent == $_[0]->max_power
+      and $values->[-1]->exponent != 0;
 }
 
 requires "max_power", "format", "probability";
@@ -34,7 +34,9 @@ sub _guess_polynom
     {
         rand(100) <= $probability or next;
         my $value = int( rand( $max_val * 2 ) - $max_val );
-        push @values, [ $value, $exp ];
+        push @values,
+          PolyTerm->new( factor   => $value,
+                         exponent => $exp );
     }
     return PolyNum->new( values => \@values );
 }

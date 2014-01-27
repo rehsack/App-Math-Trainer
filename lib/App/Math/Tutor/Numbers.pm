@@ -9,6 +9,8 @@ App::Math::Tutor::Numbers - Numbers provider for math exercises
 
 =cut
 
+use App::Math::Tutor::Util ();
+
 our $VERSION = '0.004';
 
 {
@@ -17,13 +19,13 @@ our $VERSION = '0.004';
 
     use Moo;
     use overload
-      '""'   => \&_stringify,
-      '0+'   => \&_numify,
-      'bool' => sub { 1 },
-      '<=>'  => \&_num_compare;
+      '""'   => "_stringify",
+      '0+'   => "_numify",
+      'bool' => sub { $_[0]->num != 0 },
+      '<=>'  => "_num_compare";
 
     use Carp qw/croak/;
-    use Scalar::Util qw/blessed/;
+    use Scalar::Util qw/blessed dualvar/;
 
     has num => (
                  is       => "ro",
@@ -46,9 +48,10 @@ our $VERSION = '0.004';
         defined $params->{sign} or $params->{sign} = 1;
         $params->{num} < 0   and $params->{sign} *= -1;
         $params->{denum} < 0 and $params->{sign} *= -1;
-        $params->{sign}  = $params->{sign} < 0 ? "-" : "";
-        $params->{num}   = abs( $params->{num} );
-        $params->{denum} = abs( $params->{denum} );
+        $params->{sign} = $params->{sign} < 0 ? dualvar( -1, "-" ) : dualvar( 1, "" );
+        $params->{num} = blessed $params->{num} ? $params->{num}->_abs : abs( $params->{num} );
+        $params->{denum} =
+          blessed $params->{denum} ? $params->{denum}->_abs : abs( $params->{denum} );
         $params;
     };
 
@@ -63,7 +66,7 @@ our $VERSION = '0.004';
                    int( $_[0]->_numify ),
                    $_[0]->num - $_[0]->denum * int( $_[0]->_numify ),
                    $_[0]->denum );
-        return $_[0]->sign . "\\frac{" . $_[0]->num . "}{" . $_[0]->denum . "}";
+        return "" . $_[0]->sign . "\\frac{" . $_[0]->num . "}{" . $_[0]->denum . "}";
     }
 
     sub _numify
@@ -105,7 +108,7 @@ our $VERSION = '0.004';
           VulFrac->new(
                         num   => $_[0]->num / $gcd,
                         denum => $_[0]->denum / $gcd,
-                        sign  => $_[0]->sign . "1"
+                        sign  => $_[0]->sign
                       );
     }
 
@@ -115,7 +118,17 @@ our $VERSION = '0.004';
           VulFrac->new(
                         num   => $_[0]->denum,
                         denum => $_[0]->num,
-                        sign  => $_[0]->sign . "1"
+                        sign  => $_[0]->sign
+                      );
+    }
+
+    sub abs
+    {
+        return
+          VulFrac->new(
+                        num   => $_[0]->denum,
+                        denum => $_[0]->num,
+                        sign  => 1
                       );
     }
 }
@@ -128,7 +141,7 @@ our $VERSION = '0.004';
     use overload
       '""'   => "_stringify",
       '0+'   => "_numify",
-      'bool' => sub { 1 },
+      'bool' => sub { $_[0]->value != 0 },
       '<=>'  => "_num_compare";
 
     use Carp qw/croak/;
@@ -150,6 +163,56 @@ our $VERSION = '0.004';
         blessed $other or return $self->_numify <=> $other;
         return $self->_numify <=> $other->_numify;
     }
+
+    sub sign { return $_[0]->value <=> 0 }
+    sub _abs { return NatNum->new( value => abs( $_[0]->value <=> 0 ) ) }
+}
+
+{
+    package    #
+      PolyTerm;
+
+    use Moo;
+    use overload
+      '""'   => "_stringify",
+      'bool' => sub { $_[0]->factor != 0 };
+
+    use Carp qw/croak/;
+    use Scalar::Util qw/blessed/;
+
+    has factor => (
+                    is       => "ro",
+                    required => 1
+                  );
+    has exponent => (
+                      is       => "ro",
+                      required => 1
+                    );
+
+    sub _stringify
+    {
+        my ($self) = @_;
+        my ( $fact, $exp ) = ( $self->factor, $self->exponent );
+        $fact or return;
+        0 == $exp and return "$fact";    #sprintf( "%s$fact", $fact >= 0 ? "+" : "" );
+        1 == $exp
+          and 1 != $fact
+          and return "{$fact}x";         #sprintf( "{%s$fact}x", $fact >= 0 ? "+" : "" );
+        1 == $exp  and return "x";
+        1 == $fact and return "x^{$exp}";
+        return sprintf( "{%s}x^{%s}", $fact, $exp );
+    }
+
+    sub _abs
+    {
+        my ( $fact, $exp ) = ( $_[0]->factor, $_[0]->exponent );
+        $fact = blessed $fact ? $fact->abs() : abs($fact);
+        return
+          PolyTerm->new( factor   => $fact,
+                         exponent => $exp );
+    }
+
+    sub sign { return $_[0]->factor <=> 0 }
 }
 
 {
@@ -159,48 +222,29 @@ our $VERSION = '0.004';
     use Moo;
     use overload
       '""'   => "_stringify",
-      'bool' => sub { 1 };
+      'bool' => sub { 1 };      # XXX prodcat(values->as_bool)
 
     use Carp qw/croak/;
-    use Scalar::Util qw/blessed/;
+    App::Math::Tutor::Util->import(qw(sumcat_terms));
 
     has values => (
                     is       => "ro",
                     required => 1
                   );
 
-    sub _stringify_term
-    {
-        my ( $self, $fact, $exp ) = @_;
-        $fact or return;
-        0 == $exp and return sprintf( "%s$fact", $fact >= 0 ? "+" : "" );
-        1 == $exp and 1 != $fact and return sprintf( "{%s$fact}x", $fact >= 0 ? "+" : "" );
-        1 == $exp and return "+x";
-        1 == $fact and return "+x^{$exp}";
-        return sprintf( "{%s%s}x^{%s}", $fact >= 0 ? "+" : "", $fact, $exp );
-    }
-
-    sub _stringify
-    {
-        my $self = $_[0];
-        my $s    = join( "",
-                      grep { defined $_ }
-                        ( map { $self->_stringify_term( @{$_} ) } reverse @{ $_[0]->values } ) );
-        index( $s, "+" ) == 0 and substr( $s, 0, 1 ) = "";
-        $s;
-    }
+    sub _stringify { sumcat_terms( "+", reverse @{ $_[0]->values } ); }
 }
 
 {
-    package                                          #
+    package    #
       Power;
 
     use Moo;
     use overload
-      '""'   => \&_stringify,
-      '0+'   => \&_numify,
-      'bool' => sub { 1 },
-      '<=>'  => \&_num_compare;
+      '""'   => "_stringify",
+      '0+'   => "_numify",
+      'bool' => sub { $_[0]->basis != 0 },    # 0 ** 7 == 0
+      '<=>'  => "_num_compare";
 
     use Carp qw/croak/;
     use Scalar::Util qw/blessed/;
@@ -319,10 +363,10 @@ our $VERSION = '0.004';
 
     use Moo;
     use overload
-      '""'   => \&_stringify,
-      '0+'   => \&_numify,
-      'bool' => \&_filled,
-      '<=>'  => \&_num_compare;
+      '""'   => "_stringify",
+      '0+'   => "_numify",
+      'bool' => "_filled",
+      '<=>'  => "_num_compare";
     use Scalar::Util qw/blessed/;
 
     has type => (
