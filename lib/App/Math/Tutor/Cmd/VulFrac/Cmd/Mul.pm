@@ -78,8 +78,8 @@ sub _build_exercises
                 push @way,
                   sprintf( '\frac{%d \cdot %d}{%d \cdot %d}',
                            $a->num, $b->num, $a->denum, $b->denum );
-                $s = VulFrac->new( num   => $a->num * $b->num,
-                                   denum => $a->denum * $b->denum );
+                $s = VulFracNum->new( num   => $a->num * $b->num,
+                                      denum => $a->denum * $b->denum );
             }
             else
             {
@@ -87,8 +87,8 @@ sub _build_exercises
                 push @way,
                   sprintf( '\frac{%d \cdot %d}{%d \cdot %d}',
                            $a->num, $b->denum, $b->num, $a->denum );
-                $s = VulFrac->new( num   => $a->num * $b->denum,
-                                   denum => $b->num * $a->denum );
+                $s = VulFracNum->new( num   => $a->num * $b->denum,
+                                      denum => $b->num * $a->denum );
             }
             push @way, "" . $s;
             my $c = $s->_reduce;

@@ -38,7 +38,9 @@ sub _guess_polynom
           PolyTerm->new( factor   => $value,
                          exponent => $exp );
     }
-    return PolyNum->new( values => \@values );
+    return
+      PolyNum->new( values   => [ reverse @values ],
+                    operator => "+" );
 }
 
 sub get_polynom

@@ -74,10 +74,10 @@ sub _build_exercises
             push @way, sprintf( '%s %s %s', $a, $op, $b )
               if ( $a->num != $line->[$i]->[0]->num or $b->num != $line->[$i]->[1]->num );
 
-            my $gcd = VulFrac->new(
-                                    num   => $a->denum,
-                                    denum => $b->denum
-                                  )->_gcd;
+            my $gcd = VulFracNum->new(
+                                       num   => $a->denum,
+                                       denum => $b->denum
+                                     )->_gcd;
             my ( $fa, $fb ) = ( $b->{denum} / $gcd, $a->{denum} / $gcd );
 
             push @way,
@@ -92,7 +92,7 @@ sub _build_exercises
                        $b->denum * $fb );
             push @way,
               sprintf( '\frac{%d %s %d}{%d}', $a->num * $fa, $op, $b->num * $fb, $a->denum * $fa );
-            my $s = VulFrac->new(
+            my $s = VulFracNum->new(
                           num => $i ? $a->num * $fa - $b->num * $fb : $a->num * $fa + $b->num * $fb,
                           denum => $a->denum * $fa );
             push @way, "" . $s;

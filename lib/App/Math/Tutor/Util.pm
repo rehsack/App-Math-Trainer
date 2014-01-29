@@ -28,6 +28,14 @@ my %sum_opposites = (
                       '\mp' => '\pm',
                     );
 
+=head1 EXPORTS
+
+=head2 sumcat_terms
+
+  my $formatted = sumcat_terms( "-", "", VulFrac->new( num => $p, denum => 2 ), 
+
+=cut
+
 sub sumcat_terms
 {
     my ( $op, @terms ) = @_;
@@ -45,6 +53,8 @@ sub sumcat_terms
         }
         $str .= "${c_op}${term}";
     }
+
+    $str =~ s/^\+//;
 
     $str;
 }

@@ -20,9 +20,7 @@ our $VERSION = '0.004';
     use Moo;
     use overload
       '""'   => "_stringify",
-      '0+'   => "_numify",
-      'bool' => sub { $_[0]->num != 0 },
-      '<=>'  => "_num_compare";
+      'bool' => sub { $_[0]->num != 0 };
 
     use Carp qw/croak/;
     use Scalar::Util qw/blessed dualvar/;
@@ -38,8 +36,54 @@ our $VERSION = '0.004';
                  );
     has sign => (
                   is       => "ro",
-                  required => 1,
+                  required => 1
                 );
+
+    sub _stringify
+    {
+        $_[0]->denum == 1 and return $_[0]->sign . "" . $_[0]->num;
+        $_[0]->sign < 0
+          and ( blessed $_[0]->num or blessed $_[0]->denum )
+          and return ""
+          . $_[0]->sign
+          . "\\left(\\frac{"
+          . $_[0]->num . "}{"
+          . $_[0]->denum
+          . "}\\right)";
+        return "" . $_[0]->sign . "\\frac{" . $_[0]->num . "}{" . $_[0]->denum . "}";
+    }
+
+    sub _reciprocal
+    {
+        return ref( $_[0] )->new(
+                                  num   => $_[0]->denum,
+                                  denum => $_[0]->num,
+                                  sign  => $_[0]->sign
+                                );
+    }
+
+    sub _abs
+    {
+        return ref( $_[0] )->new(
+                                  num   => $_[0]->num,
+                                  denum => $_[0]->denum,
+                                  sign  => dualvar( 1, "" )
+                                );
+    }
+}
+
+{
+    package    #
+      VulFracNum;
+
+    use Moo;
+    extends 'VulFrac';
+    use overload
+      '0+'  => "_numify",
+      '<=>' => "_num_compare";
+
+    use Carp qw/croak/;
+    use Scalar::Util qw/blessed dualvar/;
 
     around BUILDARGS => sub {
         my $orig   = shift;
@@ -66,6 +110,14 @@ our $VERSION = '0.004';
                    int( $_[0]->_numify ),
                    $_[0]->num - $_[0]->denum * int( $_[0]->_numify ),
                    $_[0]->denum );
+        $_[0]->sign < 0
+          and ( blessed $_[0]->num or blessed $_[0]->denum )
+          and return ""
+          . $_[0]->sign
+          . "\\left(\\frac{"
+          . $_[0]->num . "}{"
+          . $_[0]->denum
+          . "}\\right)";
         return "" . $_[0]->sign . "\\frac{" . $_[0]->num . "}{" . $_[0]->denum . "}";
     }
 
@@ -105,32 +157,13 @@ our $VERSION = '0.004';
         my ( $a, $b ) = ( $_[0]->num, $_[0]->denum );
         my $gcd = $a > $b ? _euklid( $a, $b ) : _euklid( $b, $a );
         return
-          VulFrac->new(
-                        num   => $_[0]->num / $gcd,
-                        denum => $_[0]->denum / $gcd,
-                        sign  => $_[0]->sign
-                      );
+          VulFracNum->new(
+                           num   => $_[0]->num / $gcd,
+                           denum => $_[0]->denum / $gcd,
+                           sign  => $_[0]->sign
+                         );
     }
 
-    sub _reciprocal
-    {
-        return
-          VulFrac->new(
-                        num   => $_[0]->denum,
-                        denum => $_[0]->num,
-                        sign  => $_[0]->sign
-                      );
-    }
-
-    sub abs
-    {
-        return
-          VulFrac->new(
-                        num   => $_[0]->denum,
-                        denum => $_[0]->num,
-                        sign  => 1
-                      );
-    }
 }
 
 {
@@ -231,8 +264,14 @@ our $VERSION = '0.004';
                     is       => "ro",
                     required => 1
                   );
+    has operator => (
+                      is       => 'ro',
+                      required => 1,
+                    );
 
-    sub _stringify { sumcat_terms( "+", reverse @{ $_[0]->values } ); }
+    sub _stringify { sumcat_terms( $_[0]->operator, @{ $_[0]->values } ); }
+
+    sub sign { 0 }
 }
 
 {
@@ -243,11 +282,11 @@ our $VERSION = '0.004';
     use overload
       '""'   => "_stringify",
       '0+'   => "_numify",
-      'bool' => sub { $_[0]->basis != 0 },    # 0 ** 7 == 0
+      'bool' => sub { !!$_[0]->basis },    # 0 ** 7 == 0
       '<=>'  => "_num_compare";
 
     use Carp qw/croak/;
-    use Scalar::Util qw/blessed/;
+    use Scalar::Util qw/blessed dualvar/;
 
     has basis => (
                    is       => "ro",
@@ -262,6 +301,10 @@ our $VERSION = '0.004';
     has mode => (
                   is      => "rw",
                   default => sub { 0 },
+                );
+
+    has sign => (
+                  is => "lazy",
                 );
 
     sub _stringify
@@ -296,6 +339,26 @@ our $VERSION = '0.004';
     sub _reduce
     {
         die "mising";
+    }
+
+    sub _build_sign
+    {
+        my ( $b, $e ) = ( $_[0]->basis, $_[0]->exponent );
+        blessed $b and $b->sign < 0 and return dualvar( -1, "-" );
+        $b < 0 and return dualvar( -1, "-" ) unless blessed $b;
+        # XXX check how to deal with even exponent
+        return dualvar( 1, "" );
+    }
+
+    sub _abs
+    {
+        my ( $b, $e, $m ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->mode );
+        $b = blessed $b ? $b->_abs : abs($b);
+        return ref( $_[0] )->new(
+                                  basis    => $b,
+                                  exponent => $e,
+                                  mode     => $m
+                                );
     }
 }
 
