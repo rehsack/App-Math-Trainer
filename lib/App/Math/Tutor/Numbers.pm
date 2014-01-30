@@ -164,6 +164,21 @@ our $VERSION = '0.004';
                          );
     }
 
+    sub _build_from_decimal
+    {
+        my ( $c, $n ) = @_;
+        my $d = 1;
+        while ( $n != int($n) )
+        {
+            $n *= 10;
+            $d *= 10;
+        }
+        return
+          $c->new(
+                   num   => $n,
+                   denum => $d
+                 )->_reduce;
+    }
 }
 
 {
@@ -227,10 +242,8 @@ our $VERSION = '0.004';
         my ($self) = @_;
         my ( $fact, $exp ) = ( $self->factor, $self->exponent );
         $fact or return;
-        0 == $exp and return "$fact";    #sprintf( "%s$fact", $fact >= 0 ? "+" : "" );
-        1 == $exp
-          and 1 != $fact
-          and return "{$fact}x";         #sprintf( "{%s$fact}x", $fact >= 0 ? "+" : "" );
+        0 == $exp  and return "$fact";
+        1 == $exp  and 1 != $fact and return "{$fact}x";
         1 == $exp  and return "x";
         1 == $fact and return "x^{$exp}";
         return sprintf( "{%s}x^{%s}", $fact, $exp );
@@ -309,15 +322,17 @@ our $VERSION = '0.004';
 
     sub _stringify
     {
-        $_[0]->exponent == 1 and return $_[0]->basis;
-        $_[0]->mode or return join( "^", $_[0]->basis, $_[0]->exponent );
-        return
-          sprintf( "\\sqrt[%s]{%s}",
-                   blessed( $_[0]->exponent ) ? $_[0]->exponent->denum : $_[0]->exponent,
-                   blessed( $_[0]->exponent )
-                     && $_[0]->exponent->num > 1
-                   ? sprintf( "{%s}^{%s}", $_[0]->basis, $_[0]->exponent->num )
-                   : $_[0]->basis );
+        my ( $b, $e, $m ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->mode );
+        $b or return "";
+        $e == 1 and return $b;
+        blessed $e or $e = VulFracNum->_build_from_decimal($e);
+        $m
+          and ( $e <=> int($e) ) != 0
+          and return
+          sprintf( "\\sqrt%s{%s}",
+                   $e->denum != 2 ? sprintf( "[%s]", $e->denum ) : "",
+                   $e->num != 1 ? sprintf( "{%s}^{%s}", $b, $e->num ) : $b );
+        return sprintf( "{%s}^{%s}", $b, $e );
     }
 
     sub _numify
