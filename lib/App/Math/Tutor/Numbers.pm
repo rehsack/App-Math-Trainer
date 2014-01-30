@@ -239,7 +239,7 @@ our $VERSION = '0.004';
     sub _abs
     {
         my ( $fact, $exp ) = ( $_[0]->factor, $_[0]->exponent );
-        $fact = blessed $fact ? $fact->abs() : abs($fact);
+        $fact = blessed $fact ? $fact->_abs() : abs($fact);
         return
           PolyTerm->new( factor   => $fact,
                          exponent => $exp );

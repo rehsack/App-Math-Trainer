@@ -18,9 +18,9 @@ sub _check_polynom
 {
     my $values = [ grep { $_->factor } @{ $_[1]->values } ];
     scalar @{$values} > 1
-      and defined $values->[-1]->exponent
-      and $values->[-1]->exponent == $_[0]->max_power
-      and $values->[-1]->exponent != 0;
+      and defined $values->[0]->exponent
+      and $values->[0]->exponent == $_[0]->max_power
+      and $values->[0]->exponent != 0;
 }
 
 requires "max_power", "format", "probability";
