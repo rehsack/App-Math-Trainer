@@ -9,13 +9,16 @@ use App::Math::Tutor;
 
 use File::Path qw(mkpath rmtree);
 
-my $test_dir = $ENV{TEST_DIR};
-my $keep     = $ENV{KEEP_TEST_OUTPUT};
+my $test_dir;
+my $keep;
 
 BEGIN
 {
-    if ( defined($test_dir) )
+    $keep = defined $ENV{KEEP_TEST_OUTPUT} and $ENV{KEEP_TEST_OUTPUT};
+    if ( defined( $ENV{TEST_DIR} ) )
     {
+        $test_dir = $ENV{TEST_DIR};
+        -d $test_dir or mkpath $test_dir;
         $keep = 1;
     }
     else
@@ -28,12 +31,11 @@ BEGIN
     }
 }
 
-END { !$keep and defined($test_dir) and rmtree $test_dir }
+END { defined($test_dir) and rmtree $test_dir unless $keep }
 
 my $rv;
 
-$rv = test_cmd_ok(
-         'App::Math::Tutor' => [ qw(vulfrac add --output-type tex --output-location), $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac add --output-type tex --output-location), $test_dir ] );
 $rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac mul -t tex -o),     $test_dir ] );
 $rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac cast -t tex -o),    $test_dir ] );
 $rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac compare -t tex -o), $test_dir ] );
