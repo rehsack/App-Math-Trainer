@@ -393,6 +393,7 @@ our $VERSION = '0.004';
         defined $x or $x = "";
         1 != $f
           and $x = sprintf( "%s%s", $f, ( $x and $x !~ m/^\\/ ) ? "\\left($x\{}\\right)" : "$x" );
+        $x or $x = "$b";
         return $x;
     }
 
