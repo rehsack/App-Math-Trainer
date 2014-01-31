@@ -14,7 +14,7 @@ my $keep;
 
 BEGIN
 {
-    $keep = defined $ENV{KEEP_TEST_OUTPUT} and $ENV{KEEP_TEST_OUTPUT};
+    defined $ENV{KEEP_TEST_OUTPUT} and $keep = $ENV{KEEP_TEST_OUTPUT};
     if ( defined( $ENV{TEST_DIR} ) )
     {
         $test_dir = $ENV{TEST_DIR};
