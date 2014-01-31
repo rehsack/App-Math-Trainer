@@ -37,6 +37,9 @@
 \setlength{\headheight}{71pt}
 \pagestyle{fancy}
 
+\rfoot{Jens Rehsack <rehsack@cpan.org>}
+\lfoot{App::Math::Tutor}
+
 \setcounter{secnumdepth}{4}
 \usepackage{natbib}
 
