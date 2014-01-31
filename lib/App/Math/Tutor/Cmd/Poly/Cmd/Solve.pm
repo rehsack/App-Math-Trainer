@@ -18,14 +18,12 @@ use MooX::Cmd;
 use MooX::Options;
 
 use Carp qw(croak);
+use Scalar::Util qw/blessed dualvar/;
 
 has template_filename => (
                            is      => "ro",
                            default => "onecolmlsol"
                          );
-use Module::Runtime qw/require_module/;
-
-require_module 'App::Math::Tutor::Role::VulFrac';    # we only want VulFrac type
 
 with "App::Math::Tutor::Role::PolyExercise";
 
@@ -80,7 +78,7 @@ around _check_polynom => sub {
     my $self = shift;
     $self->$orig(@_) or return;
 
-    my @values = reverse @{ $_[0]->values };
+    my @values = @{ $_[0]->values };
     $values[0]->exponent == 2 or return;    # XXX
     my @fac = (0) x $values[0]->exponent;
     $fac[ $_->exponent ] = $_->factor for (@values);
@@ -88,27 +86,27 @@ around _check_polynom => sub {
       @fac;    # ( $values[0]->factor, $values[1]->factor || 0, $values[2]->factor || 0 );
     $a == 0 and return;
     my ( $p, $q ) = (
-                      VulFrac->new(
-                                    num   => $b,
-                                    denum => $a
+                      VulFracNum->new(
+                                       num   => $b,
+                                       denum => $a
                         )->_reduce,
-                      VulFrac->new(
-                                    num   => $c,
-                                    denum => $a
+                      VulFracNum->new(
+                                       num   => $c,
+                                       denum => $a
                         )->_reduce
                     );
-    my $p2 = VulFrac->new(
-                           num   => $p->num * $p->num,
-                           denum => $p->denum * $p->denum * 4
-                         )->_reduce;
-    my $gcd = VulFrac->new(
-                            num   => $p2->denum,
-                            denum => $q->denum
-                          )->_gcd;
+    my $p2 = VulFracNum->new(
+                              num   => $p->num * $p->num,
+                              denum => $p->denum * $p->denum * 4
+                            )->_reduce;
+    my $gcd = VulFracNum->new(
+                               num   => $p2->denum,
+                               denum => $q->denum
+                             )->_gcd;
     my ( $fp, $fq ) = ( $q->{denum} / $gcd, $p2->{denum} / $gcd );
-    my $d = VulFrac->new( num   => $p2->num * $fp - $q->num * $fq,
-                          denum => $p2->denum * $fp );
-    $d->num < 0 and !$self->complex_solution and return;
+    my $d = VulFracNum->new( num   => $p2->num * $fp - $q->sign * $q->num * $fq,
+                             denum => $p2->denum * $fp );
+    $d->sign < 0 and !$self->complex_solution and return;
     $d->{num} = abs( $d->{num} );
     $d = $d->_reduce;
     return $self->_check_sqrt( $d->num, $values[0]->exponent )
@@ -125,13 +123,13 @@ sub _get_quad_solution
     my @rvalues;
     my @pqvalues;
     my $reduced = 0;
-    my $a_f     = $values[-1]->factor;
-    my ( $p, $q ) = ( 0, 0 );
-    foreach my $i ( 0 .. $#values - 1 )
+    my $a_f     = $values[0]->factor;
+    my ( $p, $q );
+    foreach my $i ( 1 .. $#values )
     {
         my $exp = $values[$i]->exponent;
-        my $f = VulFrac->new( num   => $values[$i]->factor,
-                              denum => $a_f );
+        my $f = VulFracNum->new( num   => $values[$i]->factor,
+                                 denum => $a_f );
         push(
               @pqvalues,
               PolyTerm->new(
@@ -150,163 +148,336 @@ sub _get_quad_solution
         0 == $exp and $q = $f;
         1 == $exp and $p = $f;
     }
+    defined $p
+      or $p = VulFracNum->new( num   => 0,
+                               denum => $a_f );
+    defined $q
+      or $q = VulFracNum->new( num   => 0,
+                               denum => $a_f );
+    unshift(
+             @pqvalues,
+             PolyTerm->new(
+                            factor   => 1,
+                            exponent => $values[0]->exponent
+                          )
+           );
+    unshift(
+             @rvalues,
+             PolyTerm->new(
+                            factor   => 1,
+                            exponent => $values[0]->exponent
+                          )
+           );
+    $reduced and push @orig,
+      PolyNum->new( values   => \@pqvalues,
+                    operator => "+" );
     push(
-          @pqvalues,
-          PolyTerm->new(
-                         factor   => 1,
-                         exponent => $values[-1]->exponent
-                       )
+          @orig,
+          PolyNum->new(
+                        values   => \@rvalues,
+                        operator => "+"
+                      )
         );
-    push(
-          @rvalues,
-          PolyTerm->new(
-                         factor   => 1,
-                         exponent => $values[-1]->exponent
-                       )
-        );
-    $reduced and push @orig, PolyNum->new( values => \@pqvalues );
-    push( @orig, PolyNum->new( values => \@rvalues ) );
 
     push( @solution, '$ ' . join( " = ", @orig ) . ' $' );
 
-    my $p_op = ( $p >= 0 ) ? "-" : "";
-    my $q_op = ( $q >= 0 ) ? "-" : "+";
-
     push @way, "X_{1/2}";
-    push @way,
-      sprintf(
-            '-\left(\frac{%s}{2}\right) \pm \sqrt{{\left(\frac{%s}{2}\right)}^2 - \left(%s\right)}',
-            $p, $p, $q );
 
-    my ( $D, $P, $Q, $P2, $SGN, $SQRT_D, @TERMS ) = ( 0, 0, 0, 0, 1 );
-          $p != 0
-      and $P = sprintf( '\frac{%d}{%d \cdot %d}', $p->num, $p->denum, 2 )
-      and $P2 = sprintf( '{\left(%s\right)}^2', $P )
-      and push @TERMS, "-$P";
-    $q != 0 and $Q = $q;
-    $SQRT_D = sprintf( '\pm\sqrt{%s}', join( " - ", grep { $_ } ( $P2, $Q ) ) )
-      and push @TERMS, $SQRT_D
-      if $p != 0 or $q != 0;
-    push @way, join( '', @TERMS );
+    my $d = PolyNum->new(
+                          values => [
+                                      Power->new(
+                                                  basis =>
+                                                    VulFracNum->new(
+                                                                     num   => $p,
+                                                                     denum => 2
+                                                                   ),
+                                                  exponent => 2,
+                                                  mode     => 0,
+                                                ),
+                                      $q
+                                    ],
+                          operator => "-",
+                        );
 
-    $p != 0
-      and $P = VulFrac->new(
-                             num   => $p->num,
-                             denum => 2 * $p->denum,
-                             sign  => $p->sign . "1"
-                           )->_reduce;
+    my $X12 = PolyNum->new(
+                            operator => '\pm',
+                            values   => [
+                                        VulFracNum->new(
+                                                         num   => $p,
+                                                         denum => 2,
+                                                         sign  => -1
+                                                       ),
+                                        Power->new(
+                                                    basis => $d,
+                                                    exponent =>
+                                                      VulFracNum->new(
+                                                                       num   => 1,
+                                                                       denum => 2
+                                                                     ),
+                                                    mode => 1
+                                                  )
+                                      ]
+                          );
+    push @way, "$X12";
 
-    if ( $p != 0 and $q != 0 )
+    if ($p)
     {
-        @TERMS = ();
-        $P2 = VulFrac->new(
-                            num   => $P->num * $P->num,
-                            denum => $P->denum * $P->denum
-          )->_reduce
-          and push @TERMS, "-$P";
-        $q != 0 and $Q = $q;
-        $SQRT_D = sprintf( '\sqrt{%s}', join( " - ", grep { $_ } ( $P2, $Q ) ) )
-          and push @TERMS, $SQRT_D
-          if $p != 0 or $q != 0;
-        push @way, join( '\pm', @TERMS );
-
-        my $gcd = VulFrac->new(
-                                num   => $P2->denum,
-                                denum => $Q->denum
-                              )->_gcd;
-        my ( $fP, $fQ ) = ( $Q->{denum} / $gcd, $P2->{denum} / $gcd );
-
-        @TERMS = ("-$P");
-        $SQRT_D =
-          sprintf( '\sqrt{\frac{%d \cdot %d}{%d \cdot %d} - \frac{%d \cdot %d}{%d \cdot %d}}',
-                   $P2->num, $fP, $P2->denum, $fP, $Q->num, $fQ, $Q->denum, $fQ );
-        push @TERMS, $SQRT_D;
-        push @way, join( '\pm', @TERMS );
-
-        @TERMS = ("-$P");
-        $SQRT_D = sprintf(
-                           '\sqrt{\frac{%d}{%d} - \frac{%d}{%d}}',
-                           $P2->num * $fP,
-                           $P2->denum * $fP,
-                           $Q->num * $fQ,
-                           $Q->denum * $fQ
+        my $sp = VulFrac->new(
+                               num   => $p->num,
+                               denum => sprintf( '%s \cdot %s', $p->denum, 2 ),
+                               sign  => $p->sign
+                             );
+        $d = PolyNum->new(
+                           values => [
+                                       Power->new(
+                                                   basis    => $sp,
+                                                   exponent => 2,
+                                                   mode     => 0,
+                                                 ),
+                                       $q
+                                     ],
+                           operator => "-",
                          );
-        push @TERMS, $SQRT_D;
-        push @way, join( '\pm', @TERMS );
 
-        @TERMS = ("-$P");
-        $SQRT_D =
-          sprintf( '\sqrt{\frac{%d - %d}{%d}}', $P2->num * $fP, $Q->num * $fQ, $P2->denum * $fP );
-        push @TERMS, $SQRT_D;
-        push @way, join( '\pm', @TERMS );
+        $X12 = PolyNum->new(
+                             operator => '\pm',
+                             values   => [
+                                         VulFrac->new(
+                                                       num   => $sp->num,
+                                                       denum => $sp->denum,
+                                                       sign  => dualvar( -1, "-" ),
+                                                     ),
+                                         Power->new(
+                                                     basis => $d,
+                                                     exponent =>
+                                                       VulFracNum->new(
+                                                                        num   => 1,
+                                                                        denum => 2
+                                                                      ),
+                                                     mode => 1
+                                                   )
+                                       ]
+                           );
+        push @way, "$X12";
 
-        @TERMS = ("-$P");
-        $D = VulFrac->new( num   => $P2->num * $fP - $Q->num * $fQ,
-                           denum => $P2->denum * $fP );
-        $D->num < 0
-          and $SGN = -1
-          and $D   = VulFrac->new(
-                                 num   => -1 * $D->num,
-                                 denum => $D->denum );
-        my $SQRT_D = sprintf( '\sqrt{%s%s}', $SGN < 0 ? "-" : "", $D );
-        push @TERMS, $SQRT_D;
-        push @way, join( '\pm', @TERMS );
+        $p = VulFracNum->new(
+                              num   => $p->num,
+                              denum => $p->denum * 2,
+                              sign  => $p->sign
+                            )->_reduce;
+        $d = PolyNum->new(
+                           values => [
+                                       Power->new(
+                                                   basis    => $p,
+                                                   exponent => 2,
+                                                   mode     => 0,
+                                                 ),
+                                       $q
+                                     ],
+                           operator => "-",
+                         );
 
-        if ( $D->_gcd > 1 )
+        $X12 = PolyNum->new(
+                             operator => '\pm',
+                             values   => [
+                                         VulFracNum->new(
+                                                          num   => $p->num,
+                                                          denum => $p->denum,
+                                                          sign  => -1
+                                                        ),
+                                         Power->new(
+                                                     basis => $d,
+                                                     exponent =>
+                                                       VulFracNum->new(
+                                                                        num   => 1,
+                                                                        denum => 2
+                                                                      ),
+                                                     mode => 1
+                                                   )
+                                       ]
+                           );
+        push @way, "$X12";
+
+        my $p2 = VulFracNum->new(
+                                  num   => $p->num * $p->num,
+                                  denum => $p->denum * $p->denum,
+                                  sign  => 1
+                                )->_reduce;
+        $d = PolyNum->new( values   => [ $p2, $q ],
+                           operator => "-", );
+
+        $X12 = PolyNum->new(
+                             operator => '\pm',
+                             values   => [
+                                         VulFracNum->new(
+                                                          num   => $p->num,
+                                                          denum => $p->denum,
+                                                          sign  => -1
+                                                        ),
+                                         Power->new(
+                                                     basis => $d,
+                                                     exponent =>
+                                                       VulFracNum->new(
+                                                                        num   => 1,
+                                                                        denum => 2
+                                                                      ),
+                                                     mode => 1
+                                                   )
+                                       ]
+                           );
+        push @way, "$X12";
+
+        if ($q)
         {
-            @TERMS = ("-$P");
-            $D     = $D->_reduce;
-            my $SQRT_D = sprintf( '\pm\sqrt{%s%s}', $SGN < 0 ? "-" : "", $D );
-            push @TERMS, $SQRT_D;
-            push @way, join( '', @TERMS );
+            my $gcd = VulFracNum->new(
+                                       num   => $p2->denum,
+                                       denum => $q->denum
+                                     )->_gcd;
+            my ( $fp, $fq ) = ( $q->{denum} / $gcd, $p2->{denum} / $gcd );
+            $d = PolyNum->new(
+                               values => [
+                                           VulFrac->new(
+                                                 num   => sprintf( '%s \cdot %s', $p2->num,   $fp ),
+                                                 denum => sprintf( '%s \cdot %s', $p2->denum, $fp ),
+                                                 sign  => $p2->sign
+                                                       ),
+                                           VulFrac->new(
+                                                  num   => sprintf( '%s \cdot %s', $q->num,   $fq ),
+                                                  denum => sprintf( '%s \cdot %s', $q->denum, $fq ),
+                                                  sign  => $q->sign
+                                                       ),
+                                         ],
+                               operator => "-",
+                             );
+            $X12 = PolyNum->new(
+                                 operator => '\pm',
+                                 values   => [
+                                             VulFracNum->new(
+                                                              num   => $p->num,
+                                                              denum => $p->denum,
+                                                              sign  => -1
+                                                            ),
+                                             Power->new(
+                                                         basis => $d,
+                                                         exponent =>
+                                                           VulFracNum->new(
+                                                                            num   => 1,
+                                                                            denum => 2
+                                                                          ),
+                                                         mode => 1
+                                                       )
+                                           ]
+                               );
+            push @way, "$X12";
+
+            $d = VulFracNum->new( num   => $p2->num * $fp - $q->sign * $q->num * $fq,
+                                  denum => $q->denum * $fq );
+            $X12 = PolyNum->new(
+                                 operator => '\pm',
+                                 values   => [
+                                             VulFracNum->new(
+                                                              num   => $p->num,
+                                                              denum => $p->denum,
+                                                              sign  => -1
+                                                            ),
+                                             Power->new(
+                                                         basis => $d,
+                                                         exponent =>
+                                                           VulFracNum->new(
+                                                                            num   => 1,
+                                                                            denum => 2
+                                                                          ),
+                                                         mode => 1
+                                                       )
+                                           ]
+                               );
+            push @way, "$X12";
         }
     }
-    elsif ( $p != 0 )
+    elsif ($q)
     {
-        # if $p can ever be < 0: XXX
-        @TERMS = ( "-$P", "$P" );
-        push @way, join( '\mp', @TERMS );
-        $D = $P;
-    }
-    elsif ( $q != 0 )
-    {
-        $D = $Q;
-        $SQRT_D = sprintf( '\pm\sqrt{-{%s}}', $D );
-        push @way, $SQRT_D;
-        $SGN = -1;
+        $d = $q->_neg;
+        $X12 = PolyNum->new(
+                             operator => '\pm',
+                             values   => [
+                                         Power->new(
+                                                     basis => $d,
+                                                     exponent =>
+                                                       VulFracNum->new(
+                                                                        num   => 1,
+                                                                        denum => 2
+                                                                      ),
+                                                     mode => 1
+                                                   )
+                                       ]
+                           );
     }
 
-    if ($SQRT_D)
+    if ( "VulFracNum" eq ref($d) )
     {
-        my ( $i, @ST ) = 0;
-        @TERMS = ();
-        $p != 0 and push @TERMS, "-$P";
-        my ( $bfn, $rmn ) = $self->_extract_sqrt( $D->num,   2 );
-        my ( $bfd, $rmd ) = $self->_extract_sqrt( $D->denum, 2 );
-        if ( $bfn != 1 and $bfd != 1 and $rmn != 1 and $rmd != 1 )
+        my ( $nbf, $nrm ) = $self->_extract_sqrt( $d->num,   2 );
+        my ( $dbf, $drm ) = $self->_extract_sqrt( $d->denum, 2 );
+
+        if ( $nbf != 1 or $dbf != 1 )
         {
-            my $SQRT_ED =
-              sprintf( '\pm\frac{%d}{%d}\frac{\sqrt{%d}}{\sqrt{%d}}', $bfn, $bfd, $rmn, $rmd );
-            $SQRT_D ne $SQRT_ED and push @way, join( "", ( @TERMS, $SQRT_ED ) );
-        }
-        else
-        {
-            if ( $rmn != 1 )
-            {
-                my $SQRT_ED =
-                  sprintf( '\pm\frac{%s\sqrt{%d}}{%d}', $bfn != 1 ? $bfn : "", $rmn, $bfd );
-                $SQRT_D ne $SQRT_ED and push @way, join( "", ( @TERMS, $SQRT_ED ) );
-            }
-            elsif ( $rmd != 1 )
-            {
-                my $SQRT_ED =
-                  sprintf( '\pm\frac{%d}{%s\sqrt{%d}}', $bfn, $bfd != 1 ? $bfd : "", $rmd );
-                $SQRT_D ne $SQRT_ED and push @way, join( "", ( @TERMS, $SQRT_ED ) );
-            }
+            $X12 = PolyNum->new(
+                                 operator => '\pm',
+                                 values   => [
+                                             $p,
+                                             VulFracNum->new(
+                                                              num =>
+                                                                Power->new(
+                                                                            basis  => $nrm,
+                                                                            factor => $nbf,
+                                                                            exponent =>
+                                                                              VulFracNum->new(
+                                                                                          num => 1,
+                                                                                          denum => 2
+                                                                              ),
+                                                                            mode => 1,
+                                                                            sign => $d->sign
+                                                                          ),
+                                                              denum =>
+                                                                Power->new(
+                                                                            basis  => $drm,
+                                                                            factor => $dbf,
+                                                                            exponent =>
+                                                                              VulFracNum->new(
+                                                                                          num => 1,
+                                                                                          denum => 2
+                                                                              ),
+                                                                            mode => 1
+                                                                          ),
+                                                              sign => dualvar( 1, "" ),
+                                                            ),
+                                           ]
+                               );
+            push @way, "$X12";
         }
     }
 
     push( @solution, '$ ' . join( " = ", @way ) . ' $' );
+
+    if ( $d >= 0 )
+    {
+        my $X1 = ref($X12)->new( operator => "+",
+                                 values   => $X12->values );
+        my $digits = 6;    # $self->digits;
+        $digits += length( "" . int( $X1->_numify ) ) + 1;
+
+        @way = "X_{1}";
+        push( @way, sprintf( "%.${digits}g", $X1->_numify ) );
+        push( @solution, '$ ' . join( " = ", @way ) . ' $' );
+
+        my $X2 = ref($X12)->new( operator => "-",
+                                 values   => $X12->values );
+        $digits = 6;       # $self->digits;
+        $digits += length( "" . int( $X2->_numify ) ) + 1;
+
+        @way = "X_{2}";
+        push( @way, sprintf( "%.${digits}g", $X2->_numify ) );
+        push( @solution, '$ ' . join( " = ", @way ) . ' $' );
+    }
 
     return @solution;
 }
@@ -339,8 +510,8 @@ sub _build_exercises
 
         my ($a) = @{$line};
         push( @challenge, "\$ $a = 0 \$" );
-        $a->values->[-1]->exponent > 2 and die "No way to solve polynoms of power 3 or higher";
-        $a->values->[-1]->exponent == 2 and push @solution, $self->_get_quad_solution($a);
+        $a->values->[0]->exponent > 2 and die "No way to solve polynoms of power 3 or higher";
+        $a->values->[0]->exponent == 2 and push @solution, $self->_get_quad_solution($a);
 
         push( @{ $exercises->{solutions} },  \@solution );
         push( @{ $exercises->{challenges} }, \@challenge );

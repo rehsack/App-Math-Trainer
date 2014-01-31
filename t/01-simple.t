@@ -47,6 +47,8 @@ $rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(unit add -t tex -o),     $test_dir
 $rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(unit cast -t tex -o),    $test_dir ] );
 $rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(unit compare -t tex -o), $test_dir ] );
 
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(poly solve -t tex -o), $test_dir ] );
+
 $rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(power rules -t tex -o), $test_dir ] );
 
 done_testing;

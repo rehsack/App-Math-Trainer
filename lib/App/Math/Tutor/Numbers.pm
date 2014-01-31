@@ -20,7 +20,7 @@ our $VERSION = '0.004';
     use Moo;
     use overload
       '""'   => "_stringify",
-      'bool' => sub { $_[0]->num != 0 };
+      'bool' => sub { !!$_[0]->num };
 
     use Carp qw/croak/;
     use Scalar::Util qw/blessed dualvar/;
@@ -41,7 +41,6 @@ our $VERSION = '0.004';
 
     sub _stringify
     {
-        $_[0]->denum == 1 and return $_[0]->sign . "" . $_[0]->num;
         $_[0]->sign < 0
           and ( blessed $_[0]->num or blessed $_[0]->denum )
           and return ""
@@ -59,6 +58,18 @@ our $VERSION = '0.004';
                                   num   => $_[0]->denum,
                                   denum => $_[0]->num,
                                   sign  => $_[0]->sign
+                                );
+    }
+
+    sub _neg
+    {
+        my $s = $_[0]->sign;
+        $s *= -1;
+        $s = $s < 0 ? dualvar( -1, "-" ) : dualvar( 1, "" );
+        return ref( $_[0] )->new(
+                                  num   => $_[0]->num,
+                                  denum => $_[0]->denum,
+                                  sign  => $s
                                 );
     }
 
@@ -101,6 +112,7 @@ our $VERSION = '0.004';
 
     sub _stringify
     {
+        $_[0]->num or return;
         $_[0]->denum == 1 and return $_[0]->num;
         $_[1]
           and $_[0]->num > $_[0]->denum
@@ -112,18 +124,14 @@ our $VERSION = '0.004';
                    $_[0]->denum );
         $_[0]->sign < 0
           and ( blessed $_[0]->num or blessed $_[0]->denum )
-          and return ""
-          . $_[0]->sign
-          . "\\left(\\frac{"
-          . $_[0]->num . "}{"
-          . $_[0]->denum
-          . "}\\right)";
-        return "" . $_[0]->sign . "\\frac{" . $_[0]->num . "}{" . $_[0]->denum . "}";
+          and return
+          sprintf( "%s\\left(\\frac{%s}{%s}\\right)", $_[0]->sign, $_[0]->num, $_[0]->denum );
+        return sprintf( "%s\\frac{%s}{%s}", $_[0]->sign, $_[0]->num, $_[0]->denum );
     }
 
     sub _numify
     {
-        my $rc = eval sprintf( "(%s%s)/(%s)", $_[0]->sign, $_[0]->num, $_[0]->denum );
+        my $rc = eval sprintf( "(%s%g)/(%g)", $_[0]->sign, $_[0]->num, $_[0]->denum );
         $@ and croak $@;
         return $rc;
     }
@@ -268,9 +276,12 @@ our $VERSION = '0.004';
     use Moo;
     use overload
       '""'   => "_stringify",
-      'bool' => sub { 1 };      # XXX prodcat(values->as_bool)
+      '0+'   => "_numify",
+      'bool' => sub { 1 },        # XXX prodcat(values->as_bool)
+      '<=>'  => "_num_compare";
 
     use Carp qw/croak/;
+    use Scalar::Util qw/blessed/;
     App::Math::Tutor::Util->import(qw(sumcat_terms));
 
     has values => (
@@ -283,6 +294,23 @@ our $VERSION = '0.004';
                     );
 
     sub _stringify { sumcat_terms( $_[0]->operator, @{ $_[0]->values } ); }
+
+    sub _numify
+    {
+        my $rc =
+          eval join( $_[0]->operator, ( map { "(" . $_->_numify . ")" } @{ $_[0]->values } ) );
+        $@ and croak $@;
+        return $rc;
+    }
+
+    sub _num_compare
+    {
+        my ( $self, $other, $swapped ) = @_;
+        $swapped and return $other <=> $self->_numify;
+
+        blessed $other or return $self->_numify <=> $other;
+        return $self->_numify <=> $other->_numify;
+    }
 
     sub sign { 0 }
 }
@@ -300,6 +328,7 @@ our $VERSION = '0.004';
 
     use Carp qw/croak/;
     use Scalar::Util qw/blessed dualvar/;
+    use Math::Complex qw(root);
 
     has basis => (
                    is       => "ro",
@@ -316,28 +345,51 @@ our $VERSION = '0.004';
                   default => sub { 0 },
                 );
 
+    has factor => ( is => "ro" );
+
     has sign => (
                   is => "lazy",
                 );
 
     sub _stringify
     {
-        my ( $b, $e, $m ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->mode );
-        $b or return "";
+        my ( $b, $e, $f, $m ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->factor, $_[0]->mode );
+        $b or return;
+        defined $f or $f = 1;
+        $f or return;
         $e == 1 and return $b;
         blessed $e or $e = VulFracNum->_build_from_decimal($e);
+        my $bn = 1;
+        eval { $bn = ( 1 <=> $b ); };
+        my $x;
         $m
           and ( $e <=> int($e) ) != 0
-          and return
-          sprintf( "\\sqrt%s{%s}",
-                   $e->denum != 2 ? sprintf( "[%s]", $e->denum ) : "",
-                   $e->num != 1 ? sprintf( "{%s}^{%s}", $b, $e->num ) : $b );
-        return sprintf( "{%s}^{%s}", $b, $e );
+          and 0 != $bn
+          and $x = sprintf(
+                            "\\sqrt%s{%s}",
+                            $e->denum != 2 ? sprintf( "[%s]", $e->denum ) : "",
+                            $e->num != 1
+                            ? sprintf( "{%s}^{%s}",
+                                       blessed $b ? "\\left($b\{}\\right)" : $b, $e->num )
+                            : $b
+                          );
+        defined $x
+          or $x = sprintf( "{%s}^{%s}", blessed $b ? "\\left($b\{}\\right)" : $b, $e )
+          if 0 != $bn;
+        defined $x or $x = "";
+        1 != $f
+          and $x = sprintf( "%s%s", $f, ( $x and $x !~ m/^\\/ ) ? "\\left($x\{}\\right)" : "$x" );
+        return $x;
     }
 
     sub _numify
     {
-        my $rc = eval sprintf( "(%d)**(%d)", $_[0]->basis, $_[0]->exponent );
+        my ( $b, $e, $f ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->factor );
+        defined $f or $f = 1;
+        blessed $e or $e = VulFracNum->_build_from_decimal($e);
+        my $s =
+          sprintf( "use Math::Complex; (%d)*root((%g)**(%d), %d, 0)", $f, $b, $e->num, $e->denum );
+        my $rc = eval $s;
         $@ and croak $@;
         return $rc;
     }
@@ -358,20 +410,23 @@ our $VERSION = '0.004';
 
     sub _build_sign
     {
-        my ( $b, $e ) = ( $_[0]->basis, $_[0]->exponent );
-        blessed $b and $b->sign < 0 and return dualvar( -1, "-" );
-        $b < 0 and return dualvar( -1, "-" ) unless blessed $b;
+        #my ( $b, $e ) = ( $_[0]->basis, $_[0]->exponent );
+        #blessed $b and $b->sign < 0 and return dualvar( -1, "-" );
+        #$b < 0 and return dualvar( -1, "-" ) unless blessed $b;
         # XXX check how to deal with even exponent
+        my ($f) = ( $_[0]->factor );
+        defined $f and $f < 0 and return dualvar( -1, "-" );
         return dualvar( 1, "" );
     }
 
     sub _abs
     {
-        my ( $b, $e, $m ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->mode );
-        $b = blessed $b ? $b->_abs : abs($b);
+        my ( $b, $e, $f, $m ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->factor, $_[0]->mode );
+        $f = blessed $f ? $f->_abs : abs($f);
         return ref( $_[0] )->new(
                                   basis    => $b,
                                   exponent => $e,
+                                  factor   => $f,
                                   mode     => $m
                                 );
     }

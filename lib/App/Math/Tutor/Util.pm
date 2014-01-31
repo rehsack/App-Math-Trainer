@@ -39,11 +39,14 @@ my %sum_opposites = (
 sub sumcat_terms
 {
     my ( $op, @terms ) = @_;
-    my $str = "" . shift @terms;
+    my $str = "";
+    my $i   = 0;
 
-    foreach my $term (@terms)
+    foreach $i ( 0 .. $#terms )
     {
+        my $term = $terms[$i];
         $term or next;
+        $str = "$term" and next unless $i;
         my $c_op = $op;
         my $sign = blessed $term ? $term->sign : $term <=> 0;
         if ( $sign < 0 )
