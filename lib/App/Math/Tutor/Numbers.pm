@@ -95,6 +95,7 @@ our $VERSION = '0.004';
 
     use Carp qw/croak/;
     use Scalar::Util qw/blessed dualvar/;
+    use Math::Complex;
 
     around BUILDARGS => sub {
         my $orig   = shift;
@@ -131,9 +132,10 @@ our $VERSION = '0.004';
 
     sub _numify
     {
-        my $rc = eval sprintf( "(%s%g)/(%g)", $_[0]->sign, $_[0]->num, $_[0]->denum );
-        $@ and croak $@;
-        return $rc;
+        my ( $s, $n, $d ) = ( $_[0]->sign, $_[0]->num, $_[0]->denum );
+        blessed $n and $n = $n->_numify;
+        blessed $d and $d = $d->_numify;
+        return $s * $n / $d;
     }
 
     sub _num_compare
@@ -202,6 +204,7 @@ our $VERSION = '0.004';
 
     use Carp qw/croak/;
     use Scalar::Util qw/blessed/;
+    use Math::Complex;
 
     has value => (
                    is       => "ro",
@@ -235,6 +238,7 @@ our $VERSION = '0.004';
 
     use Carp qw/croak/;
     use Scalar::Util qw/blessed/;
+    use Math::Complex;
 
     has factor => (
                     is       => "ro",
@@ -282,6 +286,7 @@ our $VERSION = '0.004';
 
     use Carp qw/croak/;
     use Scalar::Util qw/blessed/;
+    use Math::Complex;
     App::Math::Tutor::Util->import(qw(sumcat_terms));
 
     has values => (
@@ -340,7 +345,7 @@ our $VERSION = '0.004';
 
     use Carp qw/croak/;
     use Scalar::Util qw/blessed dualvar/;
-    use Math::Complex qw(root);
+    use Math::Complex;
 
     has basis => (
                    is       => "ro",
@@ -400,11 +405,12 @@ our $VERSION = '0.004';
         my ( $b, $e, $f ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->factor );
         defined $f or $f = 1;
         blessed $e or $e = VulFracNum->_build_from_decimal($e);
-        my $s =
-          sprintf( "use Math::Complex; (%d)*root((%g)**(%d), %d, 0)", $f, $b, $e->num, $e->denum );
-        my $rc = eval $s;
-        $@ and croak $@;
-        return $rc;
+        my ( $en, $ed ) = ( $e->num, $e->denum );
+        blessed $en and $en = $en->_numify;
+        blessed $ed and $ed = $ed->_numify;
+        blessed $b  and $b  = $b->_numify;
+        blessed $f  and $f  = $f->_numify;
+        return $f * root( $b**$en, $ed, 0 );
     }
 
     sub _num_compare
@@ -514,6 +520,7 @@ our $VERSION = '0.004';
       'bool' => "_filled",
       '<=>'  => "_num_compare";
     use Scalar::Util qw/blessed/;
+    use Math::Complex;
 
     has type => (
                   is       => "ro",

@@ -19,6 +19,7 @@ use MooX::Options;
 
 use Carp qw(croak);
 use Scalar::Util qw/blessed dualvar/;
+use Math::Complex;
 
 has template_filename => (
                            is      => "ro",
@@ -428,15 +429,14 @@ sub _get_quad_solution
                                              VulFracNum->new(
                                                               num =>
                                                                 Power->new(
-                                                                            basis  => $nrm,
-                                                                            factor => $nbf,
-                                                                            exponent =>
-                                                                              VulFracNum->new(
+                                                                           basis => $d->sign * $nrm,
+                                                                           factor => $nbf,
+                                                                           exponent =>
+                                                                             VulFracNum->new(
                                                                                           num => 1,
                                                                                           denum => 2
-                                                                              ),
-                                                                            mode => 1,
-                                                                            sign => $d->sign
+                                                                             ),
+                                                                           mode => 1,
                                                                           ),
                                                               denum =>
                                                                 Power->new(
@@ -459,25 +459,27 @@ sub _get_quad_solution
 
     push( @solution, '$ ' . join( " = ", @way ) . ' $' );
 
-    if ( $d >= 0 )
+    #if ( $d >= 0 )
     {
         my $X1 = ref($X12)->new( operator => "+",
                                  values   => $X12->values );
         my $digits = 6;    # $self->digits;
-        $digits += length( "" . int( $X1->_numify ) ) + 1;
 
         @way = "X_{1}";
-        push( @way, sprintf( "%.${digits}g", $X1->_numify ) );
-        push( @solution, '$ ' . join( " = ", @way ) . ' $' );
+        my $x1 = $X1->_numify;
+        $x1->display_format( 'format' => "%.${digits}f" );
+        push @way, $x1;
+        push @solution, '$ ' . join( " = ", @way ) . ' $';
 
         my $X2 = ref($X12)->new( operator => "-",
                                  values   => $X12->values );
         $digits = 6;       # $self->digits;
-        $digits += length( "" . int( $X2->_numify ) ) + 1;
 
         @way = "X_{2}";
-        push( @way, sprintf( "%.${digits}g", $X2->_numify ) );
-        push( @solution, '$ ' . join( " = ", @way ) . ' $' );
+        my $x2 = $X2->_numify;
+        $x2->display_format( 'format' => "%.${digits}f" );
+        push @way, $x2;
+        push @solution, '$ ' . join( " = ", @way ) . ' $';
     }
 
     return @solution;
