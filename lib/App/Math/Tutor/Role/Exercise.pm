@@ -13,6 +13,7 @@ use Moo::Role;
 use MooX::Options;
 
 use Carp qw(croak);
+use Cwd qw(abs_path getcwd);
 use File::Spec     ();
 use File::ShareDir ();
 use Template       ();
@@ -106,7 +107,7 @@ sub _build_output_name
 =head2 output_type
 
 Lazy string representing the extension of the output file. The default
-builder returns 'pdf'.
+builder returns 'pdf'. Permitted to be set via MooX::Options.
 
 =cut
 
@@ -118,6 +119,23 @@ option output_type => (
                       );
 
 sub _build_output_type { 'pdf' }
+
+=head2 output_location
+
+Lazy string representing the location of the output file in file system. The
+default builder returns the full qualified path name to the current working
+directory. Permitted to be set via MooX::Options.
+
+=cut
+
+option output_location => (
+                            is     => "lazy",
+                            doc    => "Specifies the output location",
+                            format => "s",
+                            short  => "o",
+                          );
+
+sub _build_output_location { abs_path(getcwd) }
 
 =head1 REQUIRED ATTRIBUTES
 
@@ -151,7 +169,10 @@ sub execute
                                                 format => $self->output_type,
                                               },
                                  },
-                                 join( ".", $self->output_name, $self->output_type )
+                                 File::Spec->catfile(
+                                                 $self->output_location,
+                                                 join( ".", $self->output_name, $self->output_type )
+                                 ),
                                );
     $rc or croak( $template->error() );
 
