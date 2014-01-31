@@ -297,9 +297,23 @@ our $VERSION = '0.004';
 
     sub _numify
     {
-        my $rc =
-          eval join( $_[0]->operator, ( map { "(" . $_->_numify . ")" } @{ $_[0]->values } ) );
-        $@ and croak $@;
+        my ( $op, @terms ) = ( $_[0]->operator, @{ $_[0]->values } );
+        my $rc = 0;
+
+        foreach my $i ( 0 .. $#terms )
+        {
+            my $term = $terms[$i];
+            $terms[$i] or next;
+            if ( $i == 0 )
+            {
+                $rc = blessed $terms[$i] ? $terms[$i]->_numify : $terms[$i];
+                next;
+            }
+
+            $op eq "+" and $rc += blessed $terms[$i] ? $terms[$i]->_numify : $terms[$i];
+            $op eq "-" and $rc -= blessed $terms[$i] ? $terms[$i]->_numify : $terms[$i];
+        }
+
         return $rc;
     }
 
