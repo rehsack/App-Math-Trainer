@@ -302,8 +302,6 @@ our $VERSION = '0.004';
 
         foreach my $i ( 0 .. $#terms )
         {
-            my $term = $terms[$i];
-            $terms[$i] or next;
             if ( $i == 0 )
             {
                 $rc = blessed $terms[$i] ? $terms[$i]->_numify : $terms[$i];
