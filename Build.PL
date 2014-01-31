@@ -15,6 +15,7 @@ my $builder = Module::Build->new(
 	'Carp' => 0,
 	'LaTeX::Table' => '1.0.6',
 	'Hash::MoreUtils' => 0,
+	'Math::Complex' => '1.56',
 	'Math::Prime::Util' => 0,
 	'Module::Runtime' => 0,
 	'MooX::Cmd' => '0.007',
