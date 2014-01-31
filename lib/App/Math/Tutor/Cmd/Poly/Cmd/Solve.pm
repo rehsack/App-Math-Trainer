@@ -400,6 +400,7 @@ sub _get_quad_solution
         $X12 = PolyNum->new(
                              operator => '\pm',
                              values   => [
+                                         $p,
                                          Power->new(
                                                      basis => $d,
                                                      exponent =>
