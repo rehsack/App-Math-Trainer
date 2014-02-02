@@ -211,6 +211,14 @@ sub _guess_unit_number
 requires "unit_length";
 requires "deviation";
 
+=head1 METHODS
+
+=head2 get_unit_numbers
+
+Returns as many numbers with units as requested. Does Factory :)
+
+=cut
+
 sub get_unit_numbers
 {
     my ( $self, $amount, $ut ) = @_;

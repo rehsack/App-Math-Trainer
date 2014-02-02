@@ -43,6 +43,14 @@ sub _guess_polynom
                     operator => "+" );
 }
 
+=head1 METHODS
+
+=head2 get_polynom
+
+Returns as many polynoms as requested. Does Factory :)
+
+=cut
+
 sub get_polynom
 {
     my ( $self, $amount ) = @_;

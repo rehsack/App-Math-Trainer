@@ -30,6 +30,14 @@ sub _guess_vulgar_fraction
                        denum => $denum );
 }
 
+=head1 METHODS
+
+=head2 get_vulgar_fractions
+
+Returns as many vulgar fractions as requested. Does Factory :)
+
+=cut
+
 sub get_vulgar_fractions
 {
     my ( $self, $amount ) = @_;

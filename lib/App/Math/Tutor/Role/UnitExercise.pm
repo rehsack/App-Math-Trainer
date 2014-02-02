@@ -12,6 +12,17 @@ App::Math::Tutor::Role::FracExercise - role for exercises in calculation with un
 use Moo::Role;
 use MooX::Options;
 
+=head1 ATTRIBUTES
+
+=head2 relevant_units
+
+Specifies relevant units. Option argument can be either a list of units to take care, or
+starting with an exclamation mark, a list of units to skip.
+
+Known units contain time, length, weight, euro, pound, dollar.
+
+=cut
+
 option "relevant_units" => (
                   is       => "lazy",
                   doc      => "Specifies the units relevant for the exercise",
@@ -69,6 +80,15 @@ sub _coerce_relevant_units
     return \@neg_list;
 }
 
+=head2 unit_length
+
+Allowes one to limit the "length" of a unit. While some unit categories have
+many entries (e.g. I<time> - which can result in
+C<${a} w ${b} d ${c} h ${d} min ${e} s ${f} ms>) - limiting the length would
+result in not more than C<${unit_length}> elements per number.
+
+=cut
+
 option "unit_length" => (
                           is        => "ro",
                           doc       => "Allowes limitation of unit length",
@@ -76,6 +96,13 @@ option "unit_length" => (
                           short     => "l",
                           predicate => 1,
                         );
+
+=head2 deviation
+
+When more than one operand is involved, control I<deviation> using this
+option. Best results with I<unit_length>.
+
+=cut
 
 option "deviation" => (
                         is        => "ro",

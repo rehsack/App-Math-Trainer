@@ -76,6 +76,14 @@ sub _guess_power_to
                 );
 }
 
+=head1 METHODS
+
+=head2 get_power_to
+
+Returns as many powers as requested. Does Factory :)
+
+=cut
+
 sub get_power_to
 {
     my ( $self, $amount ) = @_;

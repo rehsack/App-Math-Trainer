@@ -25,6 +25,14 @@ sub _guess_natural_number
     return NatNum->new( value => $value );
 }
 
+=head1 METHODS
+
+=head2 get_natural_number
+
+Returns as many natural numbers as requested. Does Factory :)
+
+=cut
+
 sub get_natural_number
 {
     my ( $self, $amount ) = @_;
