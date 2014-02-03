@@ -181,29 +181,24 @@ sub _guess_unit_number
     $lb == $ub and --$lb;
 
   REDO:
+    my ( $_lb, $_ub ) = ( $lb, $ub );
     my $i;
-    for ( $i = $lb; $i <= $ub; ++$i )
+    for ( $i = $_lb; $i <= $_ub; ++$i )
     {
-        my $max =
-          defined $unit_type->{spectrum}->[$i]->{max} ? $unit_type->{spectrum}->[$i]->{max} : 100;
-        my $min   = $unit_type->{spectrum}->[$i]->{min};
-        my $value = int( rand( $max + $min ) ) - $min;
-        $value or @rc or ++$lb;
-        $value or @rc or next;
-        push( @rc, $value );
+        my ( $min, $max ) = @{ $unit_type->{spectrum}->[$i] }{qw(min max)};
+        defined $max
+          or $max = 100;    # largest unit doesn't have an upper limit - XXX make it user definable
+        push( @rc, int( rand( $max + $min ) ) - $min );
     }
-    while ( !$rc[-1] )
-    {
-        pop @rc;
-        --$ub;
-    }
+    ++$_lb and shift @rc while ( @rc and !$rc[0] );
+    $_ub-- and pop @rc   while ( @rc and !$rc[-1] );
     @rc or goto REDO;
 
     return
       Unit->new(
                  type  => $unit_type,
-                 begin => $lb,
-                 end   => $ub,
+                 begin => $_lb,
+                 end   => $_ub,
                  parts => \@rc
                );
 }
