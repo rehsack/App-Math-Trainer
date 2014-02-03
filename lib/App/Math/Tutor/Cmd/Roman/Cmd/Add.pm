@@ -39,7 +39,9 @@ sub _build_exercises
         my @line;
         foreach my $j ( 0 .. 1 )
         {
+          REDO:
             my ( $a, $b ) = $self->get_natural_number(2);
+            $j and $a == $b and goto REDO;
             push @line, [ $a, $b ];
         }
         push @tasks, \@line;
