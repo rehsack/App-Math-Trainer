@@ -22,7 +22,6 @@ our $VERSION = '0.004';
       '""'   => "_stringify",
       'bool' => sub { !!$_[0]->num };
 
-    use Carp qw/croak/;
     use Scalar::Util qw/blessed dualvar/;
 
     has num => (
@@ -93,7 +92,6 @@ our $VERSION = '0.004';
       '0+'  => "_numify",
       '<=>' => "_num_compare";
 
-    use Carp qw/croak/;
     use Scalar::Util qw/blessed dualvar/;
     use Math::Complex;
 
@@ -202,7 +200,6 @@ our $VERSION = '0.004';
       'bool' => sub { $_[0]->value != 0 },
       '<=>'  => "_num_compare";
 
-    use Carp qw/croak/;
     use Scalar::Util qw/blessed/;
     use Math::Complex;
 
@@ -236,7 +233,6 @@ our $VERSION = '0.004';
       '""'   => "_stringify",
       'bool' => sub { $_[0]->factor != 0 };
 
-    use Carp qw/croak/;
     use Scalar::Util qw/blessed/;
     use Math::Complex;
 
@@ -284,7 +280,6 @@ our $VERSION = '0.004';
       'bool' => sub { 1 },        # XXX prodcat(values->as_bool)
       '<=>'  => "_num_compare";
 
-    use Carp qw/croak/;
     use Scalar::Util qw/blessed/;
     use Math::Complex;
     App::Math::Tutor::Util->import(qw(sumcat_terms));
@@ -343,7 +338,6 @@ our $VERSION = '0.004';
       'bool' => sub { !!$_[0]->basis },    # 0 ** 7 == 0
       '<=>'  => "_num_compare";
 
-    use Carp qw/croak/;
     use Scalar::Util qw/blessed dualvar/;
     use Math::Complex;
 
@@ -459,7 +453,7 @@ our $VERSION = '0.004';
 
     extends "NatNum";
 
-    use Carp qw/croak/;
+    use Carp qw/confess/;
 
     around BUILDARGS => sub {
         my $next   = shift;
@@ -467,11 +461,11 @@ our $VERSION = '0.004';
         my $params = $class->$next(@_);
         defined $params->{value}
           and $params->{value} < 1
-          and croak( "Roman numerals starts at I - " . $params->{value} . " is to low" );
+          and confess( "Roman numerals starts at I - " . $params->{value} . " is to low" );
         defined $params->{value}
           and $params->{value} > 3888
           and
-          croak( "Roman numerals ends at MMMDCCCLXXXVIII - " . $params->{value} . " is to big" );
+          confess( "Roman numerals ends at MMMDCCCLXXXVIII - " . $params->{value} . " is to big" );
         return $params;
     };
 
