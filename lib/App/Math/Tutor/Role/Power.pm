@@ -19,7 +19,7 @@ our $VERSION = '0.004';
 
 sub _check_power_to
 {
-    return $_[0]->basis != 0 and $_[0]->basis != 1;
+    return $_[0]->basis != 0 and $_[0]->basis != 1 and $_[0]->exponent != 0;
 }
 
 has power_types => (
