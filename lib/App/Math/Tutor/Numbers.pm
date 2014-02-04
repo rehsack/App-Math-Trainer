@@ -40,15 +40,11 @@ our $VERSION = '0.004';
 
     sub _stringify
     {
+        my ( $lb, $rb ) = ( "", "" );
         $_[0]->sign < 0
           and ( blessed $_[0]->num or blessed $_[0]->denum )
-          and return ""
-          . $_[0]->sign
-          . "\\left(\\frac{"
-          . $_[0]->num . "}{"
-          . $_[0]->denum
-          . "}\\right)";
-        return "" . $_[0]->sign . "\\frac{" . $_[0]->num . "}{" . $_[0]->denum . "}";
+          and ( $lb, $rb ) = ( "\\left(", "\\right)" );
+        return sprintf( "%s%s\\frac{%s}{%s}%s", $_[0]->sign, $lb, $_[0]->num, $_[0]->denum, $rb );
     }
 
     sub _reciprocal
@@ -111,7 +107,7 @@ our $VERSION = '0.004';
 
     sub _stringify
     {
-        $_[0]->num or return;
+        $_[0]->num or return $_[0]->num;
         $_[0]->denum == 1 and return $_[0]->num;
         $_[1]
           and $_[0]->num > $_[0]->denum
@@ -121,11 +117,12 @@ our $VERSION = '0.004';
                    int( $_[0]->_numify ),
                    $_[0]->num - $_[0]->denum * int( $_[0]->_numify ),
                    $_[0]->denum );
+
+        my ( $lb, $rb ) = ( "", "" );
         $_[0]->sign < 0
           and ( blessed $_[0]->num or blessed $_[0]->denum )
-          and return
-          sprintf( "%s\\left(\\frac{%s}{%s}\\right)", $_[0]->sign, $_[0]->num, $_[0]->denum );
-        return sprintf( "%s\\frac{%s}{%s}", $_[0]->sign, $_[0]->num, $_[0]->denum );
+          and ( $lb, $rb ) = ( "\\left(", "\\right)" );
+        return sprintf( "%s%s\\frac{%s}{%s}%s", $_[0]->sign, $lb, $_[0]->num, $_[0]->denum, $rb );
     }
 
     sub _numify
@@ -249,7 +246,7 @@ our $VERSION = '0.004';
     {
         my ($self) = @_;
         my ( $fact, $exp ) = ( $self->factor, $self->exponent );
-        $fact or return;
+        $fact or return "0";
         0 == $exp  and return "$fact";
         1 == $exp  and 1 != $fact and return "{$fact}x";
         1 == $exp  and return "x";
@@ -365,7 +362,7 @@ our $VERSION = '0.004';
     sub _stringify
     {
         my ( $b, $e, $f, $m ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->factor, $_[0]->mode );
-        $b or return;
+        $b or return "0";
         defined $f or $f = 1;
         $f or return;
         $e == 1 and return $b;
