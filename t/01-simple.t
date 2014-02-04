@@ -11,10 +11,12 @@ use File::Path qw(mkpath rmtree);
 
 my $test_dir;
 my $keep;
+my $format;
 
 BEGIN
 {
     defined $ENV{KEEP_TEST_OUTPUT} and $keep = $ENV{KEEP_TEST_OUTPUT};
+    defined $ENV{TEST_OUTPUT_TYPE} and $format = $ENV{TEST_OUTPUT_TYPE};
     if ( defined( $ENV{TEST_DIR} ) )
     {
         $test_dir = $ENV{TEST_DIR};
@@ -29,28 +31,30 @@ BEGIN
         rmtree $test_dir;
         mkpath $test_dir;
     }
+
+    defined $format or $format = "tex";
 }
 
 END { defined($test_dir) and rmtree $test_dir unless $keep }
 
 my $rv;
 
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac add --output-type tex --output-location), $test_dir ] );
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac mul -t tex -o),     $test_dir ] );
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac cast -t tex -o),    $test_dir ] );
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac compare -t tex -o), $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac add --output-type), $format, qw(--output-location), $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac mul -t), $format, qw(-o),     $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac cast -t), $format, qw(-o),    $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(vulfrac compare -t), $format, qw(-o), $test_dir ] );
 
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(natural add -t tex -o), $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(natural add -t), $format, qw(-o), $test_dir ] );
 
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(roman add -t tex -o),  $test_dir ] );
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(roman cast -t tex -o), $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(roman add -t), $format, qw(-o),  $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(roman cast -t), $format, qw(-o), $test_dir ] );
 
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(unit add -t tex -o),     $test_dir ] );
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(unit cast -t tex -o),    $test_dir ] );
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(unit compare -t tex -o), $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(unit add -t), $format, qw(-o),     $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(unit cast -t), $format, qw(-o),    $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(unit compare -t), $format, qw(-o), $test_dir ] );
 
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(poly solve -t tex -o), $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(poly solve -t), $format, qw(-o), $test_dir ] );
 
-$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(power rules -t tex -o), $test_dir ] );
+$rv = test_cmd_ok( 'App::Math::Tutor' => [ qw(power rules -t), $format, qw(-o), $test_dir ] );
 
 done_testing;
