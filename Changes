@@ -1,10 +1,14 @@
 Revision history for App-Math-Trainer
 
 0.004
+    - fix a lot of issues reported by niederrhein.pm
+    - improve documentation
+    - refactoring for cleaner solution writing
     - add exercise for comparing vulgar fractions
     - add missing required modules
     - add support for polynoms and power mathematics
-    - remane option --amount to --quantity
+    - rename option --amount to --quantity
+    - introduce Math::Complex support
 
 0.003	2014-01-15
     - redesign of guessing exercise values
