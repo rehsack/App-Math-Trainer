@@ -463,23 +463,25 @@ sub _get_quad_solution
     {
         my $X1 = ref($X12)->new( operator => "+",
                                  values   => $X12->values );
-        my $digits = 6;    # $self->digits;
+        my ( $digits, $x1, $x2 ) = (6);    # $self->digits;
+        my $dplus = $digits + 1;
+        my $fmt   = sub {
+            my $x = shift;
+            my ( $xs, $approx ) = ( "" . $x, 0 );
+            $x->display_format( 'format' => "%.${digits}f" ) and $xs = "" . $x and ++$approx
+              if ( $xs =~ m/e\d+/i or $xs =~ m/\.\d{${dplus}}/ );
+            push @way, $xs;
+            push @solution, '$ ' . join( $approx ? " \\approx " : " = ", @way ) . ' $';
+        };
 
         @way = "X_{1}";
-        my $x1 = $X1->_numify;
-        $x1->display_format( 'format' => "%.${digits}f" );
-        push @way, $x1;
-        push @solution, '$ ' . join( " = ", @way ) . ' $';
+        $fmt->( $X1->_numify );
 
         my $X2 = ref($X12)->new( operator => "-",
                                  values   => $X12->values );
-        $digits = 6;       # $self->digits;
 
         @way = "X_{2}";
-        my $x2 = $X2->_numify;
-        $x2->display_format( 'format' => "%.${digits}f" );
-        push @way, $x2;
-        push @solution, '$ ' . join( " = ", @way ) . ' $';
+        $fmt->( $X2->_numify );
     }
 
     return @solution;
