@@ -96,12 +96,14 @@ our $VERSION = '0.004';
         my $self   = shift;
         my $params = $self->$orig(@_) or return;
         defined $params->{sign} or $params->{sign} = 1;
-        $params->{num} < 0   and $params->{sign} *= -1;
-        $params->{denum} < 0 and $params->{sign} *= -1;
+        $params->{num} < 0
+          and $params->{num} = blessed $params->{num} ? $params->{num}->_abs : abs( $params->{num} )
+          and $params->{sign} *= -1;
+        $params->{denum} < 0
+          and $params->{denum} =
+          blessed $params->{denum} ? $params->{denum}->_abs : abs( $params->{denum} )
+          and $params->{sign} *= -1;
         $params->{sign} = $params->{sign} < 0 ? dualvar( -1, "-" ) : dualvar( 1, "" );
-        $params->{num} = blessed $params->{num} ? $params->{num}->_abs : abs( $params->{num} );
-        $params->{denum} =
-          blessed $params->{denum} ? $params->{denum}->_abs : abs( $params->{denum} );
         $params;
     };
 
@@ -218,7 +220,7 @@ our $VERSION = '0.004';
     }
 
     sub sign { return $_[0]->value <=> 0 }
-    sub _abs { return NatNum->new( value => abs( $_[0]->value <=> 0 ) ) }
+    sub _abs { return NatNum->new( value => abs( $_[0]->value ) ) }
 }
 
 {
@@ -321,7 +323,17 @@ our $VERSION = '0.004';
         return $self->_numify <=> $other->_numify;
     }
 
-    sub sign { 0 }
+    sub sign { $_[0]->values->[0]->sign }
+
+    sub _abs
+    {
+        my @values = @{ $_[0]->values };
+        return ref( $_[0] )->new(
+                   operator => $_[0]->operator,
+                   values =>
+                     [ $_[0]->values->[0]->_abs, splice @{ $_[0]->values }, 1, $#{ $_[0]->values } ]
+        );
+    }
 }
 
 {

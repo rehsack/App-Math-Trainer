@@ -100,4 +100,22 @@ $b = VulFracNum->new(
 $formatted = prodcat_terms( "/", $a, $b );
 is( $formatted, '\frac{27+14}{5}\div{}\frac{15+13}{9}', "a / b" );
 
+$a = VulFracNum->new(
+                      num => PolyNum->new(
+                                           operator => "+",
+                                           values   => [ NatNum->new( value => -27 ), 14 ]
+                                         ),
+                      denum => 5
+                    );
+$b = VulFracNum->new(
+                      num => PolyNum->new(
+                                           operator => "+",
+                                           values   => [ NatNum->new( value => -15 ), 13 ]
+                                         ),
+                      denum => 9
+                    );
+
+$formatted = prodcat_terms( "/", $a, $b );
+is( $formatted, '-\left(\frac{27+14}{5}\right)\div{}-\left(\frac{15+13}{9}\right)', "-a / -b" );
+
 done_testing;
