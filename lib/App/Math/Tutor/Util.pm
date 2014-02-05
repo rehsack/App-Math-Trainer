@@ -16,7 +16,7 @@ use Exporter;
 our $VERSION     = '0.004';
 our @ISA         = qw(Exporter);
 our @EXPORT      = qw();
-our @EXPORT_OK   = qw(sumcat_terms);
+our @EXPORT_OK   = qw(sumcat_terms prodcat_terms);
 our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 
 use Scalar::Util qw/blessed/;
@@ -63,7 +63,33 @@ sub sumcat_terms
         $str .= "${c_op}${term}";
     }
 
-    $str =~ s/^\+//;
+    $str;
+}
+
+my %prod_ops = (
+                 '*' => '\cdot',
+                 '/' => '\div',
+               );
+
+=head2 prodcat_terms
+
+  my $formatted = prodcat_terms( "/", VulFrac->new( num => $p, denum => 2 ), ...
+
+=cut
+
+sub prodcat_terms
+{
+    my ( $op, @terms ) = @_;
+    my $str = "";
+    my $i   = 0;
+
+    foreach $i ( 0 .. $#terms )
+    {
+        my $term = $terms[$i] or return "0";
+        $str = "$term" and next unless $i;
+        my $c_op = $prod_ops{$op};
+        $str .= "${c_op}{}${term}";
+    }
 
     $str;
 }

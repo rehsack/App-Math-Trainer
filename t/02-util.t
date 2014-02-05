@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Test::More;
 
-use App::Math::Tutor::Util qw(sumcat_terms);
+use App::Math::Tutor::Util qw(:all);
 use App::Math::Tutor::Numbers;
 
 my ( $p, $q, $d, $formatted );
@@ -79,5 +79,25 @@ $formatted = sumcat_terms(
 is( $formatted,
     '-\left(\frac{\frac{7}{4}}{2}\right)\pm\sqrt{\frac{\frac{7}{4}}{2}-\frac{3}{4}}',
     'format -p/2 +/- sqrt(d) with p > 0' );
+
+my ( $a, $b );
+
+$a = VulFracNum->new(
+                      num => PolyNum->new(
+                                           operator => "+",
+                                           values   => [ NatNum->new( value => 27 ), 14 ]
+                                         ),
+                      denum => 5
+                    );
+$b = VulFracNum->new(
+                      num => PolyNum->new(
+                                           operator => "+",
+                                           values   => [ NatNum->new( value => 15 ), 13 ]
+                                         ),
+                      denum => 9
+                    );
+
+$formatted = prodcat_terms( "/", $a, $b );
+is( $formatted, '\frac{27+14}{5}\div{}\frac{15+13}{9}', "a / b" );
 
 done_testing;
