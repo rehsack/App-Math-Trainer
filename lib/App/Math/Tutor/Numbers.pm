@@ -276,7 +276,7 @@ our $VERSION = '0.004';
     use overload
       '""'   => "_stringify",
       '0+'   => "_numify",
-      'bool' => sub { 1 },        # XXX prodcat(values->as_bool)
+      'bool' => "_filled",        # XXX prodcat(values->as_bool)
       '<=>'  => "_num_compare";
 
     use Scalar::Util qw/blessed/;
@@ -323,6 +323,12 @@ our $VERSION = '0.004';
         return $self->_numify <=> $other->_numify;
     }
 
+    sub _filled
+    {
+        $_ and return 1 foreach ( @{ $_[0]->values } );
+        return;
+    }
+
     sub sign { $_[0]->values->[0]->sign }
 
     sub _abs
@@ -338,6 +344,73 @@ our $VERSION = '0.004';
 
 {
     package    #
+      ProdNum;
+
+    use Moo;
+    use overload
+      '""'   => "_stringify",
+      '0+'   => "_numify",
+      'bool' => "_filled",        # XXX prodcat(values->as_bool)
+      '<=>'  => "_num_compare";
+
+    use Scalar::Util qw/blessed/;
+    use Math::Complex;
+    App::Math::Tutor::Util->import(qw(prodcat_terms));
+
+    has values => (
+                    is       => "ro",
+                    required => 1
+                  );
+    has operator => (
+                      is       => 'ro',
+                      required => 1,
+                    );
+
+    sub _stringify { prodcat_terms( $_[0]->operator, @{ $_[0]->values } ); }
+
+    sub _numify
+    {
+        my ( $op, @terms ) = ( $_[0]->operator, @{ $_[0]->values } );
+        my $rc = 0;
+
+        foreach my $i ( 0 .. $#terms )
+        {
+            my $t = blessed $terms[$i] ? $terms[$i]->_numify : $terms[$i];
+            if ( $i == 0 )
+            {
+                $rc = $t;
+                next;
+            }
+
+            $op eq "*" and $rc *= $t;
+            $op eq "/" and $rc /= $t;
+        }
+
+        return $rc;
+    }
+
+    sub _num_compare
+    {
+        my ( $self, $other, $swapped ) = @_;
+        $swapped and return $other <=> $self->_numify;
+
+        blessed $other or return $self->_numify <=> $other;
+        return $self->_numify <=> $other->_numify;
+    }
+
+    sub _filled
+    {
+        $_ or return 0 foreach ( @{ $_[0]->values } );
+        return 1;
+    }
+
+    sub sign { 0 }    # XXX prod(sigh)
+
+    sub _abs { $_[0] }    # XXX _abs(all)
+}
+
+{
+    package               #
       Power;
 
     use Moo;

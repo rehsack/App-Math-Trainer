@@ -85,7 +85,8 @@ sub prodcat_terms
 
     foreach $i ( 0 .. $#terms )
     {
-        my $term = $terms[$i] or return "0";
+        my $term = $terms[$i] or return "0" if ( $op eq "*" );
+        $term = $terms[$i] or return "inf" if ( $op eq "/" );
         $str = "$term" and next unless $i;
         my $c_op = $prod_ops{$op};
         $str .= "${c_op}{}${term}";

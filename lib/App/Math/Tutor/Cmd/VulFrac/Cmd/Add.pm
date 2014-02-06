@@ -32,6 +32,7 @@ sub _build_command_names
 sub _build_exercises
 {
     my ($self) = @_;
+    my $neg = $self->negativable;
 
     my (@tasks);
     foreach my $i ( 1 .. $self->quantity )
@@ -53,6 +54,11 @@ sub _build_exercises
                       solutions  => [],
                       challenges => [],
                     };
+    my $a_plus_b = sub {
+        return
+          PolyNum->new( operator => $_[0],
+                        values   => [ splice @_, 1 ] );
+    };
 
     # use Text::TabularDisplay;
     # my $table = Text::TabularDisplay->new( 'Bruch -> Dez', 'Dez -> Bruch' );
@@ -64,15 +70,14 @@ sub _build_exercises
         {
             my ( $a, $b ) = @{ $line->[$i] };
             my $op = $i ? '-' : '+';
-            $op eq '-' and $a < $b and ( $b, $a ) = ( $a, $b );
-            push @challenge, sprintf( '$ %s %s %s = $', $a, $op, $b );
+            $op eq '-' and $a < $b and ( $b, $a ) = ( $a, $b ) unless $neg;
+            push @challenge, sprintf( '$ %s = $', $a_plus_b->( $op, $a, $b ) );
 
             my @way;    # remember Frank Sinatra :)
-            push @way, sprintf( '%s %s %s', $a, $op, $b );
+            push @way, $a_plus_b->( $op, $a, $b );
 
-            ( $a, $b ) = ( $a->_reduce, $b = $b->_reduce );
-            push @way, sprintf( '%s %s %s', $a, $op, $b )
-              if ( $a->num != $line->[$i]->[0]->num or $b->num != $line->[$i]->[1]->num );
+            ( $a, $b ) = ( $a->_reduce, $b = $b->_reduce ) and push @way, $a_plus_b->( $op, $a, $b )
+              if ( $a->_gcd > 1 or $b->_gcd > 1 );
 
             my $gcd = VulFracNum->new(
                                        num   => $a->denum,
@@ -80,21 +85,55 @@ sub _build_exercises
                                      )->_gcd;
             my ( $fa, $fb ) = ( $b->{denum} / $gcd, $a->{denum} / $gcd );
 
-            push @way,
-              sprintf( '\frac{%d \cdot %d}{%d \cdot %d} %s \frac{%d \cdot %d}{%d \cdot %d}',
-                       $a->num, $fa, $a->denum, $fa, $op, $b->num, $fb, $b->denum, $fb );
-            push @way,
-              sprintf( '\frac{%d}{%d} %s \frac{%d}{%d}',
-                       $a->num * $fa,
-                       $a->denum * $fa,
-                       $op,
-                       $b->num * $fb,
-                       $b->denum * $fb );
-            push @way,
-              sprintf( '\frac{%d %s %d}{%d}', $a->num * $fa, $op, $b->num * $fb, $a->denum * $fa );
+            my ( $xa, $xb ) = (
+                                VulFracNum->new(
+                                                 num =>
+                                                   ProdNum->new(
+                                                                 operator => '*',
+                                                                 values   => [ $a->num, $fa ]
+                                                               ),
+                                                 denum =>
+                                                   ProdNum->new(
+                                                                 operator => '*',
+                                                                 values   => [ $a->denum, $fa ]
+                                                               ),
+                                               ),
+                                VulFracNum->new(
+                                                 num =>
+                                                   ProdNum->new(
+                                                                 operator => '*',
+                                                                 values   => [ $b->num, $fb ]
+                                                               ),
+                                                 denum =>
+                                                   ProdNum->new(
+                                                                 operator => '*',
+                                                                 values   => [ $b->denum, $fb ]
+                                                               ),
+                                               )
+                              );
+            push @way, $a_plus_b->( $op, $xa, $xb );
+            $xa = VulFracNum->new(
+                                   num   => int( $xa->num ),
+                                   denum => int( $xa->denum ),
+                                   sign  => $xa->sign
+                                 );
+            $xb = VulFracNum->new(
+                                   num   => int( $xb->num ),
+                                   denum => int( $xb->denum ),
+                                   sign  => $xb->sign
+                                 );
+            push @way, $a_plus_b->( $op, $xa, $xb );
+
             my $s = VulFracNum->new(
-                          num => $i ? $a->num * $fa - $b->num * $fb : $a->num * $fa + $b->num * $fb,
-                          denum => $a->denum * $fa );
+                            num   => $a_plus_b->( $op, $xa->sign * $xa->num, $xb->sign * $xb->num ),
+                            denum => $xa->denum );
+
+            push @way, $s;
+            $s = VulFracNum->new(
+                                  num   => int( $s->num ),
+                                  denum => $s->denum,
+                                  sign  => $s->sign
+                                );
             push @way, "" . $s;
             my $c = $s->_reduce;
             $c->num != $s->num and push @way, "" . $c;
