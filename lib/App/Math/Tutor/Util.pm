@@ -34,7 +34,7 @@ my %sum_opposites = (
 
   my $formatted = sumcat_terms( "-", VulFrac->new( num => $p, denum => 2, sign => -1 ),
                                      Power->new( mode => 1, basis => $d, exponent =>
-                                         VulFracNum->new( num => 1, denum => 2 ) ) );
+                                         VulFrac->new( num => 1, denum => 2 ) ) );
   say $formatted;
   # \frac{\frac{7}{4}}{2}\pm\sqrt{-\left(\frac{\frac{7}{4}}{2}\right)-\frac{3}{4}}
 
@@ -63,6 +63,7 @@ sub sumcat_terms
         $str .= "${c_op}${term}";
     }
 
+    $str =~ s/^\+//;
     $str;
 }
 

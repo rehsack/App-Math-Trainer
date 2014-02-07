@@ -83,15 +83,15 @@ sub _build_exercises
                 push @way, $a_mult_b->( $op, $a, $b );
             }
 
-            my $s = VulFracNum->new(
+            my $s = VulFrac->new(
                                 num   => $a_mult_b->( $op, $a->sign * $a->num, $b->sign * $b->num ),
                                 denum => $a_mult_b->( $op, $a->denum,          $b->denum ) );
             push @way, $s;
-            $s = VulFracNum->new(
-                                  num   => int( $s->num ),
-                                  denum => int( $s->denum ),
-                                  sign  => $s->sign
-                                );
+            $s = VulFrac->new(
+                               num   => int( $s->num ),
+                               denum => int( $s->denum ),
+                               sign  => $s->sign
+                             );
             push @way, $s;
 
             $s->_gcd > 1 and $s = $s->_reduce and push @way, $s;

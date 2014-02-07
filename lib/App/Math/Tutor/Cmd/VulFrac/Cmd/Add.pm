@@ -84,47 +84,47 @@ sub _build_exercises
             ( $a, $b ) = ( $a->_reduce, $b = $b->_reduce ) and push @way, $a_plus_b->( $op, $a, $b )
               if ( $a->_gcd > 1 or $b->_gcd > 1 );
 
-            my $gcd = VulFracNum->new(
-                                       num   => $a->denum,
-                                       denum => $b->denum
-                                     )->_gcd;
+            my $gcd = VulFrac->new(
+                                    num   => $a->denum,
+                                    denum => $b->denum
+                                  )->_gcd;
             my ( $fa, $fb ) = ( $b->{denum} / $gcd, $a->{denum} / $gcd );
 
             my ( $xa, $xb ) = (
-                                VulFracNum->new(
-                                                 num   => $a_mult_b->( '*', $a->num,   $fa ),
-                                                 denum => $a_mult_b->( '*', $a->denum, $fa ),
-                                                 sign  => $a->sign
-                                               ),
-                                VulFracNum->new(
-                                                 num   => $a_mult_b->( '*', $b->num,   $fb ),
-                                                 denum => $a_mult_b->( '*', $b->denum, $fb ),
-                                                 sign  => $b->sign
-                                               )
+                                VulFrac->new(
+                                              num   => $a_mult_b->( '*', $a->num,   $fa ),
+                                              denum => $a_mult_b->( '*', $a->denum, $fa ),
+                                              sign  => $a->sign
+                                            ),
+                                VulFrac->new(
+                                              num   => $a_mult_b->( '*', $b->num,   $fb ),
+                                              denum => $a_mult_b->( '*', $b->denum, $fb ),
+                                              sign  => $b->sign
+                                            )
                               );
             push @way, $a_plus_b->( $op, $xa, $xb );
-            $xa = VulFracNum->new(
-                                   num   => int( $xa->num ),
-                                   denum => int( $xa->denum ),
-                                   sign  => $xa->sign
-                                 );
-            $xb = VulFracNum->new(
-                                   num   => int( $xb->num ),
-                                   denum => int( $xb->denum ),
-                                   sign  => $xb->sign
-                                 );
+            $xa = VulFrac->new(
+                                num   => int( $xa->num ),
+                                denum => int( $xa->denum ),
+                                sign  => $xa->sign
+                              );
+            $xb = VulFrac->new(
+                                num   => int( $xb->num ),
+                                denum => int( $xb->denum ),
+                                sign  => $xb->sign
+                              );
             push @way, $a_plus_b->( $op, $xa, $xb );
 
-            my $s = VulFracNum->new(
+            my $s = VulFrac->new(
                             num   => $a_plus_b->( $op, $xa->sign * $xa->num, $xb->sign * $xb->num ),
                             denum => $xa->denum );
 
             push @way, $s;
-            $s = VulFracNum->new(
-                                  num   => int( $s->num ),
-                                  denum => $s->denum,
-                                  sign  => $s->sign
-                                );
+            $s = VulFrac->new(
+                               num   => int( $s->num ),
+                               denum => $s->denum,
+                               sign  => $s->sign
+                             );
             push @way, "" . $s;
             $s->_gcd > 1 and $s = $s->_reduce and push @way, $s;
 

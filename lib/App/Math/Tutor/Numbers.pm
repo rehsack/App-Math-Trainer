@@ -20,9 +20,12 @@ our $VERSION = '0.004';
     use Moo;
     use overload
       '""'   => "_stringify",
-      'bool' => sub { !!$_[0]->num };
+      'bool' => sub { !!$_[0]->num },
+      '0+'   => "_numify",
+      '<=>'  => "_num_compare";
 
     use Scalar::Util qw/blessed dualvar/;
+    use Math::Complex;
 
     has num => (
                  is       => "ro",
@@ -37,59 +40,6 @@ our $VERSION = '0.004';
                   is       => "ro",
                   required => 1
                 );
-
-    sub _stringify
-    {
-        my ( $lb, $rb ) = ( "", "" );
-        $_[0]->sign < 0
-          and ( blessed $_[0]->num or blessed $_[0]->denum )
-          and ( $lb, $rb ) = ( "\\left(", "\\right)" );
-        return sprintf( "%s%s\\frac{%s}{%s}%s", $_[0]->sign, $lb, $_[0]->num, $_[0]->denum, $rb );
-    }
-
-    sub _reciprocal
-    {
-        return ref( $_[0] )->new(
-                                  num   => $_[0]->denum,
-                                  denum => $_[0]->num,
-                                  sign  => $_[0]->sign
-                                );
-    }
-
-    sub _neg
-    {
-        my $s = $_[0]->sign;
-        $s *= -1;
-        $s = $s < 0 ? dualvar( -1, "-" ) : dualvar( 1, "" );
-        return ref( $_[0] )->new(
-                                  num   => $_[0]->num,
-                                  denum => $_[0]->denum,
-                                  sign  => $s
-                                );
-    }
-
-    sub _abs
-    {
-        return ref( $_[0] )->new(
-                                  num   => $_[0]->num,
-                                  denum => $_[0]->denum,
-                                  sign  => dualvar( 1, "" )
-                                );
-    }
-}
-
-{
-    package    #
-      VulFracNum;
-
-    use Moo;
-    extends 'VulFrac';
-    use overload
-      '0+'  => "_numify",
-      '<=>' => "_num_compare";
-
-    use Scalar::Util qw/blessed dualvar/;
-    use Math::Complex;
 
     around BUILDARGS => sub {
         my $orig   = shift;
@@ -159,16 +109,46 @@ our $VERSION = '0.004';
         return $gcd;
     }
 
+    sub _reciprocal
+    {
+        return ref( $_[0] )->new(
+                                  num   => $_[0]->denum,
+                                  denum => $_[0]->num,
+                                  sign  => $_[0]->sign
+                                );
+    }
+
+    sub _neg
+    {
+        my $s = $_[0]->sign;
+        $s *= -1;
+        $s = $s < 0 ? dualvar( -1, "-" ) : dualvar( 1, "" );
+        return ref( $_[0] )->new(
+                                  num   => $_[0]->num,
+                                  denum => $_[0]->denum,
+                                  sign  => $s
+                                );
+    }
+
+    sub _abs
+    {
+        return ref( $_[0] )->new(
+                                  num   => $_[0]->num,
+                                  denum => $_[0]->denum,
+                                  sign  => dualvar( 1, "" )
+                                );
+    }
+
     sub _reduce
     {
         my ( $a, $b ) = ( $_[0]->num, $_[0]->denum );
         my $gcd = $a > $b ? _euklid( $a, $b ) : _euklid( $b, $a );
         return
-          VulFracNum->new(
-                           num   => $_[0]->num / $gcd,
-                           denum => $_[0]->denum / $gcd,
-                           sign  => $_[0]->sign
-                         );
+          VulFrac->new(
+                        num   => $_[0]->num / $gcd,
+                        denum => $_[0]->denum / $gcd,
+                        sign  => $_[0]->sign
+                      );
     }
 
     sub _build_from_decimal
@@ -451,7 +431,7 @@ our $VERSION = '0.004';
         defined $f or $f = 1;
         $f or return;
         $e == 1 and return $b;
-        blessed $e or $e = VulFracNum->_build_from_decimal($e);
+        blessed $e or $e = VulFrac->_build_from_decimal($e);
         my $bn = 1;
         eval { $bn = ( 1 <=> $b ); };
         my $x;
@@ -480,7 +460,7 @@ our $VERSION = '0.004';
     {
         my ( $b, $e, $f ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->factor );
         defined $f or $f = 1;
-        blessed $e or $e = VulFracNum->_build_from_decimal($e);
+        blessed $e or $e = VulFrac->_build_from_decimal($e);
         my ( $en, $ed ) = ( $e->num, $e->denum );
         blessed $en and $en = $en->_numify;
         blessed $ed and $ed = $ed->_numify;

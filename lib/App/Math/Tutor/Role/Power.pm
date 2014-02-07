@@ -41,8 +41,8 @@ sub _build_power_types
            numbers => 1,
            builder => sub {
                return
-                 VulFracNum->new( num   => 1,
-                                  denum => int( rand( $_[0] ) + 1 ) );
+                 VulFrac->new( num   => 1,
+                               denum => int( rand( $_[0] ) + 1 ) );
            },
         },
         {
@@ -52,8 +52,8 @@ sub _build_power_types
                my $vf;
                do
                {
-                   $vf = VulFracNum->new( num   => int( rand( $_[0] ) + 1 ),
-                                          denum => int( rand( $_[0] ) + 1 ) );
+                   $vf = VulFrac->new( num   => int( rand( $_[0] ) + 1 ),
+                                       denum => int( rand( $_[0] ) + 1 ) );
                } while ( !App::Math::Tutor::Role::VulFrac::_check_vulgar_fraction($vf) );
                return $vf;
            },

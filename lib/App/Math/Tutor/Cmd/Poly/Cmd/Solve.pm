@@ -87,31 +87,42 @@ around _check_polynom => sub {
       @fac;    # ( $values[0]->factor, $values[1]->factor || 0, $values[2]->factor || 0 );
     $a == 0 and return;
     my ( $p, $q ) = (
-                      VulFracNum->new(
-                                       num   => $b,
-                                       denum => $a
+                      VulFrac->new(
+                                    num   => $b,
+                                    denum => $a
                         )->_reduce,
-                      VulFracNum->new(
-                                       num   => $c,
-                                       denum => $a
+                      VulFrac->new(
+                                    num   => $c,
+                                    denum => $a
                         )->_reduce
                     );
-    my $p2 = VulFracNum->new(
-                              num   => $p->num * $p->num,
-                              denum => $p->denum * $p->denum * 4
-                            )->_reduce;
-    my $gcd = VulFracNum->new(
-                               num   => $p2->denum,
-                               denum => $q->denum
-                             )->_gcd;
+    my $p2 = VulFrac->new(
+                           num   => $p->num * $p->num,
+                           denum => $p->denum * $p->denum * 4
+                         )->_reduce;
+    my $gcd = VulFrac->new(
+                            num   => $p2->denum,
+                            denum => $q->denum
+                          )->_gcd;
     my ( $fp, $fq ) = ( $q->{denum} / $gcd, $p2->{denum} / $gcd );
-    my $d = VulFracNum->new( num   => $p2->num * $fp - $q->sign * $q->num * $fq,
-                             denum => $p2->denum * $fp );
+    my $d = VulFrac->new( num   => $p2->num * $fp - $q->sign * $q->num * $fq,
+                          denum => $p2->denum * $fp );
     $d->sign < 0 and !$self->complex_solution and return;
     $d->{num} = abs( $d->{num} );
     $d = $d->_reduce;
     return $self->_check_sqrt( $d->num, $values[0]->exponent )
       and $self->_check_sqrt( $d->denum, $values[0]->exponent );
+};
+
+my $a_plus_b = sub {
+    return
+      PolyNum->new( operator => $_[0],
+                    values   => [ splice @_, 1 ] );
+};
+my $a_mult_b = sub {
+    return
+      ProdNum->new( operator => $_[0],
+                    values   => [ splice @_, 1 ] );
 };
 
 sub _get_quad_solution
@@ -129,8 +140,8 @@ sub _get_quad_solution
     foreach my $i ( 1 .. $#values )
     {
         my $exp = $values[$i]->exponent;
-        my $f = VulFracNum->new( num   => $values[$i]->factor,
-                                 denum => $a_f );
+        my $f = VulFrac->new( num   => $values[$i]->factor,
+                              denum => $a_f );
         push(
               @pqvalues,
               PolyTerm->new(
@@ -150,11 +161,11 @@ sub _get_quad_solution
         1 == $exp and $p = $f;
     }
     defined $p
-      or $p = VulFracNum->new( num   => 0,
-                               denum => $a_f );
+      or $p = VulFrac->new( num   => 0,
+                            denum => $a_f );
     defined $q
-      or $q = VulFracNum->new( num   => 0,
-                               denum => $a_f );
+      or $q = VulFrac->new( num   => 0,
+                            denum => $a_f );
     unshift(
              @pqvalues,
              PolyTerm->new(
@@ -188,10 +199,10 @@ sub _get_quad_solution
                           values => [
                                       Power->new(
                                                   basis =>
-                                                    VulFracNum->new(
-                                                                     num   => $p,
-                                                                     denum => 2
-                                                                   ),
+                                                    VulFrac->new(
+                                                                  num   => $p,
+                                                                  denum => 2
+                                                                ),
                                                   exponent => 2,
                                                   mode     => 0,
                                                 ),
@@ -203,18 +214,18 @@ sub _get_quad_solution
     my $X12 = PolyNum->new(
                             operator => '\pm',
                             values   => [
-                                        VulFracNum->new(
-                                                         num   => $p,
-                                                         denum => 2,
-                                                         sign  => -1
-                                                       ),
+                                        VulFrac->new(
+                                                      num   => $p,
+                                                      denum => 2,
+                                                      sign  => -1
+                                                    ),
                                         Power->new(
                                                     basis => $d,
                                                     exponent =>
-                                                      VulFracNum->new(
-                                                                       num   => 1,
-                                                                       denum => 2
-                                                                     ),
+                                                      VulFrac->new(
+                                                                    num   => 1,
+                                                                    denum => 2
+                                                                  ),
                                                     mode => 1
                                                   )
                                       ]
@@ -225,7 +236,7 @@ sub _get_quad_solution
     {
         my $sp = VulFrac->new(
                                num   => $p->num,
-                               denum => sprintf( '%s \cdot %s', $p->denum, 2 ),
+                               denum => $a_mult_b->( '*', $p->denum, 2 ),
                                sign  => $p->sign
                              );
         $d = PolyNum->new(
@@ -251,21 +262,21 @@ sub _get_quad_solution
                                          Power->new(
                                                      basis => $d,
                                                      exponent =>
-                                                       VulFracNum->new(
-                                                                        num   => 1,
-                                                                        denum => 2
-                                                                      ),
+                                                       VulFrac->new(
+                                                                     num   => 1,
+                                                                     denum => 2
+                                                                   ),
                                                      mode => 1
                                                    )
                                        ]
                            );
         push @way, "$X12";
 
-        $p = VulFracNum->new(
-                              num   => $p->num,
-                              denum => $p->denum * 2,
-                              sign  => $p->sign
-                            )->_reduce;
+        $p = VulFrac->new(
+                           num   => $p->num,
+                           denum => $p->denum * 2,
+                           sign  => $p->sign
+                         )->_reduce;
         $d = PolyNum->new(
                            values => [
                                        Power->new(
@@ -281,47 +292,47 @@ sub _get_quad_solution
         $X12 = PolyNum->new(
                              operator => '\pm',
                              values   => [
-                                         VulFracNum->new(
-                                                          num   => $p->num,
-                                                          denum => $p->denum,
-                                                          sign  => -1
-                                                        ),
+                                         VulFrac->new(
+                                                       num   => $p->num,
+                                                       denum => $p->denum,
+                                                       sign  => -1
+                                                     ),
                                          Power->new(
                                                      basis => $d,
                                                      exponent =>
-                                                       VulFracNum->new(
-                                                                        num   => 1,
-                                                                        denum => 2
-                                                                      ),
+                                                       VulFrac->new(
+                                                                     num   => 1,
+                                                                     denum => 2
+                                                                   ),
                                                      mode => 1
                                                    )
                                        ]
                            );
         push @way, "$X12";
 
-        my $p2 = VulFracNum->new(
-                                  num   => $p->num * $p->num,
-                                  denum => $p->denum * $p->denum,
-                                  sign  => 1
-                                )->_reduce;
+        my $p2 = VulFrac->new(
+                               num   => $p->num * $p->num,
+                               denum => $p->denum * $p->denum,
+                               sign  => 1
+                             )->_reduce;
         $d = PolyNum->new( values   => [ $p2, $q ],
                            operator => "-", );
 
         $X12 = PolyNum->new(
                              operator => '\pm',
                              values   => [
-                                         VulFracNum->new(
-                                                          num   => $p->num,
-                                                          denum => $p->denum,
-                                                          sign  => -1
-                                                        ),
+                                         VulFrac->new(
+                                                       num   => $p->num,
+                                                       denum => $p->denum,
+                                                       sign  => -1
+                                                     ),
                                          Power->new(
                                                      basis => $d,
                                                      exponent =>
-                                                       VulFracNum->new(
-                                                                        num   => 1,
-                                                                        denum => 2
-                                                                      ),
+                                                       VulFrac->new(
+                                                                     num   => 1,
+                                                                     denum => 2
+                                                                   ),
                                                      mode => 1
                                                    )
                                        ]
@@ -330,22 +341,22 @@ sub _get_quad_solution
 
         if ($q)
         {
-            my $gcd = VulFracNum->new(
-                                       num   => $p2->denum,
-                                       denum => $q->denum
-                                     )->_gcd;
+            my $gcd = VulFrac->new(
+                                    num   => $p2->denum,
+                                    denum => $q->denum
+                                  )->_gcd;
             my ( $fp, $fq ) = ( $q->{denum} / $gcd, $p2->{denum} / $gcd );
             $d = PolyNum->new(
                                values => [
                                            VulFrac->new(
-                                                 num   => sprintf( '%s \cdot %s', $p2->num,   $fp ),
-                                                 denum => sprintf( '%s \cdot %s', $p2->denum, $fp ),
-                                                 sign  => $p2->sign
+                                                       num   => $a_mult_b->( '*', $p2->num,   $fp ),
+                                                       denum => $a_mult_b->( '*', $p2->denum, $fp ),
+                                                       sign  => $p2->sign
                                                        ),
                                            VulFrac->new(
-                                                  num   => sprintf( '%s \cdot %s', $q->num,   $fq ),
-                                                  denum => sprintf( '%s \cdot %s', $q->denum, $fq ),
-                                                  sign  => $q->sign
+                                                        num   => $a_mult_b->( '*', $q->num,   $fq ),
+                                                        denum => $a_mult_b->( '*', $q->denum, $fq ),
+                                                        sign  => $q->sign
                                                        ),
                                          ],
                                operator => "-",
@@ -353,41 +364,41 @@ sub _get_quad_solution
             $X12 = PolyNum->new(
                                  operator => '\pm',
                                  values   => [
-                                             VulFracNum->new(
-                                                              num   => $p->num,
-                                                              denum => $p->denum,
-                                                              sign  => -1
-                                                            ),
+                                             VulFrac->new(
+                                                           num   => $p->num,
+                                                           denum => $p->denum,
+                                                           sign  => -1
+                                                         ),
                                              Power->new(
                                                          basis => $d,
                                                          exponent =>
-                                                           VulFracNum->new(
-                                                                            num   => 1,
-                                                                            denum => 2
-                                                                          ),
+                                                           VulFrac->new(
+                                                                         num   => 1,
+                                                                         denum => 2
+                                                                       ),
                                                          mode => 1
                                                        )
                                            ]
                                );
             push @way, "$X12";
 
-            $d = VulFracNum->new( num   => $p2->num * $fp - $q->sign * $q->num * $fq,
-                                  denum => $q->denum * $fq );
+            $d = VulFrac->new( num   => $p2->num * $fp - $q->sign * $q->num * $fq,
+                               denum => $q->denum * $fq );
             $X12 = PolyNum->new(
                                  operator => '\pm',
                                  values   => [
-                                             VulFracNum->new(
-                                                              num   => $p->num,
-                                                              denum => $p->denum,
-                                                              sign  => -1
-                                                            ),
+                                             VulFrac->new(
+                                                           num   => $p->num,
+                                                           denum => $p->denum,
+                                                           sign  => -1
+                                                         ),
                                              Power->new(
                                                          basis => $d,
                                                          exponent =>
-                                                           VulFracNum->new(
-                                                                            num   => 1,
-                                                                            denum => 2
-                                                                          ),
+                                                           VulFrac->new(
+                                                                         num   => 1,
+                                                                         denum => 2
+                                                                       ),
                                                          mode => 1
                                                        )
                                            ]
@@ -405,17 +416,17 @@ sub _get_quad_solution
                                          Power->new(
                                                      basis => $d,
                                                      exponent =>
-                                                       VulFracNum->new(
-                                                                        num   => 1,
-                                                                        denum => 2
-                                                                      ),
+                                                       VulFrac->new(
+                                                                     num   => 1,
+                                                                     denum => 2
+                                                                   ),
                                                      mode => 1
                                                    )
                                        ]
                            );
     }
 
-    if ( "VulFracNum" eq ref($d) )
+    if ( "VulFrac" eq ref($d) )
     {
         my ( $nbf, $nrm ) = $self->_extract_sqrt( $d->num,   2 );
         my ( $dbf, $drm ) = $self->_extract_sqrt( $d->denum, 2 );
@@ -426,31 +437,31 @@ sub _get_quad_solution
                                  operator => '\pm',
                                  values   => [
                                              $p,
-                                             VulFracNum->new(
-                                                              num =>
-                                                                Power->new(
-                                                                           basis => $d->sign * $nrm,
-                                                                           factor => $nbf,
-                                                                           exponent =>
-                                                                             VulFracNum->new(
-                                                                                          num => 1,
-                                                                                          denum => 2
-                                                                             ),
-                                                                           mode => 1,
-                                                                          ),
-                                                              denum =>
-                                                                Power->new(
-                                                                            basis  => $drm,
-                                                                            factor => $dbf,
-                                                                            exponent =>
-                                                                              VulFracNum->new(
-                                                                                          num => 1,
-                                                                                          denum => 2
-                                                                              ),
-                                                                            mode => 1
-                                                                          ),
-                                                              sign => dualvar( 1, "" ),
-                                                            ),
+                                             VulFrac->new(
+                                                           num =>
+                                                             Power->new(
+                                                                         basis  => $d->sign * $nrm,
+                                                                         factor => $nbf,
+                                                                         exponent =>
+                                                                           VulFrac->new(
+                                                                                         num   => 1,
+                                                                                         denum => 2
+                                                                                       ),
+                                                                         mode => 1,
+                                                                       ),
+                                                           denum =>
+                                                             Power->new(
+                                                                         basis  => $drm,
+                                                                         factor => $dbf,
+                                                                         exponent =>
+                                                                           VulFrac->new(
+                                                                                         num   => 1,
+                                                                                         denum => 2
+                                                                                       ),
+                                                                         mode => 1
+                                                                       ),
+                                                           sign => dualvar( 1, "" ),
+                                                         ),
                                            ]
                                );
             push @way, "$X12";
