@@ -97,7 +97,7 @@ option probability => (
           and $_[0] > 100
           and die("Invalid probability");
     },
-    default => sub { return 80; },
+    default => sub { return 95; },
     format  => "f",
     short   => "p",
                       );
