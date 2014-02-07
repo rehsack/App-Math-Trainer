@@ -216,8 +216,8 @@ our $VERSION = '0.004';
     use Math::Complex;
 
     has factor => (
-                    is       => "ro",
-                    required => 1
+                    is      => "ro",
+                    default => sub { 1 },
                   );
     has exponent => (
                       is       => "ro",
@@ -418,7 +418,10 @@ our $VERSION = '0.004';
                   default => sub { 0 },
                 );
 
-    has factor => ( is => "ro" );
+    has factor => (
+                    is      => "ro",
+                    default => sub { 1 },
+                  );
 
     has sign => (
                   is => "lazy",
