@@ -234,15 +234,15 @@ sub _get_quad_solution
 
     if ($p)
     {
-        my $sp = VulFrac->new(
-                               num   => $p->num,
-                               denum => $a_mult_b->( '*', $p->denum, 2 ),
-                               sign  => $p->sign
-                             );
+        $p = VulFrac->new(
+                           num   => $p->num,
+                           denum => $a_mult_b->( '*', $p->denum, 2 ),
+                           sign  => $p->sign
+                         );
         $d = PolyNum->new(
                            values => [
                                        Power->new(
-                                                   basis    => $sp,
+                                                   basis    => $p,
                                                    exponent => 2,
                                                    mode     => 0,
                                                  ),
@@ -254,11 +254,7 @@ sub _get_quad_solution
         $X12 = PolyNum->new(
                              operator => '\pm',
                              values   => [
-                                         VulFrac->new(
-                                                       num   => $sp->num,
-                                                       denum => $sp->denum,
-                                                       sign  => dualvar( -1, "-" ),
-                                                     ),
+                                         $p->_neg,
                                          Power->new(
                                                      basis => $d,
                                                      exponent =>
@@ -274,7 +270,7 @@ sub _get_quad_solution
 
         $p = VulFrac->new(
                            num   => $p->num,
-                           denum => $p->denum * 2,
+                           denum => int( $p->denum ),
                            sign  => $p->sign
                          )->_reduce;
         $d = PolyNum->new(
@@ -292,11 +288,7 @@ sub _get_quad_solution
         $X12 = PolyNum->new(
                              operator => '\pm',
                              values   => [
-                                         VulFrac->new(
-                                                       num   => $p->num,
-                                                       denum => $p->denum,
-                                                       sign  => -1
-                                                     ),
+                                         $p->_neg,
                                          Power->new(
                                                      basis => $d,
                                                      exponent =>
@@ -321,11 +313,7 @@ sub _get_quad_solution
         $X12 = PolyNum->new(
                              operator => '\pm',
                              values   => [
-                                         VulFrac->new(
-                                                       num   => $p->num,
-                                                       denum => $p->denum,
-                                                       sign  => -1
-                                                     ),
+                                         $p->_neg,
                                          Power->new(
                                                      basis => $d,
                                                      exponent =>
@@ -364,11 +352,7 @@ sub _get_quad_solution
             $X12 = PolyNum->new(
                                  operator => '\pm',
                                  values   => [
-                                             VulFrac->new(
-                                                           num   => $p->num,
-                                                           denum => $p->denum,
-                                                           sign  => -1
-                                                         ),
+                                             $p->_neg,
                                              Power->new(
                                                          basis => $d,
                                                          exponent =>
@@ -387,11 +371,7 @@ sub _get_quad_solution
             $X12 = PolyNum->new(
                                  operator => '\pm',
                                  values   => [
-                                             VulFrac->new(
-                                                           num   => $p->num,
-                                                           denum => $p->denum,
-                                                           sign  => -1
-                                                         ),
+                                             $p->_neg,
                                              Power->new(
                                                          basis => $d,
                                                          exponent =>
@@ -412,7 +392,7 @@ sub _get_quad_solution
         $X12 = PolyNum->new(
                              operator => '\pm',
                              values   => [
-                                         $p,
+                                         $p->_neg,
                                          Power->new(
                                                      basis => $d,
                                                      exponent =>
@@ -436,7 +416,7 @@ sub _get_quad_solution
             $X12 = PolyNum->new(
                                  operator => '\pm',
                                  values   => [
-                                             $p,
+                                             $p->_neg,
                                              VulFrac->new(
                                                            num =>
                                                              Power->new(
