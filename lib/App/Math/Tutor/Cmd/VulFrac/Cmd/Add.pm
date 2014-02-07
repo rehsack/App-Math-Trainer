@@ -59,6 +59,11 @@ sub _build_exercises
           PolyNum->new( operator => $_[0],
                         values   => [ splice @_, 1 ] );
     };
+    my $a_mult_b = sub {
+        return
+          ProdNum->new( operator => $_[0],
+                        values   => [ splice @_, 1 ] );
+    };
 
     # use Text::TabularDisplay;
     # my $table = Text::TabularDisplay->new( 'Bruch -> Dez', 'Dez -> Bruch' );
@@ -87,28 +92,14 @@ sub _build_exercises
 
             my ( $xa, $xb ) = (
                                 VulFracNum->new(
-                                                 num =>
-                                                   ProdNum->new(
-                                                                 operator => '*',
-                                                                 values   => [ $a->num, $fa ]
-                                                               ),
-                                                 denum =>
-                                                   ProdNum->new(
-                                                                 operator => '*',
-                                                                 values   => [ $a->denum, $fa ]
-                                                               ),
+                                                 num   => $a_mult_b->( '*', $a->num,   $fa ),
+                                                 denum => $a_mult_b->( '*', $a->denum, $fa ),
+                                                 sign  => $a->sign
                                                ),
                                 VulFracNum->new(
-                                                 num =>
-                                                   ProdNum->new(
-                                                                 operator => '*',
-                                                                 values   => [ $b->num, $fb ]
-                                                               ),
-                                                 denum =>
-                                                   ProdNum->new(
-                                                                 operator => '*',
-                                                                 values   => [ $b->denum, $fb ]
-                                                               ),
+                                                 num   => $a_mult_b->( '*', $b->num,   $fb ),
+                                                 denum => $a_mult_b->( '*', $b->denum, $fb ),
+                                                 sign  => $b->sign
                                                )
                               );
             push @way, $a_plus_b->( $op, $xa, $xb );
@@ -135,10 +126,9 @@ sub _build_exercises
                                   sign  => $s->sign
                                 );
             push @way, "" . $s;
-            my $c = $s->_reduce;
-            $c->num != $s->num and push @way, "" . $c;
+            $s->_gcd > 1 and $s = $s->_reduce and push @way, $s;
 
-            $c->num > $c->denum and $c->denum > 1 and push @way, $c->_stringify(1);
+            $s->num > $s->denum and $s->denum > 1 and push @way, $s->_stringify(1);
 
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }

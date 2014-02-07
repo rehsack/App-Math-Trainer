@@ -54,6 +54,12 @@ sub _build_exercises
                      challenges => [],
                     };
 
+    my $a_mult_b = sub {
+        return
+          ProdNum->new( operator => $_[0],
+                        values   => [ splice @_, 1 ] );
+    };
+
     foreach my $line (@tasks)
     {
         my ( @solution, @challenge );
@@ -61,40 +67,36 @@ sub _build_exercises
         foreach my $i ( 0 .. 1 )
         {
             my ( $a, $b ) = @{ $line->[$i] };
-            my $op = $i ? '\div' : '\cdot';
-            push @challenge, sprintf( '$ %s %s %s = $', $a, $op, $b );
+            my $op = $i ? '/' : '*';
+            push @challenge, sprintf( '$ %s = $', $a_mult_b->( $op, $a, $b ) );
 
             my @way;    # remember Frank Sinatra :)
-            push @way, sprintf( '%s %s %s', $a, $op, $b );
+            push @way, $a_mult_b->( $op, $a, $b );
 
-            ( $a, $b ) = ( $a->_reduce, $b = $b->_reduce );
-            push @way, sprintf( '%s %s %s', $a, $op, $b )
-              if ( $a->num != $line->[$i]->[0]->num or $b->num != $line->[$i]->[1]->num );
+            ( $a, $b ) = ( $a->_reduce, $b = $b->_reduce ) and push @way, $a_mult_b->( $op, $a, $b )
+              if ( $a->_gcd > 1 or $b->_gcd > 1 );
 
-            my $s;
-            unless ($i)
+            if ($i)
             {
-                # multiplication
-                push @way,
-                  sprintf( '\frac{%d \cdot %d}{%d \cdot %d}',
-                           $a->num, $b->num, $a->denum, $b->denum );
-                $s = VulFracNum->new( num   => $a->num * $b->num,
-                                      denum => $a->denum * $b->denum );
+                $b  = $b->_reciprocal;
+                $op = '*';
+                push @way, $a_mult_b->( $op, $a, $b );
             }
-            else
-            {
-                #division
-                push @way,
-                  sprintf( '\frac{%d \cdot %d}{%d \cdot %d}',
-                           $a->num, $b->denum, $b->num, $a->denum );
-                $s = VulFracNum->new( num   => $a->num * $b->denum,
-                                      denum => $b->num * $a->denum );
-            }
-            push @way, "" . $s;
-            my $c = $s->_reduce;
-            $c->num != $s->num and push @way, "" . $c;
 
-            $c->num > $c->denum and $c->denum > 1 and push @way, $c->_stringify(1);
+            my $s = VulFracNum->new(
+                                num   => $a_mult_b->( $op, $a->sign * $a->num, $b->sign * $b->num ),
+                                denum => $a_mult_b->( $op, $a->denum,          $b->denum ) );
+            push @way, $s;
+            $s = VulFracNum->new(
+                                  num   => int( $s->num ),
+                                  denum => int( $s->denum ),
+                                  sign  => $s->sign
+                                );
+            push @way, $s;
+
+            $s->_gcd > 1 and $s = $s->_reduce and push @way, $s;
+
+            $s->num > $s->denum and $s->denum > 1 and push @way, $s->_stringify(1);
 
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }
