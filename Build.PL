@@ -28,9 +28,25 @@ my $builder = Module::Build->new(
                                                },
                                   add_to_cleanup => ['App-Math-Tutor-*'],
                                   meta_merge     => {
-                                      resources => {
-                                          repository => "https://github.com/rehsack/App-Math-Tutor",
-                                      },
+                                       'meta-spec' => { version => 2 },
+                                       resources   => {
+                                           repository => {
+                                               url => 'git://github.com/rehsack/App-Math-Tutor.git',
+                                               web => 'https://github.com/rehsack/App-Math-Tutor',
+                                               type => 'git',
+                                           },
+                                       },
+                                       prereqs => {
+                                                 develop => {
+                                                     requires => {
+                                                         'Test::CPAN::Changes'                 => 0,
+                                                         'Test::CheckManifest'                 => 0,
+                                                         'Test::Pod'                           => 0,
+                                                         'Test::Pod::Coverage'                 => 0,
+                                                         'Test::Pod::Spelling::CommonMistakes' => 0,
+                                                     },
+                                                 },
+                                       },
                                   },
                                   create_readme => 1,
                                   test_files    => join( ' ' => 't/*.t xt/*.t' ),
