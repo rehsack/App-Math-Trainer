@@ -57,7 +57,7 @@ sub sumcat_terms
         my $sign = blessed $term ? $term->sign : $term <=> 0;
         if ( $sign < 0 )
         {
-            $term = $term->_abs();         # XXX
+            $term = blessed $term ? $term->_abs() : abs($term);
             $c_op = $sum_opposites{$op};
         }
         $str .= "${c_op}${term}";

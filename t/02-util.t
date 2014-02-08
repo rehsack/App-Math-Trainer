@@ -42,7 +42,7 @@ $formatted = sumcat_terms(
                          );
 
 is( $formatted,
-    '\frac{\frac{7}{4}}{2}\pm\sqrt{-\left(\frac{\frac{7}{4}}{2}\right)-\frac{3}{4}}',
+    '\frac{\frac{7}{4}}{2}\pm\sqrt{-\frac{\frac{7}{4}}{2}-\frac{3}{4}}',
     'format -p/2 +/- sqrt(d) with p < 0' );
 
 $p = VulFrac->new( num   => 7,
@@ -77,7 +77,7 @@ $formatted = sumcat_terms(
                                      )
                          );
 is( $formatted,
-    '-\left(\frac{\frac{7}{4}}{2}\right)\pm\sqrt{\frac{\frac{7}{4}}{2}-\frac{3}{4}}',
+    '-\frac{\frac{7}{4}}{2}\pm\sqrt{\frac{\frac{7}{4}}{2}-\frac{3}{4}}',
     'format -p/2 +/- sqrt(d) with p > 0' );
 
 my ( $a, $b );
@@ -116,6 +116,6 @@ $b = VulFrac->new(
                     );
 
 $formatted = prodcat_terms( "/", $a, $b );
-is( $formatted, '-\left(\frac{27+14}{5}\right)\div{}-\left(\frac{15+13}{9}\right)', "-a / -b" );
+is( $formatted, '-\frac{27+14}{5}\div{}-\frac{15+13}{9}', "-a / -b" );
 
 done_testing;

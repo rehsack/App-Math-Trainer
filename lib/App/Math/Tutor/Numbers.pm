@@ -64,9 +64,8 @@ our $VERSION = '0.004';
         $_[1]
           and $_[0]->num > $_[0]->denum
           and return
-          sprintf( '%s\normalsize{%d} \frac{%d}{%d}',
-                   $_[0]->sign,
-                   int( $_[0]->_numify ),
+          sprintf( '\normalsize{%d} \frac{%d}{%d}',
+                   int( $_[0] ),
                    $_[0]->num - $_[0]->denum * int( $_[0]->_numify ),
                    $_[0]->denum );
 
@@ -74,7 +73,7 @@ our $VERSION = '0.004';
         $_[0]->sign < 0
           and ( blessed $_[0]->num or blessed $_[0]->denum )
           and ( $lb, $rb ) = ( "\\left(", "\\right)" );
-        return sprintf( "%s%s\\frac{%s}{%s}%s", $_[0]->sign, $lb, $_[0]->num, $_[0]->denum, $rb );
+        return sprintf( "%s\\frac{%s}{%s}", $_[0]->sign, $_[0]->num, $_[0]->denum );
     }
 
     sub _numify
@@ -313,12 +312,10 @@ our $VERSION = '0.004';
 
     sub _abs
     {
-        my @values = @{ $_[0]->values };
-        return ref( $_[0] )->new(
-                   operator => $_[0]->operator,
-                   values =>
-                     [ $_[0]->values->[0]->_abs, splice @{ $_[0]->values }, 1, $#{ $_[0]->values } ]
-        );
+        my ( $first, @ov ) = @{ $_[0]->values };
+        return ref( $_[0] )->new( operator => $_[0]->operator,
+                                  values   => [ blessed $first ? $first->_abs : abs($first), @ov ]
+                                );
     }
 }
 
@@ -384,13 +381,33 @@ our $VERSION = '0.004';
         return 1;
     }
 
-    sub sign { 0 }    # XXX prod(sigh)
+    sub sign
+    {
+        @{ $_[0]->values } or return 0;
+        my $sign = 1;
+        foreach my $term ( @{ $_[0]->values } )
+        {
+            my $s = blessed $term ? $term->sign : $term <=> 0;
+            $sign *= $s;
+        }
+        return $sign;
+    }
 
-    sub _abs { $_[0] }    # XXX _abs(all)
+    sub _abs
+    {
+        my @v;
+        foreach my $term ( @{ $_[0]->values } )
+        {
+            my $x = blessed $term ? $term->_abs : abs($term);
+            push @v, $x;
+        }
+        return ref( $_[0] )->new( operator => $_[0]->operator,
+                                  values   => [@v] );
+    }
 }
 
 {
-    package               #
+    package    #
       Power;
 
     use Moo;
