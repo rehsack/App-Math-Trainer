@@ -23,8 +23,12 @@ requires "format";
 
 sub _guess_vulgar_fraction
 {
-    my ( $max_num, $max_denum ) = @{ $_[0]->format };
-    my ( $num, $denum ) = ( int( rand($max_num) ), int( rand($max_denum) ) );
+    my ( $max_num, $max_denum, $neg ) = ( @{ $_[0]->format }, $_[0]->negativable );
+    my ( $num, $denum );
+    ( $num, $denum ) =
+      $neg
+      ? ( int( rand( $max_num * 2 ) - $max_num ), int( rand( $max_denum * 2 ) - $max_denum ) )
+      : ( int( rand($max_num) ), int( rand($max_denum) ) );
     return
       VulFrac->new( num   => $num,
                     denum => $denum );
