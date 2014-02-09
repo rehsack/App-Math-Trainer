@@ -40,7 +40,7 @@ sub _get_castable_numbers
         do
         {
             $vf = $self->_guess_vulgar_fraction;
-        } while ( !_check_vulgar_fraction($vf) or !$self->_check_decimal_fraction($vf) );
+        } while ( !$self->_check_vulgar_fraction($vf) or !$self->_check_decimal_fraction($vf) );
 
         push @result, $vf;
     }

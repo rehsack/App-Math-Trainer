@@ -66,7 +66,7 @@ our $VERSION = '0.004';
           and return
           sprintf( '\normalsize{%d} \frac{%d}{%d}',
                    int( $_[0] ),
-                   $_[0]->num - $_[0]->denum * int( $_[0]->_numify ),
+                   $_[0]->num - $_[0]->denum * int( abs( $_[0]->_numify ) ),
                    $_[0]->denum );
 
         my ( $lb, $rb ) = ( "", "" );

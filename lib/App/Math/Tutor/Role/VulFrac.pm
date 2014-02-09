@@ -16,7 +16,7 @@ our $VERSION = '0.004';
 
 sub _check_vulgar_fraction
 {
-    $_[0]->num >= 2 and $_[0]->denum >= 2 and $_[0]->num % $_[0]->denum != 0;
+    $_[1]->num >= 2 and $_[1]->denum >= 2 and $_[1]->num % $_[1]->denum != 0;
 }
 
 requires "format";
@@ -53,7 +53,7 @@ sub get_vulgar_fractions
         do
         {
             $vf = $self->_guess_vulgar_fraction;
-        } while ( !_check_vulgar_fraction($vf) );
+        } while ( !$self->_check_vulgar_fraction($vf) );
 
         push @result, $vf;
     }

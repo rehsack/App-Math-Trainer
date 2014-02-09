@@ -24,9 +24,75 @@ has template_filename => (
 
 with "App::Math::Tutor::Role::VulFracExercise";
 
+my %result_formats = (
+                       keep      => 1,
+                       reducable => 1,
+                     );
+
+=head1 ATTRIBUTES
+
+=head2 result_format
+
+=cut
+
+option result_format => (
+    is        => "ro",
+    predicate => 1,
+    doc       => "Let one specify result format behavior",
+    long_doc  => "Let one specify result format behavior, pick one of\n\n"
+      . "reducable: result can be reduced, "
+      . "keep: keep exercise format (after reducing)",
+    coerce => sub {
+        defined $_[0] or return {};
+        "HASH" eq ref $_[0] and return $_[0];
+        my ( @fail, %rf );
+        $rf{$_} = defined $result_formats{$_} or push @fail, $_ foreach @{ $_[0] };
+        @fail
+          and die "Invalid result format: "
+          . join( ", ", @fail )
+          . ", pick any of "
+          . join( ", ", keys %result_formats );
+        return \%rf;
+    },
+    format     => "s@",
+    autosplit  => ",",
+    repeatable => 1,
+    short      => "r",
+                        );
+
 sub _build_command_names
 {
     return qw(mul div);
+}
+
+my $a_mult_b = sub {
+    return
+      ProdNum->new( operator => $_[0],
+                    values   => [ splice @_, 1 ] );
+};
+
+sub _operands_ok
+{
+    my ( $self, $op, @operands ) = @_;
+    $self->has_result_format or return 1;
+    my $s = shift @operands;
+    while (@operands)
+    {
+        my $b = shift @operands;
+        my $a = $s->_reduce;
+        $b = $b->_reduce;
+        $op eq "/" and $b = $b->_reciprocal;
+        $s = VulFrac->new(
+                         num   => int( $a_mult_b->( "*", $a->sign * $a->num, $b->sign * $b->num ) ),
+                         denum => int( $a_mult_b->( "*", $a->denum,          $b->denum ) ) );
+    }
+    my ( $max_num, $max_denum ) = ( @{ $_[0]->format } );
+    my %result_format = %{ $self->result_format };
+    $s->_gcd > 1 or return 0 if defined $result_format{reducable} and $result_format{reducable};
+    $s = $s->_reduce;
+    $s->num <= $max_num     or return 0 if defined $result_format{keep} and $result_format{keep};
+    $s->denum <= $max_denum or return 0 if defined $result_format{keep} and $result_format{keep};
+    return 1;
 }
 
 sub _build_exercises
@@ -39,7 +105,8 @@ sub _build_exercises
         my @line;
         foreach my $j ( 0 .. 1 )
         {
-            my ( $a, $b ) = $self->get_vulgar_fractions(2);
+          REDO: my ( $a, $b ) = $self->get_vulgar_fractions(2);
+            $self->_operands_ok( $j ? '/' : '*', $a, $b ) or goto REDO;
             push @line, [ $a, $b ];
         }
         push @tasks, \@line;
@@ -53,12 +120,6 @@ sub _build_exercises
                      solutions  => [],
                      challenges => [],
                     };
-
-    my $a_mult_b = sub {
-        return
-          ProdNum->new( operator => $_[0],
-                        values   => [ splice @_, 1 ] );
-    };
 
     foreach my $line (@tasks)
     {

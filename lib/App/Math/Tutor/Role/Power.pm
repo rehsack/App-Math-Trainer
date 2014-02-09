@@ -13,7 +13,7 @@ use Moo::Role;
 use App::Math::Tutor::Numbers;
 use Module::Runtime qw/use_module/;
 
-use_module "App::Math::Tutor::Role::VulFrac";    # for _check_vulgar_fraction
+with "App::Math::Tutor::Role::VulFrac";    # for _check_vulgar_fraction
 
 our $VERSION = '0.004';
 
@@ -34,7 +34,7 @@ sub _build_power_types
         {
            name    => "power",
            numbers => 1,
-           builder => sub { return int( rand( $_[0] ) + 1 ); },
+           builder => sub { return int( rand( $_[1] ) + 1 ); },
         },
         {
            name    => "sqrt",
@@ -42,7 +42,7 @@ sub _build_power_types
            builder => sub {
                return
                  VulFrac->new( num   => 1,
-                               denum => int( rand( $_[0] ) + 1 ) );
+                               denum => int( rand( $_[1] ) + 1 ) );
            },
         },
         {
@@ -52,9 +52,9 @@ sub _build_power_types
                my $vf;
                do
                {
-                   $vf = VulFrac->new( num   => int( rand( $_[0] ) + 1 ),
-                                       denum => int( rand( $_[0] ) + 1 ) );
-               } while ( !App::Math::Tutor::Role::VulFrac::_check_vulgar_fraction($vf) );
+                   $vf = VulFrac->new( num   => int( rand( $_[1] ) + 1 ),
+                                       denum => int( rand( $_[1] ) + 1 ) );
+               } while ( !$_[0]->_check_vulgar_fraction($vf) );
                return $vf;
            },
         },
@@ -67,7 +67,7 @@ sub _guess_power_to
     my @types = @{ $_[0]->power_types };
     my $type  = int( rand( scalar @types ) );
     my ( $basis, $exponent ) =
-      ( int( rand($max_basis) ), $types[$type]->{builder}->($max_exponent) );
+      ( int( rand($max_basis) ), $types[$type]->{builder}->( $_[0], $max_exponent ) );
     return
       Power->new(
                   basis    => $basis,
