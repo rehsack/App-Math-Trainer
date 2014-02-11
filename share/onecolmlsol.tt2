@@ -43,6 +43,15 @@
 \setcounter{secnumdepth}{4}
 \usepackage{natbib}
 
+[% usepkgs = [];
+   FOREACH pkg IN exercises.usepackages ;
+     usepkg = "\\usepackage{${pkg}}";
+     usepkgs.push( usepkg );
+   END;
+   usepkgs.join("\n");
+%]
+[% exercises.headeritems.join('\n'); %]
+
 \begin{document}
 
 %\addtolength\cellspacetoplimit{5pt}

@@ -74,6 +74,14 @@ List of challenges to exercise
 
 List of solutions of challenges
 
+=item usepackages
+
+List of additional package names to pass to \usepackage
+
+=item headeritems
+
+List of additional lines to put to document header
+
 =back
 
 =cut
