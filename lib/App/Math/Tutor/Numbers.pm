@@ -65,8 +65,8 @@ our $VERSION = '0.004';
           and $_[0]->num > $_[0]->denum
           and return
           sprintf( '\normalsize{%d} \frac{%d}{%d}',
-                   int( $_[0] ),
-                   $_[0]->num - $_[0]->denum * int( abs( $_[0]->_numify ) ),
+                   int( $_[0]->num / $_[0]->denum ),
+                   $_[0]->num % $_[0]->denum,
                    $_[0]->denum );
 
         my ( $lb, $rb ) = ( "", "" );
