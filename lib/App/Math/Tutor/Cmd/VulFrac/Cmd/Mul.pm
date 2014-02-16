@@ -33,6 +33,8 @@ my %result_formats = (
 
 =head2 result_format
 
+Allows controlling of accepted format of exercise output
+
 =cut
 
 option result_format => (

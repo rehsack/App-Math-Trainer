@@ -29,6 +29,14 @@ my %result_formats = (
                        reducable => 1,
                      );
 
+=head1 ATTRIBUTES
+
+=head2 result_format
+
+Allows controlling of accepted format of exercise output
+
+=cut
+
 option result_format => (
     is        => "ro",
     predicate => 1,
@@ -36,7 +44,7 @@ option result_format => (
     long_doc  => "Let one specify result format behavior, pick one of\n\n"
       . "reducable: result can be reduced, "
       . "keep: keep exercise format (after reducing)",
-    coerce    => sub {
+    coerce => sub {
         defined $_[0] or return {};
         "HASH" eq ref $_[0] and return $_[0];
         my ( @fail, %rf );
