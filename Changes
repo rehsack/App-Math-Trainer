@@ -1,6 +1,6 @@
 Revision history for App-Math-Trainer
 
-0.004
+0.004	2014-02-24
     - fix a lot of issues reported by niederrhein.pm
     - improve documentation
     - refactoring for cleaner solution writing
@@ -9,6 +9,8 @@ Revision history for App-Math-Trainer
     - add support for polynoms and power mathematics
     - rename option --amount to --quantity
     - introduce Math::Complex support
+    - add experimental chart support with recent LaTeX::Driver and
+      full working xelatex
 
 0.003	2014-01-15
     - redesign of guessing exercise values
