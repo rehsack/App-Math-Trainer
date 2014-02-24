@@ -13,7 +13,7 @@ use vars qw();
 
 use Exporter;
 
-our $VERSION     = '0.004';
+our $VERSION     = '0.005';
 our @ISA         = qw(Exporter);
 our @EXPORT      = qw();
 our @EXPORT_OK   = qw(sumcat_terms prodcat_terms);

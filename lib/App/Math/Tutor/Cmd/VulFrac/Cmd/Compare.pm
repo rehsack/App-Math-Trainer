@@ -11,7 +11,7 @@ App::Math::Tutor::Cmd::VulFrac::Cmd::Compare - Plugin for comparing vulgar fract
 
 =cut
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 use Moo;
 use MooX::Cmd;

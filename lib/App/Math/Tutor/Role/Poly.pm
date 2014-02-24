@@ -12,7 +12,7 @@ App::Math::Tutor::Role::Poly - role for polynoms
 use Moo::Role;
 use App::Math::Tutor::Numbers;
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 sub _check_polynom
 {

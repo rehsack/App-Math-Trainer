@@ -11,7 +11,7 @@ App::Math::Tutor::Role::Unit - role for numererical parts for calculation with u
 
 use Moo::Role;
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 use Hash::MoreUtils qw/slice_def/;
 use App::Math::Tutor::Numbers;

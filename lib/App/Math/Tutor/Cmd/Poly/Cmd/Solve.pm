@@ -11,7 +11,7 @@ App::Math::Tutor::Cmd::Poly::Cmd::Solve - Plugin for solving polynoms
 
 =cut
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 use Moo;
 use MooX::Cmd;

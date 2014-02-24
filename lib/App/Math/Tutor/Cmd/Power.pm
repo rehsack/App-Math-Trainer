@@ -9,7 +9,7 @@ App::Math::Tutor::Cmd::Power - namespace for exercises for power mathematics
 
 =cut
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 use Moo;
 use MooX::Cmd;

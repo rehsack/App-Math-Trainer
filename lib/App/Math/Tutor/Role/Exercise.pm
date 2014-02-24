@@ -18,7 +18,7 @@ use File::Spec     ();
 use File::ShareDir ();
 use Template       ();
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 =head1 ATTRIBUTES
 

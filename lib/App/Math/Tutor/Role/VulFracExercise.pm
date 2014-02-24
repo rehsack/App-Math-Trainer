@@ -14,7 +14,7 @@ use MooX::Options;
 
 with "App::Math::Tutor::Role::Exercise", "App::Math::Tutor::Role::VulFrac";
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 =head1 ATTRIBUTES
 

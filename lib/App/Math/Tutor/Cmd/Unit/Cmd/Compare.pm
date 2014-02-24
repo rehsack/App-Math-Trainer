@@ -11,7 +11,7 @@ App::Math::Tutor::Cmd::Unit::Cmd::Compare - Plugin for comparing numbers with un
 
 =cut
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 use Moo;
 use MooX::Cmd;

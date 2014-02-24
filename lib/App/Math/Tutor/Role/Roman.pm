@@ -14,7 +14,7 @@ use App::Math::Tutor::Numbers;
 
 with "App::Math::Tutor::Role::Natural";
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 around _guess_natural_number => sub {
     my $next    = shift;
