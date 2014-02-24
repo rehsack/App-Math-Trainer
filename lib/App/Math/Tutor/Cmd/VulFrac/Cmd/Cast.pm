@@ -24,6 +24,18 @@ has template_filename => (
 
 with "App::Math::Tutor::Role::VulFracExercise", "App::Math::Tutor::Role::DecFracExercise";
 
+=head1 ATTRIBUTES
+
+=head2 chart
+
+Enable chart for fraction approximation.
+
+Warning: This is experimental and requires LaTeX::Driver 0.20+ and properly working xelatex
+
+Default: 0
+
+=cut
+
 option chart => (
     is       => "ro",
     doc      => "Enable chart for fraction approximation",
