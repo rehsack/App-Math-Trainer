@@ -110,8 +110,8 @@ around _check_polynom => sub {
     $d->sign < 0 and !$self->complex_solution and return;
     $d->{num} = abs( $d->{num} );
     $d = $d->_reduce;
-    return $self->_check_sqrt( $d->num, $values[0]->exponent )
-      and $self->_check_sqrt( $d->denum, $values[0]->exponent );
+    return ($self->_check_sqrt( $d->num, $values[0]->exponent )
+      and $self->_check_sqrt( $d->denum, $values[0]->exponent ));
 };
 
 my $a_plus_b = sub {
