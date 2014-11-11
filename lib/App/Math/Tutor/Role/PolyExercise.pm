@@ -16,7 +16,7 @@ with "App::Math::Tutor::Role::Exercise", "App::Math::Tutor::Role::Poly";
 
 use Scalar::Util qw/looks_like_number/;
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 =head1 ATTRIBUTES
 

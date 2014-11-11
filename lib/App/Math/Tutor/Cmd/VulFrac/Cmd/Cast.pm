@@ -11,7 +11,7 @@ App::Math::Tutor::Cmd::VulFrac::Cmd::Cast - Plugin for casting of vulgar fractio
 
 =cut
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 use Moo;
 use MooX::Cmd;

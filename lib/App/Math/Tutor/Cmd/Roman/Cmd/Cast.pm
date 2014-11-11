@@ -11,7 +11,7 @@ App::Math::Tutor::Cmd::Roman::Cmd::Cast - Plugin for casting of roman numerals i
 
 =cut
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 use Moo;
 use MooX::Cmd;

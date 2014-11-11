@@ -11,7 +11,7 @@ App::Math::Tutor::Cmd::Unit::Cmd::Add - Plugin for addition and subtraction of n
 
 =cut
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 use Moo;
 use MooX::Cmd;

@@ -15,7 +15,7 @@ use Module::Runtime qw/use_module/;
 
 with "App::Math::Tutor::Role::VulFrac";    # for _check_vulgar_fraction
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 sub _check_power_to { $_[0]->basis != 0 and $_[0]->basis != 1 and $_[0]->exponent != 0; }
 

@@ -12,7 +12,7 @@ App::Math::Tutor::Role::DecFrac - role for decimal fraction numbers
 use Moo::Role;
 use App::Math::Tutor::Numbers;
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 requires "range", "digits";
 

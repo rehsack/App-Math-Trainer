@@ -9,7 +9,7 @@ App::Math::Tutor::Cmd::VulFrac - namespace for exercises for vulgar fraction
 
 =cut
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 use Moo;
 use MooX::Cmd;

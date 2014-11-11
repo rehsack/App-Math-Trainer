@@ -9,7 +9,7 @@ App::Math::Tutor::Cmd::Poly - namespace for exercises for polynoms
 
 =cut
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 use Moo;
 use MooX::Cmd;

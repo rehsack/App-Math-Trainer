@@ -12,7 +12,7 @@ App::Math::Tutor::Role::VulFrac - role for vulgar fraction numbers
 use Moo::Role;
 use App::Math::Tutor::Numbers;
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 sub _check_vulgar_fraction
 {

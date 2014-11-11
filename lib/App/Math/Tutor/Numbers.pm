@@ -11,7 +11,7 @@ App::Math::Tutor::Numbers - Numbers provider for math exercises
 
 use App::Math::Tutor::Util ();
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 {
     package    #

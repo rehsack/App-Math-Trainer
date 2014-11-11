@@ -114,7 +114,7 @@ option "deviation" => (
 
 with "App::Math::Tutor::Role::Exercise", "App::Math::Tutor::Role::Unit";
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 =head1 LICENSE AND COPYRIGHT
 

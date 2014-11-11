@@ -12,7 +12,7 @@ App::Math::Tutor::Role::Natural - role for natural numbers
 use Moo::Role;
 use App::Math::Tutor::Numbers;
 
-our $VERSION = '0.005';
+our $VERSION = '0.006';
 
 sub _check_natural_number { $_[0]->value >= 2 }
 
