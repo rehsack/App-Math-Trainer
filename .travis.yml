@@ -1,6 +1,11 @@
 language: perl
 before_install:
   - export PERL_CPANM_OPT="--verbose --no-interactive $( echo $PERL_CPANM_OPT | sed 's/--skip-satisfied//' )"
+install:
+  - cpanm --notest App::mymeta_requires
+  - perl Makefile.PL
+  - make manifest
+  - mymeta-requires --runtime --build --test --configure --develop --recommends --suggests | cpanm
 perl:
   - "5.20-extras"
   - "5.20"
