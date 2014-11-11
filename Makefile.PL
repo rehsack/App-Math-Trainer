@@ -5,6 +5,15 @@ use 5.008001;
 
 use ExtUtils::MakeMaker;
 
+BEGIN
+{
+    eval "use File::ShareDir::Install;";
+    $@ and eval "use lib qw,inc/File-ShareDir-Install,; use File::ShareDir::Install;";
+    $@ and die $@;
+}
+
+use File::ShareDir::Install 0.03;
+
 my %RUN_DEPS = (
     'Carp'                    => 0,
     'LaTeX::Table'            => '1.0.6',
@@ -20,6 +29,7 @@ my %RUN_DEPS = (
 
 my %CONFIGURE_DEPS = (
     'ExtUtils::MakeMaker' => 0,
+    'File::ShareDir::Install' => '0.03'
 );
 
 my %BUILD_DEPS = ();
@@ -28,6 +38,8 @@ my %TEST_DEPS = (
     'MooX::Cmd::Tester' => '0.007',
     'Test::More'        => '0.90',
 );
+
+install_share 'share';
 
 WriteMakefile1(
     MIN_PERL_VERSION => '5.008001',
@@ -132,3 +144,9 @@ sub WriteMakefile1
 
     WriteMakefile(%params);
 }
+
+package MY;
+
+use File::ShareDir::Install qw(postamble);
+
+1;
