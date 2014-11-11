@@ -1,5 +1,10 @@
 Revision history for App-Math-Trainer
 
+0.005	2014-11-11
+    - fix "Possible precedence issue with control flow operator"
+      (5.20 related)
+    - move from Module::Build to ExtUtils::MakeMaker
+
 0.004	2014-02-24
     - fix a lot of issues reported by niederrhein.pm
     - improve documentation
