@@ -18,16 +18,15 @@ use MooX::Cmd;
 use MooX::Options;
 
 has template_filename => (
-                           is      => "ro",
-                           default => "twocols"
-                         );
+    is      => "ro",
+    default => "twocols"
+);
 
 with "App::Math::Tutor::Role::UnitExercise";
 
 sub _build_exercises
 {
     my ($self) = @_;
-
     my (@tasks);
 
     foreach my $i ( 1 .. $self->quantity )
@@ -42,13 +41,13 @@ sub _build_exercises
     }
 
     my $exercises = {
-                      section    => "Unit addition / subtraction",
-                      caption    => 'Units',
-                      label      => 'unit_addition',
-                      header     => [ [ 'Unit Addition', 'Unit Subtraction' ] ],
-                      solutions  => [],
-                      challenges => [],
-                    };
+        section    => "Unit addition / subtraction",
+        caption    => 'Units',
+        label      => 'unit_addition',
+        header     => [ [ 'Unit Addition', 'Unit Subtraction' ] ],
+        solutions  => [],
+        challenges => [],
+    };
 
     foreach my $line (@tasks)
     {
@@ -82,7 +81,7 @@ sub _build_exercises
                     $dp += $a->type->{spectrum}->[$i]->{max} + 1;
                 }
                 elsif ( defined $a->type->{spectrum}->[$i]->{max}
-                        and $dp > $a->type->{spectrum}->[$i]->{max} )
+                    and $dp > $a->type->{spectrum}->[$i]->{max} )
                 {
                     @dparts and ++$dparts[-1];
                     @dparts or push @dparts, 1;
@@ -92,17 +91,17 @@ sub _build_exercises
                 push( @dparts, $dp );
             }
             my $c = Unit->new(
-                               type  => $a->type,
-                               begin => $beg,
-                               end   => $end,
-                               parts => \@cparts
-                             );
+                type  => $a->type,
+                begin => $beg,
+                end   => $end,
+                parts => \@cparts
+            );
             my $d = Unit->new(
-                               type  => $a->type,
-                               begin => $beg - ( scalar @cparts - scalar @dparts ),
-                               end   => $end,
-                               parts => \@dparts
-                             );
+                type  => $a->type,
+                begin => $beg - ( scalar @cparts - scalar @dparts ),
+                end   => $end,
+                parts => \@dparts
+            );
 
             push( @way, "$c" );
             push( @way, "$d" );
@@ -114,7 +113,7 @@ sub _build_exercises
         push( @{ $exercises->{challenges} }, \@challenge );
     }
 
-    return $exercises;
+    $exercises;
 }
 
 =head1 LICENSE AND COPYRIGHT

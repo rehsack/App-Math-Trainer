@@ -22,11 +22,11 @@ our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 use Scalar::Util qw/blessed/;
 
 my %sum_opposites = (
-                      '+'   => '-',
-                      '-'   => '+',
-                      '\pm' => '\mp',
-                      '\mp' => '\pm',
-                    );
+    '+'   => '-',
+    '-'   => '+',
+    '\pm' => '\mp',
+    '\mp' => '\pm',
+);
 
 =head1 EXPORTS
 
@@ -68,9 +68,9 @@ sub sumcat_terms
 }
 
 my %prod_ops = (
-                 '*' => '\cdot',
-                 '/' => '\div',
-               );
+    '*' => '\cdot',
+    '/' => '\div',
+);
 
 =head2 prodcat_terms
 

@@ -17,46 +17,46 @@ with "App::Math::Tutor::Role::VulFrac";    # for _check_vulgar_fraction
 
 our $VERSION = '0.005';
 
-sub _check_power_to
-{
-    return $_[0]->basis != 0 and $_[0]->basis != 1 and $_[0]->exponent != 0;
-}
+sub _check_power_to { $_[0]->basis != 0 and $_[0]->basis != 1 and $_[0]->exponent != 0; }
 
 has power_types => (
-                     is => "lazy",
-                   );
+    is => "lazy",
+);
 
 requires "format";
 
 sub _build_power_types
 {
-    return [
+    [
         {
-           name    => "power",
-           numbers => 1,
-           builder => sub { return int( rand( $_[1] ) + 1 ); },
+            name    => "power",
+            numbers => 1,
+            builder => sub { int( rand( $_[1] ) + 1 ); },
         },
         {
-           name    => "sqrt",
-           numbers => 1,
-           builder => sub {
-               return
-                 VulFrac->new( num   => 1,
-                               denum => int( rand( $_[1] ) + 1 ) );
-           },
+            name    => "sqrt",
+            numbers => 1,
+            builder => sub {
+                VulFrac->new(
+                    num   => 1,
+                    denum => int( rand( $_[1] ) + 1 )
+                );
+            },
         },
         {
-           name    => "power+sqrt",
-           numbers => 2,
-           builder => sub {
-               my $vf;
-               do
-               {
-                   $vf = VulFrac->new( num   => int( rand( $_[1] ) + 1 ),
-                                       denum => int( rand( $_[1] ) + 1 ) );
-               } while ( !$_[0]->_check_vulgar_fraction($vf) );
-               return $vf;
-           },
+            name    => "power+sqrt",
+            numbers => 2,
+            builder => sub {
+                my $vf;
+                do
+                {
+                    $vf = VulFrac->new(
+                        num   => int( rand( $_[1] ) + 1 ),
+                        denum => int( rand( $_[1] ) + 1 )
+                    );
+                } while ( !$_[0]->_check_vulgar_fraction($vf) );
+                $vf;
+            },
         },
     ];
 }
@@ -68,12 +68,11 @@ sub _guess_power_to
     my $type  = int( rand( scalar @types ) );
     my ( $basis, $exponent ) =
       ( int( rand($max_basis) ), $types[$type]->{builder}->( $_[0], $max_exponent ) );
-    return
-      Power->new(
-                  basis    => $basis,
-                  exponent => $exponent,
-                  mode     => int( rand(2) )
-                );
+    Power->new(
+        basis    => $basis,
+        exponent => $exponent,
+        mode     => int( rand(2) )
+    );
 }
 
 =head1 METHODS
@@ -100,7 +99,7 @@ sub get_power_to
         push @result, $pt;
     }
 
-    return @result;
+    @result;
 }
 
 =head1 LICENSE AND COPYRIGHT

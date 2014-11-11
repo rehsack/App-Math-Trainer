@@ -18,9 +18,9 @@ use MooX::Cmd;
 use MooX::Options;
 
 has template_filename => (
-                           is      => "ro",
-                           default => "twocols"
-                         );
+    is      => "ro",
+    default => "twocols"
+);
 
 with "App::Math::Tutor::Role::PowerExercise";
 
@@ -41,13 +41,13 @@ sub _build_exercises
     }
 
     my $exercises = {
-                      section    => "Power mathematic rules",
-                      caption    => 'Power mathematic rules',
-                      label      => 'power_to',
-                      header     => [ [ 'Simpify', 'Simplify' ] ],
-                      solutions  => [],
-                      challenges => [],
-                    };
+        section    => "Power mathematic rules",
+        caption    => 'Power mathematic rules',
+        label      => 'power_to',
+        header     => [ [ 'Simpify', 'Simplify' ] ],
+        solutions  => [],
+        challenges => [],
+    };
 
     foreach my $line (@tasks)
     {
@@ -70,7 +70,7 @@ sub _build_exercises
         push( @{ $exercises->{challenges} }, \@challenge );
     }
 
-    return $exercises;
+    $exercises;
 }
 
 =head1 LICENSE AND COPYRIGHT

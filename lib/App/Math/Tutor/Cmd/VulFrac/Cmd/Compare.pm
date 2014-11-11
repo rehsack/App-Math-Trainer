@@ -23,9 +23,9 @@ use Template       ();
 use Scalar::Util qw(looks_like_number);
 
 has template_filename => (
-                           is      => "ro",
-                           default => "twocols"
-                         );
+    is      => "ro",
+    default => "twocols"
+);
 
 with "App::Math::Tutor::Role::VulFracExercise";
 
@@ -47,13 +47,13 @@ sub _build_exercises
     }
 
     my $exercises = {
-                      section => "Vulgar fraction comparison",
-                      caption => 'Vulgar fractions',
-                      label   => 'vulgar_fractions_comparison',
-                      header  => [ [ 'Vulgar fraction Comparison', 'Vulgar fraction Comparison' ] ],
-                      solutions  => [],
-                      challenges => [],
-                    };
+        section    => "Vulgar fraction comparison",
+        caption    => 'Vulgar fractions',
+        label      => 'vulgar_fractions_comparison',
+        header     => [ [ 'Vulgar fraction Comparison', 'Vulgar fraction Comparison' ] ],
+        solutions  => [],
+        challenges => [],
+    };
 
     foreach my $line (@tasks)
     {
@@ -77,7 +77,7 @@ sub _build_exercises
         push( @{ $exercises->{challenges} }, \@challenge );
     }
 
-    return $exercises;
+    $exercises;
 }
 
 =head1 LICENSE AND COPYRIGHT

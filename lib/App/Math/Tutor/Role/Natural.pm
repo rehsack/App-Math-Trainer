@@ -14,7 +14,7 @@ use App::Math::Tutor::Numbers;
 
 our $VERSION = '0.005';
 
-sub _check_natural_number { return $_[0]->value >= 2 }
+sub _check_natural_number { $_[0]->value >= 2 }
 
 requires "format";
 
@@ -22,7 +22,7 @@ sub _guess_natural_number
 {
     my $max_val = $_[0]->format;
     my $value   = int( rand($max_val) );
-    return NatNum->new( value => $value );
+    NatNum->new( value => $value );
 }
 
 =head1 METHODS
@@ -49,7 +49,7 @@ sub get_natural_number
         push @result, $nn;
     }
 
-    return @result;
+    @result;
 }
 
 =head1 LICENSE AND COPYRIGHT

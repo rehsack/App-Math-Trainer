@@ -50,10 +50,10 @@ option format => (
         my $maxv = $startv . "0" x length($fmtv);
         $maxv;
     },
-    default => sub { return 100; },
+    default => sub { 100 },
     format  => "s",
     short   => "f",
-                 );
+);
 
 =head1 LICENSE AND COPYRIGHT
 

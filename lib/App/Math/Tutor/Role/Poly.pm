@@ -35,12 +35,15 @@ sub _guess_polynom
         rand(100) <= $probability or next;
         my $value = int( rand( $max_val * 2 ) - $max_val );
         push @values,
-          PolyTerm->new( factor   => $value,
-                         exponent => $exp );
+          PolyTerm->new(
+            factor   => $value,
+            exponent => $exp
+          );
     }
-    return
-      PolyNum->new( values   => [ reverse @values ],
-                    operator => "+" );
+    PolyNum->new(
+        values   => [ reverse @values ],
+        operator => "+"
+    );
 }
 
 =head1 METHODS
@@ -67,7 +70,7 @@ sub get_polynom
         push @result, $nn;
     }
 
-    return @result;
+    @result;
 }
 
 =head1 LICENSE AND COPYRIGHT

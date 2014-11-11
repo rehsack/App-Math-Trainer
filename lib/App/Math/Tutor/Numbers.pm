@@ -28,18 +28,18 @@ our $VERSION = '0.005';
     use Math::Complex;
 
     has num => (
-                 is       => "ro",
-                 required => 1
-               );
+        is       => "ro",
+        required => 1
+    );
 
     has denum => (
-                   is       => "ro",
-                   required => 1
-                 );
+        is       => "ro",
+        required => 1
+    );
     has sign => (
-                  is       => "ro",
-                  required => 1
-                );
+        is       => "ro",
+        required => 1
+    );
 
     around BUILDARGS => sub {
         my $orig   = shift;
@@ -50,8 +50,7 @@ our $VERSION = '0.005';
           and $params->{num} = blessed $params->{num} ? $params->{num}->_abs : abs( $params->{num} )
           and $params->{sign} *= -1;
         $params->{denum} < 0
-          and $params->{denum} =
-          blessed $params->{denum} ? $params->{denum}->_abs : abs( $params->{denum} )
+          and $params->{denum} = blessed $params->{denum} ? $params->{denum}->_abs : abs( $params->{denum} )
           and $params->{sign} *= -1;
         $params->{sign} = $params->{sign} < 0 ? dualvar( -1, "-" ) : dualvar( 1, "" );
         $params;
@@ -64,10 +63,7 @@ our $VERSION = '0.005';
         $_[1]
           and $_[0]->num > $_[0]->denum
           and return
-          sprintf( '\normalsize{%d} \frac{%d}{%d}',
-                   int( $_[0]->num / $_[0]->denum ),
-                   $_[0]->num % $_[0]->denum,
-                   $_[0]->denum );
+          sprintf( '\normalsize{%d} \frac{%d}{%d}', int( $_[0]->num / $_[0]->denum ), $_[0]->num % $_[0]->denum, $_[0]->denum );
 
         my ( $lb, $rb ) = ( "", "" );
         $_[0]->sign < 0
@@ -111,10 +107,10 @@ our $VERSION = '0.005';
     sub _reciprocal
     {
         return ref( $_[0] )->new(
-                                  num   => $_[0]->denum,
-                                  denum => $_[0]->num,
-                                  sign  => $_[0]->sign
-                                );
+            num   => $_[0]->denum,
+            denum => $_[0]->num,
+            sign  => $_[0]->sign
+        );
     }
 
     sub _neg
@@ -123,31 +119,30 @@ our $VERSION = '0.005';
         $s *= -1;
         $s = $s < 0 ? dualvar( -1, "-" ) : dualvar( 1, "" );
         return ref( $_[0] )->new(
-                                  num   => $_[0]->num,
-                                  denum => $_[0]->denum,
-                                  sign  => $s
-                                );
+            num   => $_[0]->num,
+            denum => $_[0]->denum,
+            sign  => $s
+        );
     }
 
     sub _abs
     {
         return ref( $_[0] )->new(
-                                  num   => $_[0]->num,
-                                  denum => $_[0]->denum,
-                                  sign  => dualvar( 1, "" )
-                                );
+            num   => $_[0]->num,
+            denum => $_[0]->denum,
+            sign  => dualvar( 1, "" )
+        );
     }
 
     sub _reduce
     {
         my ( $a, $b ) = ( $_[0]->num, $_[0]->denum );
         my $gcd = $a > $b ? _euklid( $a, $b ) : _euklid( $b, $a );
-        return
-          VulFrac->new(
-                        num   => $_[0]->num / $gcd,
-                        denum => $_[0]->denum / $gcd,
-                        sign  => $_[0]->sign
-                      );
+        return VulFrac->new(
+            num   => $_[0]->num / $gcd,
+            denum => $_[0]->denum / $gcd,
+            sign  => $_[0]->sign
+        );
     }
 
     sub _build_from_decimal
@@ -159,11 +154,10 @@ our $VERSION = '0.005';
             $n *= 10;
             $d *= 10;
         }
-        return
-          $c->new(
-                   num   => $n,
-                   denum => $d
-                 )->_reduce;
+        return $c->new(
+            num   => $n,
+            denum => $d
+        )->_reduce;
     }
 }
 
@@ -182,9 +176,9 @@ our $VERSION = '0.005';
     use Math::Complex;
 
     has value => (
-                   is       => "ro",
-                   required => 1
-                 );
+        is       => "ro",
+        required => 1
+    );
 
     sub _stringify { "" . $_[0]->value }
     sub _numify    { $_[0]->value }
@@ -215,13 +209,13 @@ our $VERSION = '0.005';
     use Math::Complex;
 
     has factor => (
-                    is      => "ro",
-                    default => sub { 1 },
-                  );
+        is      => "ro",
+        default => sub { 1 },
+    );
     has exponent => (
-                      is       => "ro",
-                      required => 1
-                    );
+        is       => "ro",
+        required => 1
+    );
 
     sub _stringify
     {
@@ -239,9 +233,10 @@ our $VERSION = '0.005';
     {
         my ( $fact, $exp ) = ( $_[0]->factor, $_[0]->exponent );
         $fact = blessed $fact ? $fact->_abs() : abs($fact);
-        return
-          PolyTerm->new( factor   => $fact,
-                         exponent => $exp );
+        return PolyTerm->new(
+            factor   => $fact,
+            exponent => $exp
+        );
     }
 
     sub sign { return $_[0]->factor <=> 0 }
@@ -263,13 +258,13 @@ our $VERSION = '0.005';
     App::Math::Tutor::Util->import(qw(sumcat_terms));
 
     has values => (
-                    is       => "ro",
-                    required => 1
-                  );
+        is       => "ro",
+        required => 1
+    );
     has operator => (
-                      is       => 'ro',
-                      required => 1,
-                    );
+        is       => 'ro',
+        required => 1,
+    );
 
     sub _stringify { sumcat_terms( $_[0]->operator, @{ $_[0]->values } ); }
 
@@ -313,9 +308,10 @@ our $VERSION = '0.005';
     sub _abs
     {
         my ( $first, @ov ) = @{ $_[0]->values };
-        return ref( $_[0] )->new( operator => $_[0]->operator,
-                                  values   => [ blessed $first ? $first->_abs : abs($first), @ov ]
-                                );
+        return ref( $_[0] )->new(
+            operator => $_[0]->operator,
+            values   => [ blessed $first ? $first->_abs : abs($first), @ov ]
+        );
     }
 }
 
@@ -335,13 +331,13 @@ our $VERSION = '0.005';
     App::Math::Tutor::Util->import(qw(prodcat_terms));
 
     has values => (
-                    is       => "ro",
-                    required => 1
-                  );
+        is       => "ro",
+        required => 1
+    );
     has operator => (
-                      is       => 'ro',
-                      required => 1,
-                    );
+        is       => 'ro',
+        required => 1,
+    );
 
     sub _stringify { prodcat_terms( $_[0]->operator, @{ $_[0]->values } ); }
 
@@ -401,8 +397,10 @@ our $VERSION = '0.005';
             my $x = blessed $term ? $term->_abs : abs($term);
             push @v, $x;
         }
-        return ref( $_[0] )->new( operator => $_[0]->operator,
-                                  values   => [@v] );
+        return ref( $_[0] )->new(
+            operator => $_[0]->operator,
+            values   => [@v]
+        );
     }
 }
 
@@ -421,28 +419,28 @@ our $VERSION = '0.005';
     use Math::Complex;
 
     has basis => (
-                   is       => "ro",
-                   required => 1
-                 );
+        is       => "ro",
+        required => 1
+    );
 
     has exponent => (
-                      is       => "ro",
-                      required => 1
-                    );
+        is       => "ro",
+        required => 1
+    );
 
     has mode => (
-                  is      => "rw",
-                  default => sub { 0 },
-                );
+        is      => "rw",
+        default => sub { 0 },
+    );
 
     has factor => (
-                    is      => "ro",
-                    default => sub { 1 },
-                  );
+        is      => "ro",
+        default => sub { 1 },
+    );
 
     has sign => (
-                  is => "lazy",
-                );
+        is => "lazy",
+    );
 
     sub _stringify
     {
@@ -458,14 +456,11 @@ our $VERSION = '0.005';
         $m
           and ( $e <=> int($e) ) != 0
           and 0 != $bn
-          and $x = sprintf(
-                            "\\sqrt%s{%s}",
-                            $e->denum != 2 ? sprintf( "[%s]", $e->denum ) : "",
-                            $e->num != 1
-                            ? sprintf( "{%s}^{%s}",
-                                       blessed $b ? "\\left($b\{}\\right)" : $b, $e->num )
-                            : $b
-                          );
+          and $x = sprintf( "\\sqrt%s{%s}",
+            $e->denum != 2 ? sprintf( "[%s]", $e->denum ) : "",
+            $e->num != 1
+            ? sprintf( "{%s}^{%s}", blessed $b ? "\\left($b\{}\\right)" : $b, $e->num )
+            : $b );
         defined $x
           or $x = sprintf( "{%s}^{%s}", blessed $b ? "\\left($b\{}\\right)" : $b, $e )
           if 0 != $bn;
@@ -519,11 +514,11 @@ our $VERSION = '0.005';
         my ( $b, $e, $f, $m ) = ( $_[0]->basis, $_[0]->exponent, $_[0]->factor, $_[0]->mode );
         $f = blessed $f ? $f->_abs : abs($f);
         return ref( $_[0] )->new(
-                                  basis    => $b,
-                                  exponent => $e,
-                                  factor   => $f,
-                                  mode     => $m
-                                );
+            basis    => $b,
+            exponent => $e,
+            factor   => $f,
+            mode     => $m
+        );
     }
 }
 
@@ -546,26 +541,25 @@ our $VERSION = '0.005';
           and confess( "Roman numerals starts at I - " . $params->{value} . " is to low" );
         defined $params->{value}
           and $params->{value} > 3888
-          and
-          confess( "Roman numerals ends at MMMDCCCLXXXVIII - " . $params->{value} . " is to big" );
+          and confess( "Roman numerals ends at MMMDCCCLXXXVIII - " . $params->{value} . " is to big" );
         return $params;
     };
 
     my %sizes = (
-                  M  => 1000,
-                  CM => 900,
-                  D  => 500,
-                  CD => 400,
-                  C  => 100,
-                  XC => 90,
-                  L  => 50,
-                  XL => 40,
-                  X  => 10,
-                  IX => 9,
-                  V  => 5,
-                  IV => 4,
-                  I  => 1,
-                );
+        M  => 1000,
+        CM => 900,
+        D  => 500,
+        CD => 400,
+        C  => 100,
+        XC => 90,
+        L  => 50,
+        XL => 40,
+        X  => 10,
+        IX => 9,
+        V  => 5,
+        IV => 4,
+        I  => 1,
+    );
 
     sub _stringify
     {
@@ -599,21 +593,21 @@ our $VERSION = '0.005';
     use Math::Complex;
 
     has type => (
-                  is       => "ro",
-                  required => 1
-                );
+        is       => "ro",
+        required => 1
+    );
     has begin => (
-                   is       => "ro",
-                   required => 1
-                 );
+        is       => "ro",
+        required => 1
+    );
     has end => (
-                 is       => "ro",
-                 required => 1
-               );
+        is       => "ro",
+        required => 1
+    );
     has parts => (
-                   is       => "ro",
-                   required => 1
-                 );
+        is       => "ro",
+        required => 1
+    );
 
     sub _stringify
     {

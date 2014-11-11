@@ -28,7 +28,7 @@ my %RUN_DEPS = (
 );
 
 my %CONFIGURE_DEPS = (
-    'ExtUtils::MakeMaker' => 0,
+    'ExtUtils::MakeMaker'     => 0,
     'File::ShareDir::Install' => '0.03'
 );
 

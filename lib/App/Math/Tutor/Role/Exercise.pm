@@ -29,15 +29,15 @@ Specifies number of calculations to generate
 =cut
 
 option quantity => (
-                     is       => "ro",
-                     doc      => "Specifies number of exercises to generate",
-                     long_doc => "Specify number of exercises to generate. In "
-                       . "case of several kind of exercises, \$quantity exercises "
-                       . "are generated per kind.",
-                     format  => "i",
-                     short   => "n",
-                     default => sub { 15 },
-                   );
+    is       => "ro",
+    doc      => "Specifies number of exercises to generate",
+    long_doc => "Specify number of exercises to generate. In "
+      . "case of several kind of exercises, \$quantity exercises "
+      . "are generated per kind.",
+    format  => "i",
+    short   => "n",
+    default => sub { 15 },
+);
 
 =head2 exercises
 
@@ -89,7 +89,7 @@ List of additional lines to put to document header
 has exercises => (
     is => "lazy",
     # requires _build_exercises
-                 );
+);
 
 =head2 output_name
 
@@ -100,16 +100,12 @@ joined with empty string.
 =cut
 
 has output_name => (
-                     is => "lazy",
-                   );
+    is => "lazy",
+);
 
 sub _build_output_name
 {
-    my $self = shift;
-
-    my $cmdnames = join( "", map { $_->command_name || "" } @{ $self->command_chain } );
-
-    return $cmdnames;
+    join( "", map { $_->command_name || "" } @{ $_[0]->command_chain } );
 }
 
 =head2 output_type
@@ -120,11 +116,11 @@ builder returns 'pdf'. Permitted to be set via MooX::Options.
 =cut
 
 option output_type => (
-                        is     => "lazy",
-                        doc    => "Specifies the output type (tex, pdf, ps)",
-                        format => "s",
-                        short  => "t",
-                      );
+    is     => "lazy",
+    doc    => "Specifies the output type (tex, pdf, ps)",
+    format => "s",
+    short  => "t",
+);
 
 sub _build_output_type { 'pdf' }
 
@@ -137,11 +133,11 @@ directory. Permitted to be set via MooX::Options.
 =cut
 
 option output_location => (
-                            is     => "lazy",
-                            doc    => "Specifies the output location",
-                            format => "s",
-                            short  => "o",
-                          );
+    is     => "lazy",
+    doc    => "Specifies the output location",
+    format => "s",
+    short  => "o",
+);
 
 sub _build_output_location { abs_path(getcwd) }
 
@@ -165,26 +161,23 @@ sub execute
     my $ttcpath = File::Spec->catfile( $sharedir, $self->template_filename . ".tt2" );
 
     my $template = Template->new(
-                                  {
-                                    ABSOLUTE => 1,
-                                  }
-                                );
+        {
+            ABSOLUTE => 1,
+        }
+    );
     my $rc = $template->process(
-                                 $ttcpath,
-                                 {
-                                    exercises => $exercises,
-                                    output    => {
-                                                format => $self->output_type,
-                                              },
-                                 },
-                                 File::Spec->catfile(
-                                                 $self->output_location,
-                                                 join( ".", $self->output_name, $self->output_type )
-                                 ),
-                               );
+        $ttcpath,
+        {
+            exercises => $exercises,
+            output    => {
+                format => $self->output_type,
+            },
+        },
+        File::Spec->catfile( $self->output_location, join( ".", $self->output_name, $self->output_type ) ),
+    );
     $rc or croak( $template->error() );
 
-    return 0;
+    0;
 }
 
 =head1 LICENSE AND COPYRIGHT

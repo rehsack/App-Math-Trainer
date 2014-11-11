@@ -18,16 +18,13 @@ use MooX::Cmd;
 use MooX::Options;
 
 has template_filename => (
-                           is      => "ro",
-                           default => "twocols"
-                         );
+    is      => "ro",
+    default => "twocols"
+);
 
 with "App::Math::Tutor::Role::NaturalExercise";
 
-sub _build_command_names
-{
-    return qw(add sub);
-}
+sub _build_command_names { qw(add sub); }
 
 sub _build_exercises
 {
@@ -46,13 +43,13 @@ sub _build_exercises
     }
 
     my $exercises = {
-                      section    => "Natural number addition / subtraction",
-                      caption    => 'NaturalNums',
-                      label      => 'natural_number_addition',
-                      header     => [ [ 'Natural Number Addition', 'Natural Number Subtraction' ] ],
-                      solutions  => [],
-                      challenges => [],
-                    };
+        section    => "Natural number addition / subtraction",
+        caption    => 'NaturalNums',
+        label      => 'natural_number_addition',
+        header     => [ [ 'Natural Number Addition', 'Natural Number Subtraction' ] ],
+        solutions  => [],
+        challenges => [],
+    };
 
     foreach my $line (@tasks)
     {
@@ -76,7 +73,7 @@ sub _build_exercises
         push( @{ $exercises->{challenges} }, \@challenge );
     }
 
-    return $exercises;
+    $exercises;
 }
 
 =head1 LICENSE AND COPYRIGHT

@@ -23,9 +23,9 @@ use Template       ();
 use Scalar::Util qw(looks_like_number);
 
 has template_filename => (
-                           is      => "ro",
-                           default => "twocols"
-                         );
+    is      => "ro",
+    default => "twocols"
+);
 
 with "App::Math::Tutor::Role::UnitExercise", "App::Math::Tutor::Role::DecFracExercise";
 
@@ -49,15 +49,15 @@ sub _get_castable_numbers
           [
             $un,
             Unit->new(
-                       parts => [ $un->_numify($base) ],
-                       begin => $base,
-                       end   => $base,
-                       type  => $un->type
-                     )
+                parts => [ $un->_numify($base) ],
+                begin => $base,
+                end   => $base,
+                type  => $un->type
+            )
           ];
     }
 
-    return @result;
+    @result;
 }
 
 sub _build_exercises
@@ -76,12 +76,12 @@ sub _build_exercises
     }
 
     my $exercises = {
-           section => "Unit casting",
-           caption => 'Units',
-           label   => 'unit_castings',
-           header => [ [ 'Multiple entity => Single entity', 'Single entity => Multiple entity' ] ],
-           solutions  => [],
-           challenges => [],
+        section    => "Unit casting",
+        caption    => 'Units',
+        label      => 'unit_castings',
+        header     => [ [ 'Multiple entity => Single entity', 'Single entity => Multiple entity' ] ],
+        solutions  => [],
+        challenges => [],
     };
 
     my $digits = $self->digits;
@@ -92,9 +92,7 @@ sub _build_exercises
         my ( $unit, $based ) = @{ $line->[0] };
         my $base      = $based->begin;
         my $base_name = $unit->type->{spectrum}->[$base]->{unit};
-        push @challenge,
-          sprintf( '$ %s = %s\\text{%s} $',
-                   $unit, "\\ldots" x int( length($based) / 3 ), $base_name );
+        push @challenge, sprintf( '$ %s = %s\\text{%s} $', $unit, "\\ldots" x int( length($based) / 3 ), $base_name );
 
         my @way;    # remember Frank Sinatra :)
         push @way, "" . $unit;
@@ -115,7 +113,7 @@ sub _build_exercises
         push( @{ $exercises->{challenges} }, \@challenge );
     }
 
-    return $exercises;
+    $exercises;
 
 }
 

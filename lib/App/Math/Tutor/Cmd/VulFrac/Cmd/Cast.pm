@@ -18,9 +18,9 @@ use MooX::Cmd;
 use MooX::Options;
 
 has template_filename => (
-                           is      => "ro",
-                           default => "twocols"
-                         );
+    is      => "ro",
+    default => "twocols"
+);
 
 with "App::Math::Tutor::Role::VulFracExercise", "App::Math::Tutor::Role::DecFracExercise";
 
@@ -46,10 +46,7 @@ option chart => (
     negativable => 1,
 );
 
-sub _build_command_names
-{
-    return qw(cast);
-}
+sub _build_command_names { qw(cast); }
 
 sub _get_castable_numbers
 {
@@ -67,7 +64,7 @@ sub _get_castable_numbers
         push @result, $vf;
     }
 
-    return @result;
+    @result;
 }
 
 sub _build_exercises
@@ -87,14 +84,14 @@ sub _build_exercises
     }
 
     my $exercises = {
-                      section => "Vulgar fraction <-> decimal fracion casting",
-                      caption => 'Fractions',
-                      label   => 'vulgar_decimal_fractions',
-                      header  => [ [ 'Vulgar => Decimal Fraction', 'Decimal => Vulgar Fraction' ] ],
-                      solutions   => [],
-                      challenges  => [],
-                      usepackages => [qw(pstricks pstricks-add)],
-                    };
+        section     => "Vulgar fraction <-> decimal fracion casting",
+        caption     => 'Fractions',
+        label       => 'vulgar_decimal_fractions',
+        header      => [ [ 'Vulgar => Decimal Fraction', 'Decimal => Vulgar Fraction' ] ],
+        solutions   => [],
+        challenges  => [],
+        usepackages => [qw(pstricks pstricks-add)],
+    };
 
     my $digits = $self->digits;
     foreach my $line (@tasks)
@@ -114,7 +111,9 @@ sub _build_exercises
         $self->chart and push @way,
           sprintf(
             '\begin{pspicture}(-0.25,-0.25)(0.25,0.25)\psChart[chartColor=color,chartSep=1pt]{%d,%d}{}{0.25}\end{pspicture}',
-            $a->num % $a->denum, $a->denum - ( $a->num % $a->denum ) );
+            $a->num % $a->denum,
+            $a->denum - ( $a->num % $a->denum )
+          );
         push( @solution, '$ ' . join( " = ", @way ) . ' $' );
 
         # cast decimal to vulgar fraction
@@ -128,14 +127,16 @@ sub _build_exercises
         $self->chart and push @way,
           sprintf(
             '\begin{pspicture}(-0.25,-0.25)(0.25,0.25)\psChart[chartColor=color,chartSep=1pt]{%d,%d}{}{0.25}\end{pspicture}',
-            $a->num % $a->denum, $a->denum - ( $a->num % $a->denum ) );
+            $a->num % $a->denum,
+            $a->denum - ( $a->num % $a->denum )
+          );
         push( @solution, '$ ' . join( " = ", @way ) . ' $' );
 
         push( @{ $exercises->{solutions} },  \@solution );
         push( @{ $exercises->{challenges} }, \@challenge );
     }
 
-    return $exercises;
+    $exercises;
 }
 
 =head1 LICENSE AND COPYRIGHT

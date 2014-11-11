@@ -20,7 +20,7 @@ around _guess_natural_number => sub {
     my $next    = shift;
     my $max_val = $_[0]->format;
     my $value   = int( rand( $max_val - 1 ) ) + 1;
-    return RomanNum->new( value => $value );
+    RomanNum->new( value => $value );
 };
 
 =head1 LICENSE AND COPYRIGHT

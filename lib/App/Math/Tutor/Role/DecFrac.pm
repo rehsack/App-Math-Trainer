@@ -24,10 +24,7 @@ sub _check_decimal_fraction
     $digits += length( "" . int( $_[0] ) ) + 1;
     my $s1 = sprintf( "%.${digits}g", $_[0] );
 
-    return (     $minc->( $minr, $_[0] )
-             and $maxc->( $maxr, $_[0] )
-             and $s1 == $_[0]
-             and length($s1) >= 3 );
+    $minc->( $minr, $_[0] ) and $maxc->( $maxr, $_[0] ) and $s1 == $_[0] and length($s1) >= 3;
 }
 
 =head1 LICENSE AND COPYRIGHT

@@ -20,102 +20,102 @@ has unit_definitions => ( is => "lazy" );
 
 sub _build_unit_definitions
 {
-    return {
-             time => {
-                       base       => { s => { max => 59 } },
-                       multiplier => {
-                                       w => {
-                                              max    => 52,
-                                              factor => 7 * 24 * 60 * 60,
-                                            },
-                                       d => {
-                                              max    => 6,
-                                              factor => 24 * 60 * 60,
-                                            },
-                                       h => {
-                                              max    => 23,
-                                              factor => 60 * 60,
-                                            },
-                                       min => {
-                                                max    => 59,
-                                                factor => 60,
-                                              },
-                                     },
-                       divider => {
-                                    ms => {
-                                            max    => 999,
-                                            factor => 1000,
-                                          },
-                                  },
-                     },
-             length => {
-                         base       => { m => { max => 999 } },
-                         multiplier => {
-                                         km => {
-                                                 factor => 1000,
-                                               },
-                                       },
-                         divider => {
-                                      dm => {
-                                              max    => 9,
-                                              factor => 10,
-                                            },
-                                      cm => {
-                                              max    => 9,
-                                              factor => 100,
-                                            },
-                                      mm => {
-                                              max    => 9,
-                                              factor => 1000,
-                                            },
-                                    }
-                       },
-             weight => {
-                         base       => { g => { max => 999 } },
-                         multiplier => {
-                                         kg => {
-                                                 max    => 999,
-                                                 factor => 1000,
-                                               },
-                                         t => {
-                                                factor => 1000 * 1000,
-                                              },
-                                       },
-                         divider => {
-                                      mg => {
-                                              max    => 999,
-                                              factor => 1000,
-                                            },
-                                    },
-                       },
-             euro => {
-                       base    => { '\euro{}' => {} },
-                       divider => {
-                                    'cent' => {
-                                                factor => 100,
-                                                max    => 99
-                                              }
-                                  },
-                     },
-             pound => {
-                        base    => { '\textsterling{}' => {} },
-                        divider => {
-                                     'p' => {
-                                              factor => 100,
-                                              max    => 99
-                                            }
-                                   },
-                      },
-             dollar => {
-                         base    => { '\textdollar{}' => {} },
-                         divider => {
-                                      '\textcent{}' => {
-                                                         factor => 100,
-                                                         max    => 99
-                                                       }
-                                    },
-                       },
-           };
+    {
+        time => {
+            base       => { s => { max => 59 } },
+            multiplier => {
+                w => {
+                    max    => 52,
+                    factor => 7 * 24 * 60 * 60,
+                },
+                d => {
+                    max    => 6,
+                    factor => 24 * 60 * 60,
+                },
+                h => {
+                    max    => 23,
+                    factor => 60 * 60,
+                },
+                min => {
+                    max    => 59,
+                    factor => 60,
+                },
+            },
+            divider => {
+                ms => {
+                    max    => 999,
+                    factor => 1000,
+                },
+            },
+        },
+        length => {
+            base       => { m => { max => 999 } },
+            multiplier => {
+                km => {
+                    factor => 1000,
+                },
+            },
+            divider => {
+                dm => {
+                    max    => 9,
+                    factor => 10,
+                },
+                cm => {
+                    max    => 9,
+                    factor => 100,
+                },
+                mm => {
+                    max    => 9,
+                    factor => 1000,
+                },
+            }
+        },
+        weight => {
+            base       => { g => { max => 999 } },
+            multiplier => {
+                kg => {
+                    max    => 999,
+                    factor => 1000,
+                },
+                t => {
+                    factor => 1000 * 1000,
+                },
+            },
+            divider => {
+                mg => {
+                    max    => 999,
+                    factor => 1000,
+                },
+            },
+        },
+        euro => {
+            base    => { '\euro{}' => {} },
+            divider => {
+                'cent' => {
+                    factor => 100,
+                    max    => 99
+                }
+            },
+        },
+        pound => {
+            base    => { '\textsterling{}' => {} },
+            divider => {
+                'p' => {
+                    factor => 100,
+                    max    => 99
+                }
+            },
+        },
+        dollar => {
+            base    => { '\textdollar{}' => {} },
+            divider => {
+                '\textcent{}' => {
+                    factor => 100,
+                    max    => 99
+                }
+            },
+        },
+    };
 }
 
 has ordered_units => ( is => "lazy" );
@@ -133,11 +133,11 @@ sub _build_ordered_units_flatten_helper
         defined $min    or $min    = 0;
         defined $factor or $factor = 1;
         my %upv = slice_def {
-                              min    => $min,
-                              max    => $max,
-                              factor => $factor,
-                              unit   => $upnm
-                            };
+            min    => $min,
+            max    => $max,
+            factor => $factor,
+            unit   => $upnm
+        };
         push @flatten, \%upv;
     }
 
@@ -167,7 +167,7 @@ sub _build_ordered_units
         $ou{$cat}     = \%ru;
     }
 
-    return \%ou;
+    \%ou;
 }
 
 sub _guess_unit_number
@@ -194,13 +194,12 @@ sub _guess_unit_number
     $_ub-- and pop @rc   while ( @rc and !$rc[-1] );
     @rc or goto REDO;
 
-    return
-      Unit->new(
-                 type  => $unit_type,
-                 begin => $_lb,
-                 end   => $_ub,
-                 parts => \@rc
-               );
+    Unit->new(
+        type  => $unit_type,
+        begin => $_lb,
+        end   => $_ub,
+        parts => \@rc
+    );
 }
 
 requires "unit_length";
@@ -232,7 +231,7 @@ sub get_unit_numbers
         defined $deviation or return 1;
         defined $lo and abs( $lb - $lo ) > $deviation and return 0;
         defined $uo and abs( $lb - $uo ) > $deviation and return 0;
-        return 1;
+        1;
     };
 
     while ( $amount-- )
@@ -240,10 +239,7 @@ sub get_unit_numbers
         my ( @bounds, $unit );
         do
         {
-            @bounds = (
-                        int( rand( scalar @{ $ut->{spectrum} } ) ),
-                        int( rand( scalar @{ $ut->{spectrum} } ) )
-                      );
+            @bounds = ( int( rand( scalar @{ $ut->{spectrum} } ) ), int( rand( scalar @{ $ut->{spectrum} } ) ) );
             $bounds[0] > $bounds[1] and @bounds = reverse @bounds;
         } while ( !$fits->(@bounds) );
 
@@ -252,7 +248,7 @@ sub get_unit_numbers
         push( @result, $unit );
     }
 
-    return @result;
+    @result;
 }
 
 =head1 LICENSE AND COPYRIGHT

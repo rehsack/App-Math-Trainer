@@ -24,15 +24,15 @@ Known units contain time, length, weight, euro, pound, dollar.
 =cut
 
 option "relevant_units" => (
-                  is       => "lazy",
-                  doc      => "Specifies the units relevant for the exercise",
-                  long_doc => "Specifies the units relevant for the exercise using one or more of: "
-                    . "time, length, weight, euro, pound, dollar.",
-                  coerce     => \&_coerce_relevant_units,
-                  format     => "s@",
-                  autosplit  => ",",
-                  repeatable => 1,
-                  short      => "r",
+    is       => "lazy",
+    doc      => "Specifies the units relevant for the exercise",
+    long_doc => "Specifies the units relevant for the exercise using one or more of: "
+      . "time, length, weight, euro, pound, dollar.",
+    coerce     => \&_coerce_relevant_units,
+    format     => "s@",
+    autosplit  => ",",
+    repeatable => 1,
+    short      => "r",
 );
 
 my $single_inst;
@@ -43,7 +43,7 @@ around new => sub {
     my $self = $class->$orig(%params);
     $single_inst = $self;
     $single_redo and $self->{relevant_units} = _coerce_relevant_units($single_redo);
-    return $self;
+    $self;
 };
 
 sub _build_relevant_units
@@ -77,7 +77,7 @@ sub _coerce_relevant_units
         my $item = $_;
         grep { $_ ne "!" and $_ ne $item } @{$val}
     } keys %{ $single_inst->unit_definitions };
-    return \@neg_list;
+    \@neg_list;
 }
 
 =head2 unit_length
@@ -90,12 +90,12 @@ result in not more than C<${unit_length}> elements per number.
 =cut
 
 option "unit_length" => (
-                          is        => "ro",
-                          doc       => "Allowes limitation of unit length",
-                          format    => "i",
-                          short     => "l",
-                          predicate => 1,
-                        );
+    is        => "ro",
+    doc       => "Allowes limitation of unit length",
+    format    => "i",
+    short     => "l",
+    predicate => 1,
+);
 
 =head2 deviation
 
@@ -105,12 +105,12 @@ option. Best results with I<unit_length>.
 =cut
 
 option "deviation" => (
-                        is        => "ro",
-                        doc       => "Allowes limit deviation of unit elements by <einheit>",
-                        format    => "i",
-                        short     => "d",
-                        predicate => 1,
-                      );
+    is        => "ro",
+    doc       => "Allowes limit deviation of unit elements by <einheit>",
+    format    => "i",
+    short     => "d",
+    predicate => 1,
+);
 
 with "App::Math::Tutor::Role::Exercise", "App::Math::Tutor::Role::Unit";
 

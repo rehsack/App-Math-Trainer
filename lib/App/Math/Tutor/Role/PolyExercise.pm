@@ -50,10 +50,10 @@ option format => (
         my $maxv = $startv . "0" x length($fmtv);
         $maxv;
     },
-    default => sub { return 100; },
+    default => sub { 100 },
     format  => "s",
     short   => "f",
-                 );
+);
 
 =head2 max_power
 
@@ -64,20 +64,18 @@ Specifies format of exponent
 option max_power => (
     is       => "ro",
     doc      => "specifies the highest exponent",
-    long_doc => "Allow specifying the format of the polynom "
-      . "by using the higest exponent.\n\n"
-      . "Default: 2",
-    isa => sub {
+    long_doc => "Allow specifying the format of the polynom " . "by using the higest exponent.\n\n" . "Default: 2",
+    isa      => sub {
         defined( $_[0] )
           and !looks_like_number( $_[0] )
           and die("Invalid exponent");
         int( $_[0] ) == $_[0]
           or die("Invalid exponent");
     },
-    default => sub { return 2; },
+    default => sub { 2 },
     format  => "i",
     short   => "e",
-                    );
+);
 
 =head2 probability
 
@@ -97,10 +95,10 @@ option probability => (
           and $_[0] > 100
           and die("Invalid probability");
     },
-    default => sub { return 95; },
+    default => sub { 95 },
     format  => "f",
     short   => "p",
-                      );
+);
 
 =head1 LICENSE AND COPYRIGHT
 

@@ -18,15 +18,15 @@ use MooX::Cmd;
 use MooX::Options;
 
 has template_filename => (
-                           is      => "ro",
-                           default => "twocols"
-                         );
+    is      => "ro",
+    default => "twocols"
+);
 
 with "App::Math::Tutor::Role::Roman", "App::Math::Tutor::Role::NaturalExercise";
 
 sub _build_command_names
 {
-    return qw(add sub);
+    qw(add sub);
 }
 
 sub _build_exercises
@@ -48,13 +48,13 @@ sub _build_exercises
     }
 
     my $exercises = {
-                      section    => "Roman number addition / subtraction",
-                      caption    => 'Roman Numeral Addition / Subtraction',
-                      label      => 'roman_numeral_addition',
-                      header     => [ [ 'Roman Number Addition', 'Roman Number Subtraction' ] ],
-                      solutions  => [],
-                      challenges => [],
-                    };
+        section    => "Roman number addition / subtraction",
+        caption    => 'Roman Numeral Addition / Subtraction',
+        label      => 'roman_numeral_addition',
+        header     => [ [ 'Roman Number Addition', 'Roman Number Subtraction' ] ],
+        solutions  => [],
+        challenges => [],
+    };
 
     foreach my $line (@tasks)
     {
@@ -69,9 +69,7 @@ sub _build_exercises
 
             my @way;    # remember Frank Sinatra :)
             push @way, sprintf( '%s %s %s', $a, $op, $b );
-            push @way,
-              RomanNum->new(
-                      value => $op eq "+" ? $a->_numify + $b->_numify : $a->_numify - $b->_numify );
+            push @way, RomanNum->new( value => $op eq "+" ? $a->_numify + $b->_numify : $a->_numify - $b->_numify );
 
             push( @solution, '$ ' . join( " = ", @way ) . ' $' );
         }
@@ -80,7 +78,7 @@ sub _build_exercises
         push( @{ $exercises->{challenges} }, \@challenge );
     }
 
-    return $exercises;
+    $exercises;
 }
 
 =head1 LICENSE AND COPYRIGHT

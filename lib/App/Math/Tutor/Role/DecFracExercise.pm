@@ -18,11 +18,11 @@ use Scalar::Util qw(looks_like_number);
 
 our $VERSION = '0.005';
 
-sub _lt { return $_[0] < $_[1]; }
-sub _le { return $_[0] <= $_[1]; }
-sub _gt { return $_[0] > $_[1]; }
-sub _ge { return $_[0] >= $_[1]; }
-sub _ok { return 1; }
+sub _lt { $_[0] < $_[1]; }
+sub _le { $_[0] <= $_[1]; }
+sub _gt { $_[0] > $_[1]; }
+sub _ge { $_[0] >= $_[1]; }
+sub _ok { 1; }
 
 =head1 ATTRIBUTES
 
@@ -63,7 +63,7 @@ option range => (
 			      (?:(?:\d+\.?\d*)|(?:\.?\d+)\])
 			  )
 		        )?$/x
-                                  );
+        );
         my ( $minr, $minc, $maxr, $maxc );
 
         $fmtmin =~ s/^\[// and $minc = \&_le;
@@ -83,12 +83,12 @@ option range => (
             $maxc = \&_ok;
         }
 
-        return [ $minr, $minc, $maxr, $maxc ];
+        [ $minr, $minc, $maxr, $maxc ];
     },
-    default => sub { return [ 0, \&_lt, undef, \&_ok ]; },
+    default => sub { [ 0, \&_lt, undef, \&_ok ]; },
     format  => "s",
     short   => "r",
-                );
+);
 
 =head2 digits
 
@@ -112,10 +112,10 @@ option digits => (
     coerce => sub {
         int( $_[0] );
     },
-    default => sub { return 5; },
+    default => sub { 5; },
     format  => "s",
     short   => "g",
-                 );
+);
 
 =head1 LICENSE AND COPYRIGHT
 
